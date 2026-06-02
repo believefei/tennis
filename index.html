@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>冠军之外 · 网球小孩的一百种人生</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <section id="cover">
+    <!-- 全幅手绘画布：场景 / 小人 / 网球，三层叠放 -->
+    <canvas id="c-scene" class="layer"></canvas>
+    <canvas id="c-player" class="layer"></canvas>
+    <canvas id="c-ball" class="layer"></canvas>
+
+    <!-- 文字内容 -->
+    <div class="cover-content">
+      <h1 class="title">冠军之外：</h1>
+      <h2 class="subtitle">
+        网球小孩的&nbsp;1<span class="zero-slot" id="slot-0"></span><span class="zero-slot" id="slot-1"></span>&nbsp;种人生
+      </h2>
+
+      <div class="cover-lower">
+        <p class="body">
+          也许不是每个网球小孩都能成为郑钦文，但今天的中国网球，
+          至少让这场梦想不再只有一种终点。更多孩子终于能从一把球拍里，
+          走向不同但真实的人生。
+        </p>
+        <button id="start-btn" class="start-btn">开始人生</button>
+      </div>
+    </div>
+
+    <p class="hint" id="hint">点击画面，让小孩再打一球</p>
+  </section>
+
+  <!-- RoughJS：手绘草图风格的线条 -->
+  <script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.js"></script>
+  <!-- GSAP：动效时间线 -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="sketch.js"></script>
+</body>
+</html>

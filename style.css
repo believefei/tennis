@@ -1,0 +1,137 @@
+:root {
+  /* 米白纸张底色 + 近黑墨线，沿用手绘风格 */
+  --paper: #f4f1ea;
+  --ink: #1a1a1a;
+  --accent: #c2410c;
+  --ball: #c9d83a;
+}
+
+/* 自托管站酷快乐体（SIL OFL，免费商用） */
+@font-face {
+  font-family: 'ZCOOL KuaiLe';
+  src: url('fonts/zcool-kuaile.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'ZCOOL KuaiLe', "Songti SC", serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* ---------- 封面：整幅画布 + 文字浮层 ---------- */
+#cover {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* 三层 canvas 铺满整屏，叠在文字下面 */
+#cover .layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#c-scene  { z-index: 1; }
+#c-player { z-index: 2; }
+#c-ball   { z-index: 4; } /* 球在文字之上，才能"落"在标题里 */
+
+/* 文字浮层 */
+.cover-content {
+  position: relative;
+  z-index: 3;
+  height: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 6vh 6vw;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none; /* 点击穿透到画布，按钮再单独开启 */
+}
+
+.title {
+  font-size: clamp(34px, 5vw, 64px);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+}
+
+.subtitle {
+  font-size: clamp(30px, 4.6vw, 58px);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* 两个"0"的占位：给网球预留落点，本身不显示字符 */
+.zero-slot {
+  display: inline-block;
+  width: 0.92em;   /* 约等于一个"0"字宽 */
+  height: 0.92em;
+  vertical-align: -0.12em;
+}
+
+/* 正文 + 按钮：推到右下 */
+.cover-lower {
+  margin-top: auto;
+  margin-left: auto;
+  max-width: 26em;
+  text-align: left;
+}
+
+.body {
+  font-size: clamp(15px, 1.5vw, 19px);
+  line-height: 2;
+  letter-spacing: 0.01em;
+  opacity: 0.82;
+  margin-bottom: 1.6em;
+}
+
+/* 手绘风按钮：墨线描边 + 轻微倾斜 */
+.start-btn {
+  pointer-events: auto; /* 重新开启点击 */
+  font-family: inherit;
+  font-size: clamp(17px, 1.8vw, 22px);
+  color: var(--paper);
+  background: var(--ink);
+  border: none;
+  padding: 0.55em 1.8em;
+  border-radius: 28px 24px 30px 22px / 24px 28px 22px 30px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease;
+  box-shadow: 3px 3px 0 rgba(26, 26, 26, 0.18);
+}
+.start-btn:hover {
+  background: var(--accent);
+  transform: translateY(-2px) rotate(-1deg);
+}
+.start-btn:active { transform: translateY(1px); }
+
+/* 角落提示语 */
+.hint {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: 2.2vh;
+  transform: translateX(-50%);
+  font-size: clamp(12px, 1.2vw, 15px);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ---------- 窄屏 ---------- */
+@media (max-width: 760px) {
+  .subtitle { font-size: clamp(24px, 7vw, 38px); }
+  .cover-lower { margin-left: 0; }
+}
