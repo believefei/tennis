@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1078 927">
+  <defs>
+    <style><![CDATA[
+      .bill-text { font-family: "PF HuTu", "PFanHuTu", "KaiTi", "STKaiti", serif; fill: #1a1a1a; }
+      .bill-title { font-size: 32px; letter-spacing: 2px; font-weight: 700; }
+      .bill-sub { font-size: 17px; }
+      .bill-mini { font-size: 12px; fill: #7f7f7f; }
+      .bill-col { font-size: 17px; }
+      .bill-item { font-size: 17px; }
+      .bill-amt { font-size: 16px; fill: #c85f29; }
+      .bill-line { stroke: #1a1a1a; stroke-width: 1.8; fill: none; stroke-linecap: round; }
+      .bill-dot { fill: #fffdf8; stroke: #1a1a1a; stroke-width: 1.8; }
+      .bill-total { font-size: 24px; font-weight: 700; }
+      .bill-total-note { font-size: 14px; fill: #555555; }
+    ]]></style>
+    <radialGradient id="paperGlow" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#fffdf8"/>
+      <stop offset="100%" stop-color="#f8f2e8"/>
+    </radialGradient>
+  </defs>
+
+  <path d="M0,0 L1078,0 L1078,927 L0,927 Z" fill="none"/>
+
+  <path class="bill-line" d="M115 84 C160 48 262 30 504 28 C788 27 917 47 974 101 C1009 135 1020 199 1017 318 L1005 735 C1001 818 972 871 917 896 C860 920 710 928 493 924 C270 921 157 893 118 837 C99 808 90 739 93 629 L105 164 C107 122 111 98 115 84 Z" fill="url(#paperGlow)"/>
+  <path class="bill-line" d="M103 122 C113 99 137 86 175 84 C211 85 234 99 246 124 C215 112 188 111 166 118 C135 128 115 149 104 182 C100 157 100 138 103 122 Z" fill="url(#paperGlow)"/>
+  <ellipse class="bill-line" cx="166" cy="129" rx="57" ry="30" fill="none"/>
+  <path class="bill-line" d="M748 72 C846 75 905 102 926 158 C899 128 850 108 778 99" fill="none"/>
+  <path class="bill-line" d="M765 77 C834 87 879 110 902 144" fill="none"/>
+  <path class="bill-line" d="M174 135 C165 255 164 491 182 812" fill="none"/>
+  <path class="bill-line" d="M129 842 C242 866 396 873 589 868 C771 865 877 864 931 868 C881 906 735 921 492 922 C272 919 153 891 129 842 Z" fill="url(#paperGlow)"/>
+  <path class="bill-line" d="M144 830 C263 853 409 859 594 854 C780 849 888 852 941 862" fill="none"/>
+  <path class="bill-line" d="M159 62 C332 37 566 35 838 55" fill="none"/>
+
+  <text class="bill-text bill-title" x="315" y="122">FAMILY</text>
+  <text class="bill-text bill-sub" x="322" y="160">家庭训练投入</text>
+  <text class="bill-text bill-mini" x="323" y="188">2026 cost sketch</text>
+
+  <text class="bill-text bill-col" x="278" y="234">项目</text>
+  <text class="bill-text bill-col" x="582" y="234">参考金额</text>
+  <path class="bill-line" d="M268 247 C389 246 520 246 734 244"/>
+
+  <circle class="bill-dot" cx="250" cy="281" r="5"/>
+  <text class="bill-text bill-item" x="278" y="286">私教课</text>
+  <path class="bill-line" d="M276 293 C378 290 477 289 554 287"/>
+  <text class="bill-text bill-amt" x="571" y="286">¥300—1000 / 小时</text>
+
+  <circle class="bill-dot" cx="250" cy="333" r="5"/>
+  <text class="bill-text bill-item" x="278" y="338">场地费</text>
+  <path class="bill-line" d="M276 345 C378 342 477 341 554 339"/>
+  <text class="bill-text bill-amt" x="571" y="338">¥100—600 / 小时</text>
+
+  <circle class="bill-dot" cx="250" cy="385" r="5"/>
+  <text class="bill-text bill-item" x="278" y="390">团课</text>
+  <path class="bill-line" d="M276 397 C378 394 477 393 554 391"/>
+  <text class="bill-text bill-amt" x="553" y="390">¥100—150 / 人 / 节</text>
+
+  <circle class="bill-dot" cx="250" cy="437" r="5"/>
+  <text class="bill-text bill-item" x="278" y="442">专业球拍</text>
+  <path class="bill-line" d="M276 449 C378 446 477 445 554 443"/>
+  <text class="bill-text bill-amt" x="571" y="442">¥1000—2000 / 支</text>
+
+  <circle class="bill-dot" cx="250" cy="489" r="5"/>
+  <text class="bill-text bill-item" x="278" y="494">月卡场地 / 会员</text>
+  <path class="bill-line" d="M276 501 C405 498 497 497 554 495"/>
+  <text class="bill-text bill-amt" x="547" y="494">≈ ¥2000—2800 / 月</text>
+
+  <circle class="bill-dot" cx="250" cy="541" r="5"/>
+  <text class="bill-text bill-item" x="278" y="546">年卡场地 / 会员</text>
+  <path class="bill-line" d="M276 553 C405 550 497 549 554 547"/>
+  <text class="bill-text bill-amt" x="529" y="546">≈ ¥18000—22000 / 年</text>
+
+  <circle class="bill-dot" cx="250" cy="593" r="5"/>
+  <text class="bill-text bill-item" x="278" y="598">全训型网校</text>
+  <path class="bill-line" d="M276 605 C378 602 477 601 554 599"/>
+  <text class="bill-text bill-amt" x="505" y="598">≈ ¥19.7万—22.7万 / 年</text>
+
+  <circle class="bill-dot" cx="250" cy="645" r="5"/>
+  <text class="bill-text bill-item" x="278" y="650">国内两站赛事</text>
+  <path class="bill-line" d="M276 657 C405 654 497 653 554 651"/>
+  <text class="bill-text bill-amt" x="588" y="650">≈ ¥6000—7000</text>
+
+  <circle class="bill-dot" cx="250" cy="697" r="5"/>
+  <text class="bill-text bill-item" x="278" y="702">出国参赛</text>
+  <path class="bill-line" d="M276 709 C378 706 477 705 554 703"/>
+  <text class="bill-text bill-amt" x="485" y="702">机票、住宿等可达数万元</text>
+
+  <path class="bill-line" d="M295 804 C377 806 452 805 533 801"/>
+  <path class="bill-line" d="M238 838 C365 838 504 839 718 834"/>
+  <text class="bill-text bill-total" x="330" y="866">TOTAL</text>
+  <text class="bill-text bill-total-note" x="480" y="866">这是一张会越打越长的账单</text>
+</svg>

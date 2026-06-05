@@ -1,0 +1,45 @@
+window.INDUSTRY_METRICS = {
+  market: {
+    key: 'market',
+    title: '网球市场规模',
+    unit: '亿元',
+    yTicks: [50, 150, 250, 350, 380],
+    points: [
+      { year: '2015', value: 50, label: '50' },
+      { year: '2019', value: 284.1, label: '284.1' },
+      { year: '2020', value: 286.4, label: '286.4' },
+      { year: '2021', value: 299.0, label: '299.0' },
+      { year: '2022', value: 308.3, label: '308.3' },
+      { year: '2023', value: 321.2, label: '321.2' },
+      { year: '2024', value: 367.5, label: '367.5' },
+    ],
+  },
+  players: {
+    key: 'players',
+    title: '网球人口',
+    unit: '万',
+    yTicks: [0, 600, 1200, 1800, 2600],
+    points: [
+      { year: '2004', value: 197, label: '197' },
+      { year: '2008', value: 550, label: '500-600' },
+      { year: '2009', value: 820, label: '>800' },
+      { year: '2010初', value: 1200, label: '1200' },
+      { year: '2014', value: 1200, label: '1200' },
+      { year: '2021', value: 1992, label: '1992' },
+      { year: '2024', value: 2518.8, label: '2518.8' },
+    ],
+  },
+  courts: {
+    key: 'courts',
+    title: '网球场数量',
+    unit: '片',
+    yTicks: [0, 10000, 30000, 50000, 56000],
+    points: [
+      { year: '2005', value: 10500, label: '>10000' },
+      { year: '2018', value: 28000, label: '~28000' },
+      { year: '2020', value: 49767, label: '49767' },
+      { year: '2021', value: 49767, label: '49767' },
+      { year: '2024', value: 53805, label: '53805' },
+    ],
+  },
+};

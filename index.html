@@ -1,42 +1,281 @@
-<!DOCTYPE html>
-<html lang="zh">
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>冠军之外 · 网球小孩的一百种人生</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>网球小孩的100种人生</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <section id="cover">
-    <!-- 全幅手绘画布：场景 / 小人 / 网球，三层叠放 -->
-    <canvas id="c-scene" class="layer"></canvas>
-    <canvas id="c-player" class="layer"></canvas>
-    <canvas id="c-ball" class="layer"></canvas>
-
-    <!-- 文字内容 -->
-    <div class="cover-content">
-      <h1 class="title">冠军之外：</h1>
-      <h2 class="subtitle">
-        网球小孩的&nbsp;1<span class="zero-slot" id="slot-0"></span><span class="zero-slot" id="slot-1"></span>&nbsp;种人生
-      </h2>
-
-      <div class="cover-lower">
-        <p class="body">
-          也许不是每个网球小孩都能成为郑钦文，但今天的中国网球，
-          至少让这场梦想不再只有一种终点。更多孩子终于能从一把球拍里，
-          走向不同但真实的人生。
-        </p>
-        <button id="start-btn" class="start-btn">开始人生</button>
+  <main>
+    <section id="cover" aria-hidden="false">
+      <div class="page-meta">
+        <div class="page-index">01</div>
+        <div class="page-name">封面</div>
       </div>
-    </div>
+      <div class="page-nav" aria-label="页面跳转">
+        <button class="page-nav-btn" type="button" data-dir="prev" data-page="cover" aria-label="上一页">&lt;</button>
+        <button class="page-nav-btn" type="button" data-dir="next" data-page="cover" aria-label="下一页">&gt;</button>
+      </div>
 
-    <p class="hint" id="hint">点击画面，让小孩再打一球</p>
-  </section>
+      <canvas id="c-scene" class="layer"></canvas>
+      <canvas id="c-player" class="layer"></canvas>
+      <canvas id="c-ball" class="layer"></canvas>
+      <img id="player" src="photos/begin.png" alt="" aria-hidden="true">
 
-  <!-- RoughJS：手绘草图风格的线条 -->
-  <script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.js"></script>
-  <!-- GSAP：动效时间线 -->
+      <div class="cover-content">
+        <div class="text-block">
+          <h1 class="title">冠军之外：</h1>
+          <h2 class="subtitle">
+            网球小孩的 1<span id="slot-0" class="zero-slot"></span><span id="slot-1" class="zero-slot"></span> 种人生
+          </h2>
+          <p class="body">
+            也许不是每个网球小孩都能成为郑钦文，但今天的中国网球，至少让这场梦想不再只有一种终点。更多孩子终于能从一把球拍里，走向不同但真实的人生。
+          </p>
+          <button id="start-btn" class="start-btn" type="button">开始人生</button>
+        </div>
+      </div>
+
+      <div id="serve-hint" class="serve-hint"><kbd>Space</kbd><span>挥拍发球</span></div>
+    </section>
+
+    <section id="gender-page" class="gender-page" aria-hidden="true">
+      <div class="page-meta">
+        <div class="page-index">02</div>
+        <div class="page-name">性别</div>
+      </div>
+      <div class="page-nav" aria-label="页面跳转">
+        <button class="page-nav-btn" type="button" data-dir="prev" data-page="gender-page" aria-label="上一页">&lt;</button>
+        <button class="page-nav-btn" type="button" data-dir="next" data-page="gender-page" aria-label="下一页">&gt;</button>
+      </div>
+
+      <svg class="squiggle-defs" aria-hidden="true">
+        <filter id="hand-drawn">
+          <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="noise" seed="7" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.5" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </svg>
+
+      <div class="gender-paper">
+        <div class="gender-copy">
+          <h2 class="gender-title">你呱呱落地，你是——</h2>
+          <div class="gender-options">
+            <button class="gender-option" type="button" data-gender="boy"><span class="gender-option-tag">A.</span>男生</button>
+            <button class="gender-option" type="button" data-gender="girl"><span class="gender-option-tag">B.</span>女生</button>
+          </div>
+        </div>
+
+        <div class="baby-stage">
+          <img id="baby-frame" src="photos/baby0.png" alt="宝宝插图">
+        </div>
+      </div>
+    </section>
+
+    <section id="ratio-page" class="ratio-page" aria-hidden="true">
+      <div class="page-meta">
+        <div class="page-index">03</div>
+        <div class="page-name">比例</div>
+      </div>
+      <div class="page-nav" aria-label="页面跳转">
+        <button class="page-nav-btn" type="button" data-dir="prev" data-page="ratio-page" aria-label="上一页">&lt;</button>
+        <button class="page-nav-btn" type="button" data-dir="next" data-page="ratio-page" aria-label="下一页">&gt;</button>
+      </div>
+
+      <canvas id="c-ratio" class="ratio-layer"></canvas>
+
+      <div class="ratio-copy">
+        <h2 class="ratio-title">每100个网球人里——</h2>
+        <p id="ratio-body" class="ratio-body"></p>
+      </div>
+
+      <div class="ratio-cars-label" aria-hidden="true">
+        <span>男生</span>
+        <span>女生</span>
+      </div>
+
+      <button id="ratio-next-btn" class="start-btn ratio-next-btn" type="button">看看同酬之路</button>
+    </section>
+
+    <section id="equal-page" class="equal-page" aria-hidden="true">
+      <div class="page-meta">
+        <div class="page-index">04</div>
+        <div class="page-name">同酬</div>
+      </div>
+      <div class="page-nav" aria-label="页面跳转">
+        <button class="page-nav-btn" type="button" data-dir="prev" data-page="equal-page" aria-label="上一页">&lt;</button>
+        <button class="page-nav-btn" type="button" data-dir="next" data-page="equal-page" aria-label="下一页">&gt;</button>
+      </div>
+
+      <canvas id="c-equal" class="equal-layer"></canvas>
+
+      <div class="equal-copy">
+        <h2 class="equal-title">35年，一条通往同工同酬的时间轴</h2>
+        <p class="equal-body">
+          1968年，温网男单冠军奖金为 £2,000，而女单冠军仅有 £750，不足前者四成。<br><br>
+          此后，四大满贯陆续推进奖金平等。从1972年美网率先破局，到2007年温网完成改革，网球用了35年，才让男女选手站上同一条奖金线。<br><br>
+          这条时间轴记录的，不只是奖金数字的变化，更是一场持续数十年的公平争取。
+        </p>
+      </div>
+
+      <button id="equal-next-btn" class="start-btn equal-next-btn" type="button">去看看你的家乡</button>
+    </section>
+
+    <section id="achievement-page" class="achievement-page" aria-hidden="true">
+      <div class="page-meta">
+        <div class="page-index">05</div>
+        <div class="page-name">竞技</div>
+      </div>
+      <div class="page-nav" aria-label="页面跳转">
+        <button class="page-nav-btn" type="button" data-dir="prev" data-page="achievement-page" aria-label="上一页">&lt;</button>
+        <button class="page-nav-btn" type="button" data-dir="next" data-page="achievement-page" aria-label="下一页">&gt;</button>
+      </div>
+
+      <div class="achievement-copy">
+        <h2 class="achievement-title">一颗球，就是一次被记住的突破。</h2>
+        <p class="achievement-body">从 2004 到 2024，中国网球在大满贯舞台上的每一步，都可以被看见。</p>
+      </div>
+
+      <div class="achievement-side-nav" id="achievement-side-nav" aria-label="竞技视图切换">
+        <button class="achievement-view-btn is-active" type="button" data-view="slam">大满贯</button>
+        <button class="achievement-view-btn" type="button" data-view="olympics">奥运会</button>
+        <button class="achievement-view-btn" type="button" data-view="rankings">世界排名</button>
+      </div>
+
+      <div class="achievement-court" id="achievement-court">
+        <div class="achievement-zones" id="achievement-zones" aria-hidden="true">
+          <span>冠军</span>
+          <span>亚军 / 四强</span>
+          <span>排名突破</span>
+        </div>
+        <div class="achievement-years" id="achievement-years" aria-hidden="true"></div>
+        <div class="achievement-points" id="achievement-points" aria-label="中国网球突破数据点"></div>
+        <div class="achievement-tooltip" id="achievement-tooltip" aria-hidden="true"></div>
+      </div>
+
+      <div class="achievement-legend" id="achievement-legend" aria-hidden="true"></div>
+    </section>
+
+    <section id="map-page" class="map-page" aria-hidden="true">
+      <div class="page-meta">
+        <div class="page-index">06</div>
+        <div class="page-name">出生地</div>
+      </div>
+      <div class="page-nav" aria-label="页面跳转">
+        <button class="page-nav-btn" type="button" data-dir="prev" data-page="map-page" aria-label="上一页">&lt;</button>
+        <button class="page-nav-btn" type="button" data-dir="next" data-page="map-page" aria-label="下一页">&gt;</button>
+      </div>
+
+      <div id="map-chart" class="map-layer" aria-hidden="true"></div>
+      <div id="map-hint" class="map-hint">点击地图，选择你的出生地</div>
+
+      <div id="map-copy" class="map-copy" aria-hidden="true">
+        <div class="map-kicker">Birth Place</div>
+        <h2 id="map-title" class="map-title"></h2>
+        <p id="map-body" class="map-body"></p>
+      </div>
+
+      <div id="map-legend" class="map-legend" aria-hidden="true">
+        <span>场地少</span>
+        <span class="map-legend-bar"></span>
+        <span>场地多</span>
+      </div>
+    </section>
+
+    <section id="journey-page" class="journey-page" aria-hidden="true">
+      <div class="page-meta">
+        <div id="journey-page-index" class="page-index">07-01</div>
+        <div id="journey-page-name" class="page-name">未来</div>
+      </div>
+      <div class="page-nav" aria-label="页面跳转">
+        <button class="page-nav-btn" type="button" data-dir="prev" data-page="journey-page" aria-label="上一页">&lt;</button>
+        <button class="page-nav-btn" type="button" data-dir="next" data-page="journey-page" aria-label="下一页">&gt;</button>
+      </div>
+
+      <div class="journey-paper">
+        <div id="journey-kicker" class="journey-kicker">Future Route</div>
+        <h2 id="journey-title" class="journey-title">成绩开始波动，球场和课本都在拉扯你。</h2>
+        <p id="journey-body" class="journey-body">从出生地一路走到这里，真正困难的决定才刚刚开始。</p>
+        <div id="journey-context" class="journey-context" aria-live="polite">
+          <span class="journey-context-chip">性别：待选择</span>
+          <span class="journey-context-chip">出生地：待选择</span>
+          <span class="journey-context-chip">阶段：选择中</span>
+        </div>
+        <div id="journey-options" class="journey-options" aria-label="人生选择">
+          <button class="journey-option" type="button" data-next="academic-future">
+            <span class="journey-option-tag">做个选择</span>
+            <strong class="journey-option-title">A 先把学业稳住</strong>
+            <span class="journey-option-desc">离开职业赛道，把网球留在生活里，进入兴趣线。</span>
+          </button>
+          <button class="journey-option" type="button" data-next="training-choice">
+            <span class="journey-option-tag">做个选择</span>
+            <strong class="journey-option-title">B 继续系统训练</strong>
+            <span class="journey-option-desc">赌一把竞技成长，看看自己能不能把天赋打出来。</span>
+          </button>
+        </div>
+        <div class="journey-actions">
+          <button id="journey-restart-btn" class="journey-action-btn" type="button">回到岔路口</button>
+          <button id="journey-map-btn" class="journey-action-btn is-ghost" type="button">返回出生地</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="industry-page" class="industry-page" aria-hidden="true">
+      <div class="page-meta">
+        <div class="page-index">08</div>
+        <div class="page-name">产业可视化</div>
+      </div>
+      <div class="page-nav" aria-label="页面跳转">
+        <button class="page-nav-btn" type="button" data-dir="prev" data-page="industry-page" aria-label="上一页">&lt;</button>
+        <button class="page-nav-btn" type="button" data-dir="next" data-page="industry-page" aria-label="下一页">&gt;</button>
+      </div>
+
+      <div class="industry-left">
+        <div class="industry-copy">
+          <div class="industry-kicker">Industry Visualization</div>
+          <h2 class="industry-title">网球产业的增长轨迹</h2>
+          <p class="industry-body">三组数据，一张手绘曲线图。点击导航切换视角。</p>
+        </div>
+
+        <nav class="industry-nav" aria-label="产业指标切换">
+          <button class="industry-nav-btn is-active" type="button" data-key="market">市场规模</button>
+          <button class="industry-nav-btn" type="button" data-key="players">网球人口</button>
+          <button class="industry-nav-btn" type="button" data-key="courts">球场数量</button>
+        </nav>
+
+        <div class="industry-hint"><kbd>Space</kbd><span>或点击图表，发球动画</span></div>
+
+        <canvas id="industry-canvas" class="industry-canvas"></canvas>
+      </div>
+
+      <aside class="industry-illustration" aria-label="插图">
+        <img class="industry-illustration-img" src="photos/audience.png" alt="观众插图">
+      </aside>
+    </section>
+  </main>
+
+  <div class="debug-jump" aria-label="调试跳页">
+    <label class="debug-jump-label" for="debug-page-select">调试跳转</label>
+    <select id="debug-page-select" class="debug-jump-select">
+      <option value="">选择页面</option>
+      <option value="cover">01 封面</option>
+      <option value="gender-page">02 性别</option>
+      <option value="ratio-page">03 比例</option>
+      <option value="equal-page">04 同酬</option>
+      <option value="achievement-page">05 竞技</option>
+      <option value="map-page">06 出生地</option>
+      <option value="journey-page">07 未来</option>
+      <option value="industry-page">08 产业可视化</option>
+    </select>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+  <script src="data/china-geo.js"></script>
+  <script src="data/equal-pay.js"></script>
+  <script src="data/slam-breakthroughs.js"></script>
+  <script src="data/achievement-extra.js"></script>
+  <script src="data/industry-metrics.js"></script>
   <script src="sketch.js"></script>
 </body>
 </html>
