@@ -2079,56 +2079,27 @@ function buildFamilyReceiptSvg() {
   ];
 
   const N = BILL_ITEMS.length;
-  const ROW_H  = 30;
-  const HEAD_Y = 220;
+  const ROW_H  = 28;
+  const HEAD_Y = 210;
   const BODY_H = N * ROW_H;
-  const GAP    = 28;
-  const FOOT_H = 62;
-  const PAD_BOT = 60;
+  const GAP    = 32;
+  const FOOT_H = 60;
+  const PAD_BOT = 56;
 
   const VIEW_W = 340;
   const VIEW_H = Math.ceil(HEAD_Y + BODY_H + GAP + FOOT_H + PAD_BOT);
 
-  const B = VIEW_H - PAD_BOT;
+  // Camp bill shape mirrored, X-scaled 6% wider for Chinese text
+  const outerPath = "M 287 136 C 231 110 160 90 103 102 C 82 106 69 142 65 204 C 57 310 52 446 44 510 C 36 564 23 602 7 630 L 173 640 C 203 602 222 550 232 480 C 242 404 244 334 252 270 C 259 214 270 168 287 136 Z";
+  const clipPath  = "M 242 168 C 200 148 152 134 113 142 C 102 146 96 162 92 190 C 87 276 82 382 74 462 C 69 514 60 556 47 588 L 166 600 C 188 572 203 532 210 476 C 219 410 222 342 230 280 C 235 232 239 196 242 168 Z";
 
-  // Paper outline — receipt with clean right-angle bottom corners
-  //  · Top: gentle arc
-  //  · Right: perforation wave (register-tape tear)
-  //  · Bottom: horizontal line → right angle at bottom-right ↓
-  //  · Bottom-left: right angle where horizontal bottom meets left edge ↓
-  //  · Left: deep curl inset (paper rolled under)
-  const BY = B + 2;          // bottom y (paper bottom edge)
-  const outerPath = [
-    "M54 40",
-    "C115 28, 210 24, 296 30",
-    "C306 58, 304 115, 308 180",
-    "C312 258, 308 350, 312 420",
-    "C314 464, 312 488, 306 " + BY,
-    "L2 " + BY,
-    "C0 " + (BY - 70) + ", 0 " + (BY - 160) + ", 2 " + (BY - 270),
-    "C4 " + (BY - 400) + ", 12 " + (BY - 476) + ", 54 40 Z",
-  ].join(" ");
-
-  // Content clip — inset ~20-35px
-  const CBY = BY - 18;       // clip bottom y
-  const clipPath = [
-    "M74 58",
-    "C128 48, 200 44, 272 50",
-    "C280 70, 280 115, 284 180",
-    "C288 255, 284 345, 288 415",
-    "C290 450, 288 468, 282 " + CBY,
-    "L30 " + CBY,
-    "C28 " + (CBY - 60) + ", 28 " + (CBY - 140) + ", 30 " + (CBY - 250),
-    "C32 " + (CBY - 360) + ", 38 " + (CBY - 430) + ", 74 58 Z",
-  ].join(" ");
-
-  const AMT_X = 248;
+  const AMT_X = 226;
   const billRows = BILL_ITEMS.map((item, i) => {
     const y = HEAD_Y + i * ROW_H;
     const amountClass = item.amount.length > 12 ? " bill-amount--small" : "";
     return (
-      '<circle class="bill-bullet" cx="70" cy="' + (y - 2) + '" r="2.4" />' +
-      '<text class="bill-row-label" x="82" y="' + (y + 1) + '">' + item.label + '</text>' +
+      '<circle class="bill-bullet" cx="57" cy="' + (y - 2) + '" r="2.2" />' +
+      '<text class="bill-row-label" x="63" y="' + (y + 1) + '">' + item.label + '</text>' +
       '<text class="bill-amount' + amountClass + '" x="' + AMT_X + '" y="' + (y + 1) + '" text-anchor="end">' + item.amount + '</text>'
     );
   }).join("");
@@ -2140,7 +2111,7 @@ function buildFamilyReceiptSvg() {
   return (
     '<svg class="training-bill-svg training-bill-svg--family" viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" aria-label="Family investment bill" role="img">' +
       '<defs>' +
-        '<radialGradient id="familyPaperGlow" cx="38%" cy="28%" r="82%">' +
+        '<radialGradient id="familyPaperGlow" cx="42%" cy="32%" r="82%">' +
           '<stop offset="0%" stop-color="#fffdf7" />' +
           '<stop offset="100%" stop-color="#f2ebd8" />' +
         '</radialGradient>' +
@@ -2149,25 +2120,25 @@ function buildFamilyReceiptSvg() {
         '</clipPath>' +
       '</defs>' +
 
-      '<path class="bill-shadow bill-shadow-soft" d="' + outerPath + '" transform="translate(7 9)" />' +
+      '<path class="bill-shadow bill-shadow-soft" d="' + outerPath + '" transform="translate(7 8)" />' +
       '<path class="bill-paper" d="' + outerPath + '" fill="url(#familyPaperGlow)" />' +
       '<path class="bill-content-guide" d="' + clipPath + '" />' +
 
       '<g clip-path="url(#familyScrollClip)">' +
-        '<text class="bill-title" x="82" y="100">FAMILY</text>' +
-        '<text class="bill-subtitle" x="86" y="122">家庭训练投入</text>' +
-        '<text class="bill-mini-note" x="86" y="138">2026 cost sketch</text>' +
+        '<text class="bill-title" x="63" y="186">FAMILY</text>' +
+        '<text class="bill-subtitle" x="67" y="208">家庭训练投入</text>' +
+        '<text class="bill-mini-note" x="67" y="224">2026 cost sketch</text>' +
 
-        '<text class="bill-column-label" x="82" y="180">项目</text>' +
-        '<text class="bill-column-label" x="' + AMT_X + '" y="180" text-anchor="end">参考金额</text>' +
-        '<path class="bill-line" d="M80 188 C145 185, 175 186, ' + (AMT_X + 2) + ' 189" />' +
+        '<text class="bill-column-label" x="63" y="178">项目</text>' +
+        '<text class="bill-column-label" x="' + AMT_X + '" y="178" text-anchor="end">参考金额</text>' +
+        '<path class="bill-line" d="M61 186 C99 184, 145 185, 228 188" />' +
 
         billRows +
 
-        '<path class="bill-total-line" d="M78 ' + t0 + ' C145 ' + (t0 - 1) + ', 175 ' + (t0 + 1) + ', ' + (AMT_X + 2) + ' ' + t0 + '" />' +
-        '<path class="bill-total-line" d="M72 ' + t1 + ' C140 ' + (t1 - 2) + ', 178 ' + t1 + ', ' + (AMT_X + 6) + ' ' + (t1 + 1) + '" />' +
-        '<text class="bill-total" x="86" y="' + tText + '">TOTAL</text>' +
-        '<text class="bill-total-note" x="150" y="' + tText + '">越打越长的账单</text>' +
+        '<path class="bill-total-line" d="M61 ' + t0 + ' C99 ' + (t0-1) + ', 145 ' + (t0+1) + ', 228 ' + t0 + '" />' +
+        '<path class="bill-total-line" d="M55 ' + t1 + ' C93 ' + (t1-2) + ', 145 ' + t1 + ', 232 ' + (t1+1) + '" />' +
+        '<text class="bill-total" x="63" y="' + tText + '">TOTAL</text>' +
+        '<text class="bill-total-note" x="115" y="' + tText + '">越打越长的账单</text>' +
       '</g>' +
 
       '<path class="bill-outline-top" d="' + outerPath + '" />' +

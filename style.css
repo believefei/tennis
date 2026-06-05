@@ -2233,15 +2233,15 @@ body {
 }
 
 .training-bill-svg--family .bill-row-label {
-  font-size: 11.5px;
+  font-size: 10.5px;
 }
 
 .training-bill-svg--family .bill-amount {
-  font-size: 11.5px;
+  font-size: 10.5px;
 }
 
 .training-bill-svg--family .bill-amount--small {
-  font-size: 10px;
+  font-size: 9px;
   letter-spacing: 0.01em;
 }
 
