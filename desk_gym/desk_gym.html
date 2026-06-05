@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>分镜 · 学业与网球</title>
+<style>
+  @font-face {
+    font-family: "PFanHuTu";
+    src: url("../PFanHuTuTi 0.680.ttf") format("truetype");
+    font-display: swap;
+  }
+
+  :root {
+    --paper: #f4efe1;
+    --ink: #2b2a26;
+    --highlight: rgba(240, 228, 150, 0.664);
+    --line: #2b2a26;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+  }
+
+  body {
+    font-family: "PFanHuTu", "KaiTi", "STKaiti", serif;
+    color: var(--ink);
+    background: #f6f1e8;
+    min-height: 100vh;
+    display: flex;
+    align-items: stretch;
+  }
+
+  /* 手绘抖动滤镜：让直线边框看起来像手画的 */
+  .squiggle-defs { position: absolute; width: 0; height: 0; }
+
+  .stage {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    gap: clamp(16px, 3vw, 48px);
+    padding: clamp(20px, 4vw, 56px);
+  }
+
+  /* ---------- 左侧：插画 ---------- */
+  .illus {
+    flex: 1 1 54%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    align-self: stretch;
+  }
+
+  .illus img {
+    max-width: 100%;
+    max-height: 90vh;
+  }
+
+  /* ---------- 右侧：叙事文本 ---------- */
+  .content {
+    flex: 1 1 46%;
+    max-width: 640px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: clamp(18px, 2.5vw, 30px);
+  }
+
+  .narrative {
+    position: relative;
+    align-self: center;
+    padding: clamp(18px, 2.4vw, 28px) clamp(20px, 2.6vw, 34px);
+    line-height: 2.05;
+    font-size: clamp(17px, 1.55vw, 23px);
+    letter-spacing: 0.4px;
+    transform: rotate(-0.4deg);
+  }
+
+  .narrative p {
+    margin: 0;
+    text-indent: 0;
+  }
+
+  .question {
+    align-self: center;
+    font-size: clamp(20px, 1.9vw, 28px);
+    font-weight: 700;
+    padding: 6px 14px 4px;
+    background: linear-gradient(transparent 58%, #f1d94e 58%);
+    transform: rotate(-0.6deg);
+  }
+
+  /* ---------- 选择框 ---------- */
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(16px, 2vw, 26px);
+    margin-top: 4px;
+  }
+
+  .choice {
+    position: relative;
+    width: clamp(300px, 34vw, 460px);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .choice-box {
+    position: relative;
+    background: #fffdf8;
+    border: 2.5px solid var(--line);
+    border-radius: 4px;
+    padding: 22px 28px 26px;
+    min-height: clamp(120px, 15vh, 150px);
+    filter: url(#hand-drawn);
+    transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .choice:hover .choice-box {
+    transform: translate(-2px, -3px) rotate(-0.5deg);
+    box-shadow: 4px 6px 0 rgba(0, 0, 0, 0.12);
+  }
+
+  .choice.active .choice-box {
+    background: #fbf2bf;
+    box-shadow: 4px 6px 0 rgba(0, 0, 0, 0.16);
+  }
+
+  .opt {
+    font-size: clamp(18px, 1.7vw, 24px);
+  }
+
+  .choice .tag { font-weight: 700; margin-right: 4px; }
+
+  /* 框内的小字 */
+  .hint {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1.5px dashed rgba(43, 42, 38, 0.35);
+    font-size: clamp(14px, 1.2vw, 17px);
+    line-height: 1.8;
+    color: #5a564b;
+  }
+
+  .hint .quote {
+    display: block;
+    color: var(--ink);
+    font-style: italic;
+  }
+
+  /* 每行保留行高占位，初始不可见；问题和选项初始隐藏 */
+  .narrative p {
+    min-height: 2em;
+    visibility: hidden;
+  }
+  .question, .choices {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  /* ---------- 内容淡出过渡 ---------- */
+  .narrative, .question, .choices {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .fade-out {
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+  }
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width: 860px) {
+    .stage { flex-direction: column; justify-content: center; }
+    .content { flex: none; max-width: 560px; width: 100%; align-items: center; text-align: center; }
+    .narrative, .question { align-self: center; }
+    .choices { align-items: center; }
+    .illus img { max-height: 42vh; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- 手绘抖动滤镜定义 -->
+  <svg class="squiggle-defs" aria-hidden="true">
+    <filter id="hand-drawn">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="noise" seed="7" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.5" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+
+  <main class="stage">
+    <section class="illus">
+      <img id="book-anim" src="desk_book/image (1).png" alt="堆满课本的书桌、成绩单与窗外的网球场" />
+    </section>
+
+    <section class="content">
+      <div class="narrative">
+        <p>高年级课程的难度不断加大，</p>
+        <p>可网球几乎挤占了你的所有课余时间……</p>
+        <p>看着不断下滑的排名，</p>
+        <p>你心里有些着急。</p>
+        <p>你不是没想过 all in 网球，</p>
+        <p>可这条路实在少有人走，</p>
+        <p>你身边没有谁真的实现靠网球吃饭。</p>
+      </div>
+
+      <div class="question">你会怎么选择？</div>
+
+      <div class="choices">
+        <div class="choice" data-choice="A">
+          <div class="choice-box">
+            <div class="opt"><span class="tag">A.</span>继续兴趣为主</div>
+            <div class="hint">
+              <span class="quote">“走上职业道路的运动员终究是少数，这条路风险太大了，还是把它当兴趣培养吧。”</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="choice" data-choice="B">
+          <div class="choice-box">
+            <div class="opt"><span class="tag">B.</span>进入系统训练</div>
+            <div class="hint">
+              <span class="quote">“我是看着李娜的比赛长大的，就算这条路会很辛苦，我还是想要赌一把。”</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* 等待一组图片全部加载完毕，返回 Promise */
+    function preload(srcs) {
+      return Promise.all(srcs.map(src => new Promise(resolve => {
+        const img = new Image();
+        img.onload = img.onerror = resolve;
+        img.src = src;
+      })));
+    }
+
+    /* 逐帧播放（调用前已确保帧已加载） */
+    function runFrames(frames, interval) {
+      const el = document.getElementById("book-anim");
+      el.src = frames[0];
+      let current = 0;
+      const timer = setInterval(() => {
+        current++;
+        el.src = frames[current];
+        if (current >= frames.length - 1) clearInterval(timer);
+      }, interval);
+    }
+
+    /* ---------- 书本叠加帧动画（页面初始，等加载完再播） ---------- */
+    const bookFrames = [
+      "desk_book/image (1).png",
+      "desk_book/image (2).png",
+      "desk_book/image (3).png",
+      "desk_book/image (4).png",
+      "desk_book/image (5).png",
+      "desk_book/image (6).png",
+      "desk_book/image (7).png",
+      "desk_book/image (8).png"
+    ];
+
+    /* ---------- 选项帧列表 ---------- */
+    const deskAFrames = [
+      "desk_A/" + encodeURIComponent("ChatGPT Image 2026年6月4日 22_25_08 (1).png"),
+      "desk_A/" + encodeURIComponent("ChatGPT Image 2026年6月4日 22_25_08 (2).png"),
+      "desk_A/" + encodeURIComponent("ChatGPT Image 2026年6月4日 22_25_10 (3).png"),
+      "desk_A/" + encodeURIComponent("ChatGPT Image 2026年6月4日 22_25_11 (4).png")
+    ];
+
+    const deskBFrames = [
+      "desk_B/" + encodeURIComponent("ChatGPT Image 2026年6月4日 21_51_50 (1).png"),
+      "desk_B/" + encodeURIComponent("ChatGPT Image 2026年6月4日 21_51_50 (2).png"),
+      "desk_B/" + encodeURIComponent("ChatGPT Image 2026年6月4日 21_51_52 (3).png"),
+      "desk_B/" + encodeURIComponent("ChatGPT Image 2026年6月4日 21_51_53 (4).png"),
+      "desk_B/" + encodeURIComponent("ChatGPT Image 2026年6月4日 21_51_54 (5).png"),
+      "desk_B/" + encodeURIComponent("ChatGPT Image 2026年6月4日 21_51_54 (6).png"),
+      "desk_B/" + encodeURIComponent("ChatGPT Image 2026年6月4日 21_51_55 (7).png")
+    ];
+
+    /* ---------- 打字机效果 ---------- */
+    function typewriterNarrative() {
+      const paras = Array.from(document.querySelectorAll(".narrative p"));
+      const questionEl = document.querySelector(".question");
+      const choicesEl  = document.querySelector(".choices");
+
+      /* 存原始文本，清空内容（保留 min-height 占位） */
+      const texts = paras.map(p => {
+        const t = p.textContent;
+        p.textContent = "";
+        return t;
+      });
+
+      let paraIndex = 0;
+      let charIndex = 0;
+
+      function typeNext() {
+        if (paraIndex >= paras.length) {
+          questionEl.style.opacity = "1";
+          choicesEl.style.opacity  = "1";
+          choicesEl.style.pointerEvents = "auto";
+          return;
+        }
+
+        const p = paras[paraIndex];
+        p.style.visibility = "visible";
+
+        if (charIndex < texts[paraIndex].length) {
+          p.textContent += texts[paraIndex][charIndex];
+          charIndex++;
+          setTimeout(typeNext, 80);
+        } else {
+          paraIndex++;
+          charIndex = 0;
+          setTimeout(typeNext, 200);
+        }
+      }
+
+      typeNext();
+    }
+
+    /* 页面加载：先预加载所有帧，完成后再启动初始动画；同时后台预加载选项帧 */
+    preload(bookFrames).then(() => runFrames(bookFrames, 500));
+    preload([...deskAFrames, ...deskBFrames]); // 后台静默预加载，供点击时使用
+
+    /* 打字效果在页面加载后立即开始 */
+    typewriterNarrative();
+
+    /* ---------- 选项点击 ---------- */
+    function fadeOutContent() {
+      const els = [
+        document.querySelector(".narrative"),
+        document.querySelector(".question"),
+        document.querySelector(".choices")
+      ];
+      els.forEach(el => {
+        el.classList.add("fade-out");
+        el.addEventListener("transitionend", () => {
+          el.style.display = "none";
+        }, { once: true });
+      });
+    }
+
+    function playChoice(frames) {
+      fadeOutContent();
+      /* 等淡出结束，再确保帧已加载，然后播放 */
+      setTimeout(() => {
+        preload(frames).then(() => runFrames(frames, 500));
+      }, 220);
+    }
+
+    const choices = document.querySelectorAll(".choice");
+    choices.forEach((choice) => {
+      choice.addEventListener("click", () => {
+        const isActive = choice.classList.contains("active");
+        choices.forEach((c) => c.classList.remove("active"));
+        if (!isActive) {
+          choice.classList.add("active");
+          if (choice.dataset.choice === "A") playChoice(deskAFrames);
+          if (choice.dataset.choice === "B") playChoice(deskBFrames);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
