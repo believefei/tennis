@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>分镜 · 晚餐邀约</title>
+<style>
+  @font-face {
+    font-family: "PFanHuTu";
+    src: url("../PFanHuTuTi 0.680.ttf") format("truetype");
+    font-display: swap;
+  }
+
+  :root {
+    --paper: #f4efe1;
+    --ink: #2b2a26;
+    --highlight: rgba(240, 228, 150, 0.664);
+    --line: #2b2a26;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+  }
+
+  body {
+    font-family: "PFanHuTu", "KaiTi", "STKaiti", serif;
+    color: var(--ink);
+    background: #f6f1e8;
+    min-height: 100vh;
+    display: flex;
+    align-items: stretch;
+  }
+
+  .squiggle-defs { position: absolute; width: 0; height: 0; }
+
+  .stage {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    gap: clamp(16px, 3vw, 48px);
+    padding: clamp(20px, 4vw, 56px);
+  }
+
+  /* ---------- 左侧：插画 ---------- */
+  .illus {
+    flex: 1 1 48%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    align-self: stretch;
+  }
+
+  .illus img {
+    max-width: 100%;
+    max-height: 90vh;
+  }
+
+  /* ---------- 右侧：叙事文本 ---------- */
+  .content {
+    flex: 1 1 52%;
+    max-width: 760px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: clamp(18px, 2.5vw, 30px);
+  }
+
+  .narrative {
+    position: relative;
+    align-self: center;
+    padding: clamp(18px, 2.4vw, 28px) clamp(20px, 2.6vw, 34px);
+    line-height: 2.05;
+    font-size: clamp(15px, 1.35vw, 18px);
+    letter-spacing: 0.4px;
+    transform: rotate(-0.4deg);
+  }
+
+  .narrative p {
+    margin: 0;
+    text-indent: 0;
+  }
+
+  .question {
+    align-self: center;
+    font-size: clamp(20px, 1.9vw, 28px);
+    font-weight: 700;
+    padding: 6px 14px 4px;
+    background: linear-gradient(transparent 58%, #f1d94e 58%);
+    transform: rotate(-0.6deg);
+  }
+
+  /* ---------- 选择框 ---------- */
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(16px, 2vw, 26px);
+    margin-top: 4px;
+  }
+
+  .choice {
+    position: relative;
+    width: clamp(300px, 34vw, 460px);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .choice-box {
+    position: relative;
+    background: #fffdf8;
+    border: 2.5px solid var(--line);
+    border-radius: 4px;
+    padding: 22px 28px 26px;
+    min-height: clamp(120px, 15vh, 150px);
+    filter: url(#hand-drawn);
+    transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .choice:hover .choice-box {
+    transform: translate(-2px, -3px) rotate(-0.5deg);
+    box-shadow: 4px 6px 0 rgba(0, 0, 0, 0.12);
+  }
+
+  .choice.active .choice-box {
+    background: #fbf2bf;
+    box-shadow: 4px 6px 0 rgba(0, 0, 0, 0.16);
+  }
+
+  .opt {
+    font-size: clamp(18px, 1.7vw, 24px);
+  }
+
+  .choice .tag { font-weight: 700; margin-right: 4px; }
+
+  .hint {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1.5px dashed rgba(43, 42, 38, 0.35);
+    font-size: clamp(14px, 1.2vw, 17px);
+    line-height: 1.8;
+    color: #5a564b;
+  }
+
+  .hint .fact {
+    display: block;
+    color: #5a564b;
+  }
+
+  .hint .quote {
+    display: block;
+    color: var(--ink);
+    font-style: italic;
+    margin-top: 4px;
+  }
+
+  /* 每行保留行高占位，初始不可见；问题和选项初始隐藏 */
+  .narrative p {
+    min-height: 2em;
+    visibility: hidden;
+  }
+  .question, .choices {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  /* ---------- 内容淡出过渡 ---------- */
+  .narrative, .question, .choices {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .fade-out {
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+  }
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width: 860px) {
+    .stage { flex-direction: column; justify-content: center; }
+    .content { flex: none; max-width: 560px; width: 100%; align-items: center; text-align: center; }
+    .narrative, .question { align-self: center; }
+    .choices { align-items: center; }
+    .illus img { max-height: 42vh; }
+  }
+</style>
+</head>
+<body>
+
+  <svg class="squiggle-defs" aria-hidden="true">
+    <filter id="hand-drawn">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="noise" seed="7" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.5" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+
+  <main class="stage">
+    <section class="illus">
+      <img id="main-anim" src="businessman/1.png" alt="商业晚餐邀约" />
+    </section>
+
+    <section class="content">
+      <div class="narrative">
+        <p>你在巡回赛里开始被更多人看见。</p>
+        <p>比赛结束后的晚上，你打算归队训练，</p>
+        <p>这时一家网球用品总裁邀请你共进晚餐。</p>
+        <p>职业网球不仅是比赛，也是商业、流量与品牌价值。</p>
+        <p>一边是已经排好的训练，</p>
+        <p>一边是可能改变职业道路的商业机会。</p>
+      </div>
+
+      <div class="question">你会接受这份晚餐邀约吗？</div>
+
+      <div class="choices">
+        <div class="choice" data-choice="A">
+          <div class="choice-box">
+            <div class="opt"><span class="tag">A.</span>接受邀请</div>
+            <div class="hint">
+              <span class="fact">奖金、代言、曝光度…… 你开始真正进入职业体育商业体系。</span>
+              <span class="quote">"也许网球之外，我还能拥有更大的影响力。"</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="choice" data-choice="B">
+          <div class="choice-box">
+            <div class="opt"><span class="tag">B.</span>专注比赛与训练</div>
+            <div class="hint">
+              <span class="fact">你把更多时间留给球场与巡回赛。</span>
+              <span class="quote">"我还是想先把球打好。"</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* 预加载一组图片，返回 Promise */
+    function preload(srcs) {
+      return Promise.all(srcs.map(src => new Promise(resolve => {
+        const img = new Image();
+        img.onload = img.onerror = resolve;
+        img.src = src;
+      })));
+    }
+
+    /* 逐帧播放，loop=true 时循环（最后一帧多停留 lastPause ms），返回控制对象 */
+    function runFrames(frames, interval, loop, lastPause) {
+      const el = document.getElementById("main-anim");
+      el.src = frames[0];
+      let current = 0;
+      let timerId = null;
+
+      function scheduleNext(delay) {
+        timerId = setTimeout(() => {
+          current++;
+          if (current >= frames.length) {
+            if (loop) {
+              current = 0;
+            } else {
+              return;
+            }
+          }
+          el.src = frames[current];
+          const isLast = current === frames.length - 1;
+          scheduleNext(isLast && loop ? (lastPause || interval * 3) : interval);
+        }, delay);
+      }
+
+      scheduleNext(interval);
+      return { stop() { clearTimeout(timerId); timerId = null; } };
+    }
+
+    /* ---------- 初始：商务人物入场帧 ---------- */
+    const businessmanFrames = [
+      "businessman/1.png",
+      "businessman/2.png",
+      "businessman/3.png",
+      "businessman/4.png",
+      "businessman/5.png"
+    ];
+
+    /* ---------- 选项 A：接受邀请 ---------- */
+    const aYesFrames = [
+      "A_yes/" + encodeURIComponent("ChatGPT Image 2026年6月6日 11_29_20 (1).png"),
+      "A_yes/" + encodeURIComponent("ChatGPT Image 2026年6月6日 11_29_20 (2).png"),
+      "A_yes/" + encodeURIComponent("ChatGPT Image 2026年6月6日 11_29_20 (3).png")
+    ];
+
+    /* ---------- 选项 B：专注比赛 ---------- */
+    const bNoFrames = [
+      "B_no/" + encodeURIComponent("ChatGPT Image 2026年6月6日 11_40_39 (1).png"),
+      "B_no/" + encodeURIComponent("ChatGPT Image 2026年6月6日 11_40_39 (2).png"),
+      "B_no/" + encodeURIComponent("ChatGPT Image 2026年6月6日 11_40_40 (3).png"),
+      "B_no/" + encodeURIComponent("ChatGPT Image 2026年6月6日 11_40_40 (4).png"),
+      "B_no/" + encodeURIComponent("ChatGPT Image 2026年6月6日 11_40_40 (5).png")
+    ];
+
+    /* ---------- 打字机效果 ---------- */
+    function typewriterNarrative() {
+      const paras = Array.from(document.querySelectorAll(".narrative p"));
+      const questionEl = document.querySelector(".question");
+      const choicesEl  = document.querySelector(".choices");
+
+      const texts = paras.map(p => {
+        const t = p.textContent;
+        p.textContent = "";
+        return t;
+      });
+
+      let paraIndex = 0;
+      let charIndex = 0;
+
+      function typeNext() {
+        if (paraIndex >= paras.length) {
+          questionEl.style.opacity = "1";
+          choicesEl.style.opacity  = "1";
+          choicesEl.style.pointerEvents = "auto";
+          return;
+        }
+
+        const p = paras[paraIndex];
+        p.style.visibility = "visible";
+
+        if (charIndex < texts[paraIndex].length) {
+          p.textContent += texts[paraIndex][charIndex];
+          charIndex++;
+          setTimeout(typeNext, 80);
+        } else {
+          paraIndex++;
+          charIndex = 0;
+          setTimeout(typeNext, 200);
+        }
+      }
+
+      typeNext();
+    }
+
+    /* ---------- 叙事内容淡出 ---------- */
+    function fadeOutContent() {
+      const els = [
+        document.querySelector(".narrative"),
+        document.querySelector(".question"),
+        document.querySelector(".choices")
+      ];
+      els.forEach(el => {
+        el.classList.add("fade-out");
+        el.addEventListener("transitionend", () => {
+          el.style.display = "none";
+        }, { once: true });
+      });
+    }
+
+    let loopAnim = null;
+
+    function playChoice(frames) {
+      if (loopAnim) { loopAnim.stop(); loopAnim = null; }
+      fadeOutContent();
+      setTimeout(() => {
+        preload(frames).then(() => runFrames(frames, 500, false));
+      }, 220);
+    }
+
+    /* 页面加载：循环播放商务人物（最后一帧停留 1600ms），同时后台预加载选项帧 */
+    preload(businessmanFrames).then(() => { loopAnim = runFrames(businessmanFrames, 400, true, 700); });
+    preload([...aYesFrames, ...bNoFrames]);
+
+    typewriterNarrative();
+
+    /* ---------- 选项点击 ---------- */
+    const choices = document.querySelectorAll(".choice");
+    choices.forEach((choice) => {
+      choice.addEventListener("click", () => {
+        const isActive = choice.classList.contains("active");
+        choices.forEach((c) => c.classList.remove("active"));
+        if (!isActive) {
+          choice.classList.add("active");
+          if (choice.dataset.choice === "A") playChoice(aYesFrames);
+          if (choice.dataset.choice === "B") playChoice(bNoFrames);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

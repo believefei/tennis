@@ -47,7 +47,7 @@
 
   /* ---------- 左侧：插画 ---------- */
   .illus {
-    flex: 1 1 54%;
+    flex: 1 1 48%;
     display: flex;
     align-items: flex-end;
     justify-content: flex-start;
@@ -61,8 +61,8 @@
 
   /* ---------- 右侧：叙事文本 ---------- */
   .content {
-    flex: 1 1 46%;
-    max-width: 640px;
+    flex: 1 1 52%;
+    max-width: 760px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -75,7 +75,7 @@
     align-self: center;
     padding: clamp(18px, 2.4vw, 28px) clamp(20px, 2.6vw, 34px);
     line-height: 2.05;
-    font-size: clamp(17px, 1.55vw, 23px);
+    font-size: clamp(15px, 1.35vw, 18px);
     letter-spacing: 0.4px;
     transform: rotate(-0.4deg);
   }
@@ -198,7 +198,7 @@
 
   <main class="stage">
     <section class="illus">
-      <img src="dinner_binessman_left_bg.png" alt="商业晚餐邀约" />
+      <img id="main-anim" src="businessman/1.png" alt="商业晚餐邀约" />
     </section>
 
     <section class="content">
@@ -238,6 +238,68 @@
   </main>
 
   <script>
+    /* 预加载一组图片，返回 Promise */
+    function preload(srcs) {
+      return Promise.all(srcs.map(src => new Promise(resolve => {
+        const img = new Image();
+        img.onload = img.onerror = resolve;
+        img.src = src;
+      })));
+    }
+
+    /* 逐帧播放，loop=true 时循环（最后一帧多停留 lastPause ms），返回控制对象 */
+    function runFrames(frames, interval, loop, lastPause) {
+      const el = document.getElementById("main-anim");
+      el.src = frames[0];
+      let current = 0;
+      let timerId = null;
+
+      function scheduleNext(delay) {
+        timerId = setTimeout(() => {
+          current++;
+          if (current >= frames.length) {
+            if (loop) {
+              current = 0;
+            } else {
+              return;
+            }
+          }
+          el.src = frames[current];
+          const isLast = current === frames.length - 1;
+          scheduleNext(isLast && loop ? (lastPause || interval * 3) : interval);
+        }, delay);
+      }
+
+      scheduleNext(interval);
+      return { stop() { clearTimeout(timerId); timerId = null; } };
+    }
+
+    /* ---------- 初始：商务人物入场帧 ---------- */
+    const businessmanFrames = [
+      "businessman/1.png",
+      "businessman/2.png",
+      "businessman/3.png",
+      "businessman/4.png",
+      "businessman/5.png"
+    ];
+
+    /* ---------- 选项 A：接受邀请 ---------- */
+    const aYesFrames = [
+      "A_yes/" + encodeURIComponent("ChatGPT Image 2026年6月6日 11_29_20 (1).png"),
+      "A_yes/" + encodeURIComponent("ChatGPT Image 2026年6月6日 11_29_20 (2).png"),
+      "A_yes/" + encodeURIComponent("ChatGPT Image 2026年6月6日 11_29_20 (3).png")
+    ];
+
+    /* ---------- 选项 B：专注比赛 ---------- */
+    const bNoFrames = [
+      "B_no/" + encodeURIComponent("ChatGPT Image 2026年6月6日 11_40_39 (1).png"),
+      "B_no/" + encodeURIComponent("ChatGPT Image 2026年6月6日 11_40_39 (2).png"),
+      "B_no/" + encodeURIComponent("ChatGPT Image 2026年6月6日 11_40_40 (3).png"),
+      "B_no/" + encodeURIComponent("ChatGPT Image 2026年6月6日 11_40_40 (4).png"),
+      "B_no/" + encodeURIComponent("ChatGPT Image 2026年6月6日 11_40_40 (5).png")
+    ];
+
+    /* ---------- 打字机效果 ---------- */
     function typewriterNarrative() {
       const paras = Array.from(document.querySelectorAll(".narrative p"));
       const questionEl = document.querySelector(".question");
@@ -266,19 +328,49 @@
         if (charIndex < texts[paraIndex].length) {
           p.textContent += texts[paraIndex][charIndex];
           charIndex++;
-          setTimeout(typeNext, 40);
+          setTimeout(typeNext, 80);
         } else {
           paraIndex++;
           charIndex = 0;
-          setTimeout(typeNext, 100);
+          setTimeout(typeNext, 200);
         }
       }
 
       typeNext();
     }
 
+    /* ---------- 叙事内容淡出 ---------- */
+    function fadeOutContent() {
+      const els = [
+        document.querySelector(".narrative"),
+        document.querySelector(".question"),
+        document.querySelector(".choices")
+      ];
+      els.forEach(el => {
+        el.classList.add("fade-out");
+        el.addEventListener("transitionend", () => {
+          el.style.display = "none";
+        }, { once: true });
+      });
+    }
+
+    let loopAnim = null;
+
+    function playChoice(frames) {
+      if (loopAnim) { loopAnim.stop(); loopAnim = null; }
+      fadeOutContent();
+      setTimeout(() => {
+        preload(frames).then(() => runFrames(frames, 500, false));
+      }, 220);
+    }
+
+    /* 页面加载：循环播放商务人物（最后一帧停留 1600ms），同时后台预加载选项帧 */
+    preload(businessmanFrames).then(() => { loopAnim = runFrames(businessmanFrames, 400, true, 700); });
+    preload([...aYesFrames, ...bNoFrames]);
+
     typewriterNarrative();
 
+    /* ---------- 选项点击 ---------- */
     const choices = document.querySelectorAll(".choice");
     choices.forEach((choice) => {
       choice.addEventListener("click", () => {
@@ -286,6 +378,8 @@
         choices.forEach((c) => c.classList.remove("active"));
         if (!isActive) {
           choice.classList.add("active");
+          if (choice.dataset.choice === "A") playChoice(aYesFrames);
+          if (choice.dataset.choice === "B") playChoice(bNoFrames);
         }
       });
     });

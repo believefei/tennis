@@ -54,6 +54,7 @@ const PAGE_ORDER = [
   "journey-page",
   "industry-page",
   "photo-wall-page",
+  "photo-wall-woman-page",
 ];
 let currentPageId = "cover";
 
@@ -532,6 +533,8 @@ function updatePageNav() {
       if (page === "equal-page") disabled = disabled || !canGoEqualNext;
       if (page === "map-page") disabled = disabled || !canGoMapNext;
       if (page === "industry-page") disabled = false;
+      if (page === "photo-wall-page") disabled = true;
+      if (page === "photo-wall-woman-page") disabled = true;
       nextBtn.disabled = disabled;
     }
   });
@@ -560,6 +563,7 @@ function showOnlyPage(id) {
   const journey = document.getElementById("journey-page");
   const industry = document.getElementById("industry-page");
   const photoWall = document.getElementById("photo-wall-page");
+  const photoWallWoman = document.getElementById("photo-wall-woman-page");
 
   cover.style.visibility = id === "cover" ? "visible" : "hidden";
   cover.style.opacity = id === "cover" ? "1" : "0";
@@ -612,6 +616,15 @@ function showOnlyPage(id) {
   photoWall.setAttribute(
     "aria-hidden",
     id === "photo-wall-page" ? "false" : "true",
+  );
+
+  photoWallWoman.classList.toggle("is-active", id === "photo-wall-woman-page");
+  photoWallWoman.style.visibility =
+    id === "photo-wall-woman-page" ? "visible" : "hidden";
+  photoWallWoman.style.opacity = id === "photo-wall-woman-page" ? "1" : "0";
+  photoWallWoman.setAttribute(
+    "aria-hidden",
+    id === "photo-wall-woman-page" ? "false" : "true",
   );
 
   ratioState.active = id === "ratio-page";
@@ -710,6 +723,9 @@ function showPageInstant(id) {
   if (id === "photo-wall-page") {
     initPhotoWall();
   }
+  if (id === "photo-wall-woman-page") {
+    initPhotoWallWoman();
+  }
   setPageNavReady(id, true);
 }
 
@@ -729,6 +745,14 @@ function navigatePage(dir, fromPage) {
       debugOpenJourneyNode("ending-business");
       return;
     }
+  }
+  // Gender-based photo wall routing
+  if (fromPage === "photo-wall-page" && dir === "next") return;
+  if (fromPage === "photo-wall-woman-page") {
+    if (dir === "prev") {
+      showPageInstant("industry-page");
+    }
+    return;
   }
   const idx = pageIndexOf(fromPage);
   if (idx < 0) return;
@@ -1845,18 +1869,68 @@ const journeyDeskGymState = {
 const JOURNEY_PRIMARY_TENNIS_IMAGE =
   "primary_teinns/primary_tennis_left_bg.png";
 const JOURNEY_FAMILY_ABOARD_IMAGE = "family_aboard/family_aboard_right_bg.png";
+const JOURNEY_FAMILY_ABOARD_LOOP_FRAMES = [
+  "family_aboard/fly/01fly.png",
+  "family_aboard/fly/02fly.png",
+  "family_aboard/fly/03fly.png",
+  "family_aboard/fly/04fly.png",
+  "family_aboard/fly/05fly.png",
+  "family_aboard/fly/06fly.png",
+  "family_aboard/fly/07fly.png",
+  "family_aboard/fly/08fly.png",
+  "family_aboard/fly/09fly.png",
+];
+const JOURNEY_FAMILY_ABOARD_HOME_FRAMES = [
+  "family_aboard/home/ChatGPT Image 2026年6月6日 13_35_00 (1).png",
+  "family_aboard/home/ChatGPT Image 2026年6月6日 13_35_01 (2).png",
+  "family_aboard/home/ChatGPT Image 2026年6月6日 13_35_02 (3).png",
+  "family_aboard/home/ChatGPT Image 2026年6月6日 13_35_02 (4).png",
+  "family_aboard/home/ChatGPT Image 2026年6月6日 13_35_03 (5).png",
+  "family_aboard/home/ChatGPT Image 2026年6月6日 13_35_03 (6).png",
+  "family_aboard/home/ChatGPT Image 2026年6月6日 13_35_03 (7).png",
+];
+const JOURNEY_FAMILY_ABOARD_ABROAD_FRAMES = [
+  "family_aboard/aboard/ChatGPT Image 2026年6月6日 14_07_17 (1).png",
+  "family_aboard/aboard/ChatGPT Image 2026年6月6日 14_07_18 (2).png",
+  "family_aboard/aboard/ChatGPT Image 2026年6月6日 14_07_18 (3).png",
+  "family_aboard/aboard/ChatGPT Image 2026年6月6日 14_07_19 (4).png",
+  "family_aboard/aboard/ChatGPT Image 2026年6月6日 14_07_19 (5).png",
+  "family_aboard/aboard/ChatGPT Image 2026年6月6日 14_07_19 (6).png",
+];
 const JOURNEY_DINNER_BIZ_IMAGE =
   "dinner_binessman/dinner_binessman_left_bg.png";
+const JOURNEY_DINNER_BIZ_LOOP_FRAMES = [
+  "dinner_binessman/businessman/1.png",
+  "dinner_binessman/businessman/2.png",
+  "dinner_binessman/businessman/3.png",
+  "dinner_binessman/businessman/4.png",
+  "dinner_binessman/businessman/5.png",
+];
+const JOURNEY_DINNER_BIZ_ACCEPT_FRAMES = [
+  "dinner_binessman/A_yes/ChatGPT Image 2026年6月6日 11_29_20 (1).png",
+  "dinner_binessman/A_yes/ChatGPT Image 2026年6月6日 11_29_20 (2).png",
+  "dinner_binessman/A_yes/ChatGPT Image 2026年6月6日 11_29_20 (3).png",
+];
+const JOURNEY_DINNER_BIZ_DECLINE_FRAMES = [
+  "dinner_binessman/B_no/ChatGPT Image 2026年6月6日 11_40_39 (1).png",
+  "dinner_binessman/B_no/ChatGPT Image 2026年6月6日 11_40_39 (2).png",
+  "dinner_binessman/B_no/ChatGPT Image 2026年6月6日 11_40_40 (3).png",
+  "dinner_binessman/B_no/ChatGPT Image 2026年6月6日 11_40_40 (4).png",
+  "dinner_binessman/B_no/ChatGPT Image 2026年6月6日 11_40_40 (5).png",
+];
 
 const ENDING_FLIP_DEFAULT_CLOSE = "ending/01close_champion.png";
 const ENDING_FLIP_DEFAULT_OPEN = "ending/01open_champion.png";
 
 const journeyEndingFlipState = { opened: false };
-function clearJourneyEndingFlipState() { journeyEndingFlipState.opened = false; }
+function clearJourneyEndingFlipState() {
+  journeyEndingFlipState.opened = false;
+}
 
 const journeyPrimaryTennisState = {
   typingTimer: null,
   locked: false,
+  imageTimer: null,
 };
 
 function clearJourneyPrimaryTennisState() {
@@ -1865,32 +1939,156 @@ function clearJourneyPrimaryTennisState() {
     clearTimeout(journeyPrimaryTennisState.typingTimer);
     journeyPrimaryTennisState.typingTimer = null;
   }
+  if (journeyPrimaryTennisState.imageTimer) {
+    clearTimeout(journeyPrimaryTennisState.imageTimer);
+    journeyPrimaryTennisState.imageTimer = null;
+  }
 }
 
 const journeyFamilyAboardState = {
   typingTimer: null,
   locked: false,
+  frameTimer: null,
+  choicePlaybackTimer: null,
+  transitionTimer: null,
+  token: 0,
 };
 
 function clearJourneyFamilyAboardState() {
+  journeyFamilyAboardState.token += 1;
   journeyFamilyAboardState.locked = false;
   if (journeyFamilyAboardState.typingTimer) {
     clearTimeout(journeyFamilyAboardState.typingTimer);
     journeyFamilyAboardState.typingTimer = null;
   }
+  if (journeyFamilyAboardState.frameTimer) {
+    clearTimeout(journeyFamilyAboardState.frameTimer);
+    journeyFamilyAboardState.frameTimer = null;
+  }
+  if (journeyFamilyAboardState.choicePlaybackTimer) {
+    clearTimeout(journeyFamilyAboardState.choicePlaybackTimer);
+    journeyFamilyAboardState.choicePlaybackTimer = null;
+  }
+  if (journeyFamilyAboardState.transitionTimer) {
+    clearTimeout(journeyFamilyAboardState.transitionTimer);
+    journeyFamilyAboardState.transitionTimer = null;
+  }
+}
+
+function preloadJourneyFamilyAboardFrames(frames) {
+  return Promise.all(
+    frames.map(
+      (src) =>
+        new Promise((resolve) => {
+          const img = new Image();
+          img.onload = img.onerror = resolve;
+          img.src = src;
+        }),
+    ),
+  );
+}
+
+function runJourneyFamilyAboardFrames(
+  frames,
+  interval,
+  loop,
+  lastPause,
+  token,
+) {
+  const el = document.getElementById("main-anim");
+  if (!el || !frames.length) return;
+
+  let current = 0;
+  el.src = frames[0];
+
+  function scheduleNext(delay) {
+    journeyFamilyAboardState.frameTimer = setTimeout(() => {
+      if (token !== journeyFamilyAboardState.token) return;
+      current += 1;
+      if (current >= frames.length) {
+        if (!loop) {
+          journeyFamilyAboardState.frameTimer = null;
+          return;
+        }
+        current = 0;
+      }
+      el.src = frames[current];
+      const isLast = current === frames.length - 1;
+      scheduleNext(isLast && loop ? lastPause || interval * 3 : interval);
+    }, delay);
+  }
+
+  scheduleNext(interval);
 }
 
 const journeyDinnerBizState = {
   typingTimer: null,
   locked: false,
+  frameTimer: null,
+  choicePlaybackTimer: null,
+  transitionTimer: null,
+  token: 0,
 };
 
 function clearJourneyDinnerBizState() {
+  journeyDinnerBizState.token += 1;
   journeyDinnerBizState.locked = false;
   if (journeyDinnerBizState.typingTimer) {
     clearTimeout(journeyDinnerBizState.typingTimer);
     journeyDinnerBizState.typingTimer = null;
   }
+  if (journeyDinnerBizState.frameTimer) {
+    clearTimeout(journeyDinnerBizState.frameTimer);
+    journeyDinnerBizState.frameTimer = null;
+  }
+  if (journeyDinnerBizState.choicePlaybackTimer) {
+    clearTimeout(journeyDinnerBizState.choicePlaybackTimer);
+    journeyDinnerBizState.choicePlaybackTimer = null;
+  }
+  if (journeyDinnerBizState.transitionTimer) {
+    clearTimeout(journeyDinnerBizState.transitionTimer);
+    journeyDinnerBizState.transitionTimer = null;
+  }
+}
+
+function preloadJourneyDinnerBizFrames(frames) {
+  return Promise.all(
+    frames.map(
+      (src) =>
+        new Promise((resolve) => {
+          const img = new Image();
+          img.onload = img.onerror = resolve;
+          img.src = src;
+        }),
+    ),
+  );
+}
+
+function runJourneyDinnerBizFrames(frames, interval, loop, lastPause, token) {
+  const el = document.getElementById("main-anim");
+  if (!el || !frames.length) return;
+
+  let current = 0;
+  el.src = frames[0];
+
+  function scheduleNext(delay) {
+    journeyDinnerBizState.frameTimer = setTimeout(() => {
+      if (token !== journeyDinnerBizState.token) return;
+      current += 1;
+      if (current >= frames.length) {
+        if (!loop) {
+          journeyDinnerBizState.frameTimer = null;
+          return;
+        }
+        current = 0;
+      }
+      el.src = frames[current];
+      const isLast = current === frames.length - 1;
+      scheduleNext(isLast && loop ? lastPause || interval * 3 : interval);
+    }, delay);
+  }
+
+  scheduleNext(interval);
 }
 
 function clearJourneyDeskGymState() {
@@ -1949,6 +2147,41 @@ function journeyTeeSvg(className = "") {
   `;
 }
 
+function journeySkirtSvg(className = "") {
+  return `
+    <svg class="${className}" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <path d="M22 14h20l2 8 6 18H14l6-18 2-8z" />
+      <path d="M24 14c1.6 2.3 4 3.5 8 3.5s6.4-1.2 8-3.5M22 27c6 2.8 14 2.8 20 0M19 35c8.2 3.2 17.8 3.2 26 0" fill="none" />
+    </svg>
+  `;
+}
+
+function journeyBagSvg(className = "") {
+  return `
+    <svg class="${className}" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <path d="M16 24h32l4 26H12l4-26z" />
+      <path d="M23 24c0-6.4 4-10 9-10s9 3.6 9 10M25 33h14M23 39h18" fill="none" />
+    </svg>
+  `;
+}
+
+function journeyShoeSvg(className = "") {
+  return `
+    <svg class="${className}" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <path d="M11 40h18l7-9 6 5 10 3c1.8.5 3 2.1 3 4v5H11v-8z" />
+      <path d="M19 40l4-5M26 40l4-5M37 40h8M16 48h33" fill="none" />
+    </svg>
+  `;
+}
+
+function journeyApparelIconMarkup(data) {
+  const kind = data && data.iconKind ? data.iconKind : "tee";
+  if (kind === "skirt") return journeySkirtSvg("apparel-icon-svg");
+  if (kind === "bag") return journeyBagSvg("apparel-icon-svg");
+  if (kind === "shoe") return journeyShoeSvg("apparel-icon-svg");
+  return journeyTeeSvg("apparel-icon-svg");
+}
+
 function buildJourneyApparelVisual(node) {
   const data = node.apparelData || {};
   const baseCount = Number.isFinite(data.baseCount)
@@ -1957,8 +2190,6 @@ function buildJourneyApparelVisual(node) {
   const growthCount = Number.isFinite(data.growthCount)
     ? data.growthCount
     : JOURNEY_APPAREL_GROWTH_COUNT;
-  const nextLabel = data.nextLabel || "继续";
-  const nextId = data.next || "ending-campus";
   const imageSrc = data.imageSrc || "photos/t_shirt.png";
   const title = data.title || "网球服成交额同比增长";
   const valueLabel = data.valueLabel || "+216%";
@@ -1966,16 +2197,22 @@ function buildJourneyApparelVisual(node) {
   const accent = data.accent || "#78c88a";
   const accentStroke = data.accentStroke || "rgba(91, 156, 102, 0.8)";
   const glow = data.glow || "rgba(120, 200, 138, 0.05)";
+  const iconSize = Number.isFinite(data.iconSize) ? data.iconSize : 32;
+  const iconMobileSize = Number.isFinite(data.iconMobileSize)
+    ? data.iconMobileSize
+    : Math.max(26, Math.round(iconSize * 0.8));
+  const baseIconMarkup = journeyApparelIconMarkup(data);
+  const growthIconMarkup = journeyApparelIconMarkup(data);
   const baseIcons = Array.from(
     { length: baseCount },
     () => `
-    <span class="apparel-icon apparel-icon--base">${journeyTeeSvg("apparel-icon-svg")}</span>
+    <span class="apparel-icon apparel-icon--base">${baseIconMarkup}</span>
   `,
   ).join("");
   const growthIcons = Array.from(
     { length: growthCount },
     () => `
-    <span class="apparel-icon apparel-icon--growth">${journeyTeeSvg("apparel-icon-svg")}</span>
+    <span class="apparel-icon apparel-icon--growth">${growthIconMarkup}</span>
   `,
   ).join("");
 
@@ -1994,14 +2231,10 @@ function buildJourneyApparelVisual(node) {
       </div>
 
       <div class="apparel-growth-right">
-        <div class="apparel-icon-grid" aria-label="${title} ${valueLabel}">
+        <div class="apparel-icon-grid" style="--apparel-icon-size: ${iconSize}px; --apparel-icon-mobile-size: ${iconMobileSize}px;" aria-label="${title} ${valueLabel}">
           ${baseIcons}${growthIcons}
         </div>
       </div>
-    </div>
-
-    <div class="journey-visual-actions">
-      <button class="journey-action-btn" type="button" data-next="${nextId}">${nextLabel}</button>
     </div>
   `;
 }
@@ -2077,8 +2310,16 @@ function buildTrainingBillsModal() {
 function cubicBezEval(p0, p1, p2, p3, t) {
   var u = 1 - t;
   return {
-    x: u*u*u*p0.x + 3*u*u*t*p1.x + 3*u*t*t*p2.x + t*t*t*p3.x,
-    y: u*u*u*p0.y + 3*u*u*t*p1.y + 3*u*t*t*p2.y + t*t*t*p3.y
+    x:
+      u * u * u * p0.x +
+      3 * u * u * t * p1.x +
+      3 * u * t * t * p2.x +
+      t * t * t * p3.x,
+    y:
+      u * u * u * p0.y +
+      3 * u * u * t * p1.y +
+      3 * u * t * t * p2.y +
+      t * t * t * p3.y,
   };
 }
 
@@ -2095,7 +2336,9 @@ function buildContourFn(segments, yMin, yMax, samplesPerSeg) {
       }
     }
   }
-  raw.sort(function(a, b) { return a.y - b.y; });
+  raw.sort(function (a, b) {
+    return a.y - b.y;
+  });
 
   var byY = {};
   for (var r = 0; r < raw.length; r++) {
@@ -2111,20 +2354,24 @@ function buildContourFn(segments, yMin, yMax, samplesPerSeg) {
     var yi = Number(keys[k]);
     table.push({ y: yi, x: byY[yi].sum / byY[yi].count });
   }
-  table.sort(function(a, b) { return a.y - b.y; });
+  table.sort(function (a, b) {
+    return a.y - b.y;
+  });
 
-  return function(y) {
+  return function (y) {
     if (table.length === 0) return 0;
     if (y <= table[0].y) return table[0].x;
     if (y >= table[table.length - 1].y) return table[table.length - 1].x;
 
-    var lo = 0, hi = table.length - 1;
+    var lo = 0,
+      hi = table.length - 1;
     while (lo < hi - 1) {
       var mid = (lo + hi) >> 1;
       if (table[mid].y <= y) lo = mid;
       else hi = mid;
     }
-    var a = table[lo], b = table[hi];
+    var a = table[lo],
+      b = table[hi];
     var frac = (y - a.y) / (b.y - a.y);
     return a.x + frac * (b.x - a.x);
   };
@@ -2151,17 +2398,49 @@ function buildFamilyReceiptSvg() {
   const CONTENT_BOTTOM_Y = 640;
   const INNER_PAD = 10;
 
-  const outerPath = "M 287 136 C 231 110 160 90 103 102 C 82 106 69 142 65 204 C 57 310 52 446 44 510 C 36 564 23 602 7 630 L 173 640 C 203 602 222 550 232 480 C 242 404 244 334 252 270 C 259 214 270 168 287 136 Z";
-  const clipPath  = "M 242 168 C 200 148 152 134 113 142 C 102 146 96 162 92 190 C 87 276 82 382 74 462 C 69 514 60 556 47 588 L 166 600 C 188 572 203 532 210 476 C 219 410 222 342 230 280 C 235 232 239 196 242 168 Z";
+  const outerPath =
+    "M 287 136 C 231 110 160 90 103 102 C 82 106 69 142 65 204 C 57 310 52 446 44 510 C 36 564 23 602 7 630 L 173 640 C 203 602 222 550 232 480 C 242 404 244 334 252 270 C 259 214 270 168 287 136 Z";
+  const clipPath =
+    "M 242 168 C 200 148 152 134 113 142 C 102 146 96 162 92 190 C 87 276 82 382 74 462 C 69 514 60 556 47 588 L 166 600 C 188 572 203 532 210 476 C 219 410 222 342 230 280 C 235 232 239 196 242 168 Z";
   var clipLeftSegs = [
-    { p0: {x:113, y:142}, p1: {x:102, y:146}, p2: {x:96, y:162}, p3: {x:92, y:190} },
-    { p0: {x:92, y:190}, p1: {x:87, y:276}, p2: {x:82, y:382}, p3: {x:74, y:462} },
-    { p0: {x:74, y:462}, p1: {x:69, y:514}, p2: {x:60, y:556}, p3: {x:47, y:588} }
+    {
+      p0: { x: 113, y: 142 },
+      p1: { x: 102, y: 146 },
+      p2: { x: 96, y: 162 },
+      p3: { x: 92, y: 190 },
+    },
+    {
+      p0: { x: 92, y: 190 },
+      p1: { x: 87, y: 276 },
+      p2: { x: 82, y: 382 },
+      p3: { x: 74, y: 462 },
+    },
+    {
+      p0: { x: 74, y: 462 },
+      p1: { x: 69, y: 514 },
+      p2: { x: 60, y: 556 },
+      p3: { x: 47, y: 588 },
+    },
   ];
   var clipRightSegs = [
-    { p0: {x:166, y:600}, p1: {x:188, y:572}, p2: {x:203, y:532}, p3: {x:210, y:476} },
-    { p0: {x:210, y:476}, p1: {x:219, y:410}, p2: {x:222, y:342}, p3: {x:230, y:280} },
-    { p0: {x:230, y:280}, p1: {x:235, y:232}, p2: {x:239, y:196}, p3: {x:242, y:168} }
+    {
+      p0: { x: 166, y: 600 },
+      p1: { x: 188, y: 572 },
+      p2: { x: 203, y: 532 },
+      p3: { x: 210, y: 476 },
+    },
+    {
+      p0: { x: 210, y: 476 },
+      p1: { x: 219, y: 410 },
+      p2: { x: 222, y: 342 },
+      p3: { x: 230, y: 280 },
+    },
+    {
+      p0: { x: 230, y: 280 },
+      p1: { x: 235, y: 232 },
+      p2: { x: 239, y: 196 },
+      p3: { x: 242, y: 168 },
+    },
   ];
   var leftEdgeAtY = buildContourFn(clipLeftSegs, 130, 660);
   var rightEdgeAtY = buildContourFn(clipRightSegs, 150, 660);
@@ -2188,130 +2467,365 @@ function buildFamilyReceiptSvg() {
     const amountY = y + line2Off;
     const amountClass = item.amount.length > 10 ? " bill-amount--small" : "";
     return (
-      '<circle class="bill-bullet" cx="' + bulletX + '" cy="' + (y - 2) + '" r="2.2" />' +
-      '<text class="bill-row-label" x="' + labelX + '" y="' + (y + 1) + '">' + item.label + '</text>' +
-      '<text class="bill-amount' + amountClass + '" x="' + amountX + '" y="' + amountY + '">' + item.amount + '</text>'
+      '<circle class="bill-bullet" cx="' +
+      bulletX +
+      '" cy="' +
+      (y - 2) +
+      '" r="2.2" />' +
+      '<text class="bill-row-label" x="' +
+      labelX +
+      '" y="' +
+      (y + 1) +
+      '">' +
+      item.label +
+      "</text>" +
+      '<text class="bill-amount' +
+      amountClass +
+      '" x="' +
+      amountX +
+      '" y="' +
+      amountY +
+      '">' +
+      item.amount +
+      "</text>"
     );
   }).join("");
 
   return (
-    '<svg class="training-bill-svg training-bill-svg--family" viewBox="0 ' + VIEW_TOP + ' ' + VIEW_W + ' ' + VIEW_H + '" aria-label="Family investment bill" role="img">' +
-      '<defs>' +
-        '<radialGradient id="familyPaperGlow" cx="42%" cy="32%" r="82%">' +
-          '<stop offset="0%" stop-color="#fffdf7" />' +
-          '<stop offset="100%" stop-color="#f2ebd8" />' +
-        '</radialGradient>' +
-        '<clipPath id="familyScrollClip">' +
-          '<rect x="42" y="' + CONTENT_TOP_Y + '" width="220" height="' + (CONTENT_BOTTOM_Y - CONTENT_TOP_Y) + '" rx="16" ry="16" />' +
-        '</clipPath>' +
-      '</defs>' +
-
-      '<path class="bill-shadow bill-shadow-soft" d="' + outerPath + '" transform="translate(7 8)" />' +
-      '<path class="bill-paper" d="' + outerPath + '" fill="url(#familyPaperGlow)" />' +
-      '<path class="bill-content-guide" d="' + clipPath + '" />' +
-
-      '<g clip-path="url(#familyScrollClip)">' +
-        '<text class="bill-title" x="' + contentLeftAtY(titleY) + '" y="' + titleY + '">FAMILY</text>' +
-        '<text class="bill-subtitle" x="' + contentLeftAtY(subtitleY) + '" y="' + subtitleY + '">家庭训练投入</text>' +
-        '<text class="bill-mini-note" x="' + contentLeftAtY(miniY) + '" y="' + miniY + '">2026 cost sketch</text>' +
-
-        '<text class="bill-column-label" x="' + contentLeftAtY(colLabelY) + '" y="' + colLabelY + '">项目</text>' +
-        '<text class="bill-column-label" x="' + (contentLeftAtY(colLabelY) + 58) + '" y="' + colLabelY + '">金额</text>' +
-        '<path class="bill-line" d="M' + (contentLeftAtY(topBarY) - 4) + ' ' + topBarY + ' C' + (contentLeftAtY(topBarY) + 28) + ' ' + (topBarY - 1) + ', ' + (contentRightAtY(topBarY) - 40) + ' ' + topBarY + ', ' + (contentRightAtY(topBarY) + 2) + ' ' + (topBarY + 1) + '" />' +
-
-        billRows +
-
-        '<path class="bill-total-line" d="M' + (contentLeftAtY(totalLineY) - 8) + ' ' + totalLineY + ' C' + (contentLeftAtY(totalLineY) + 28) + ' ' + (totalLineY-1) + ', ' + (contentRightAtY(totalLineY) - 44) + ' ' + (totalLineY+1) + ', ' + (contentRightAtY(totalLineY) + 2) + ' ' + totalLineY + '" />' +
-        '<path class="bill-total-line" d="M' + (contentLeftAtY(totalLineY2) - 12) + ' ' + totalLineY2 + ' C' + (contentLeftAtY(totalLineY2) + 22) + ' ' + (totalLineY2-2) + ', ' + (contentRightAtY(totalLineY2) - 46) + ' ' + totalLineY2 + ', ' + (contentRightAtY(totalLineY2) + 4) + ' ' + (totalLineY2+1) + '" />' +
-        '<text class="bill-total" x="' + contentLeftAtY(totalTextY) + '" y="' + totalTextY + '">TOTAL</text>' +
-        '<text class="bill-total-note" x="' + (contentLeftAtY(totalTextY) + 46) + '" y="' + totalTextY + '">越打越长的账单</text>' +
-      '</g>' +
-
-      '<path class="bill-outline-top" d="' + outerPath + '" />' +
-    '</svg>'
+    '<svg class="training-bill-svg training-bill-svg--family" viewBox="0 ' +
+    VIEW_TOP +
+    " " +
+    VIEW_W +
+    " " +
+    VIEW_H +
+    '" aria-label="Family investment bill" role="img">' +
+    "<defs>" +
+    '<radialGradient id="familyPaperGlow" cx="42%" cy="32%" r="82%">' +
+    '<stop offset="0%" stop-color="#fffdf7" />' +
+    '<stop offset="100%" stop-color="#f2ebd8" />' +
+    "</radialGradient>" +
+    '<clipPath id="familyScrollClip">' +
+    '<rect x="42" y="' +
+    CONTENT_TOP_Y +
+    '" width="220" height="' +
+    (CONTENT_BOTTOM_Y - CONTENT_TOP_Y) +
+    '" rx="16" ry="16" />' +
+    "</clipPath>" +
+    "</defs>" +
+    '<path class="bill-shadow bill-shadow-soft" d="' +
+    outerPath +
+    '" transform="translate(7 8)" />' +
+    '<path class="bill-paper" d="' +
+    outerPath +
+    '" fill="url(#familyPaperGlow)" />' +
+    '<path class="bill-content-guide" d="' +
+    clipPath +
+    '" />' +
+    '<g clip-path="url(#familyScrollClip)">' +
+    '<text class="bill-title" x="' +
+    contentLeftAtY(titleY) +
+    '" y="' +
+    titleY +
+    '">FAMILY</text>' +
+    '<text class="bill-subtitle" x="' +
+    contentLeftAtY(subtitleY) +
+    '" y="' +
+    subtitleY +
+    '">家庭训练投入</text>' +
+    '<text class="bill-mini-note" x="' +
+    contentLeftAtY(miniY) +
+    '" y="' +
+    miniY +
+    '">2026 cost sketch</text>' +
+    '<text class="bill-column-label" x="' +
+    contentLeftAtY(colLabelY) +
+    '" y="' +
+    colLabelY +
+    '">项目</text>' +
+    '<text class="bill-column-label" x="' +
+    (contentLeftAtY(colLabelY) + 58) +
+    '" y="' +
+    colLabelY +
+    '">金额</text>' +
+    '<path class="bill-line" d="M' +
+    (contentLeftAtY(topBarY) - 4) +
+    " " +
+    topBarY +
+    " C" +
+    (contentLeftAtY(topBarY) + 28) +
+    " " +
+    (topBarY - 1) +
+    ", " +
+    (contentRightAtY(topBarY) - 40) +
+    " " +
+    topBarY +
+    ", " +
+    (contentRightAtY(topBarY) + 2) +
+    " " +
+    (topBarY + 1) +
+    '" />' +
+    billRows +
+    '<path class="bill-total-line" d="M' +
+    (contentLeftAtY(totalLineY) - 8) +
+    " " +
+    totalLineY +
+    " C" +
+    (contentLeftAtY(totalLineY) + 28) +
+    " " +
+    (totalLineY - 1) +
+    ", " +
+    (contentRightAtY(totalLineY) - 44) +
+    " " +
+    (totalLineY + 1) +
+    ", " +
+    (contentRightAtY(totalLineY) + 2) +
+    " " +
+    totalLineY +
+    '" />' +
+    '<path class="bill-total-line" d="M' +
+    (contentLeftAtY(totalLineY2) - 12) +
+    " " +
+    totalLineY2 +
+    " C" +
+    (contentLeftAtY(totalLineY2) + 22) +
+    " " +
+    (totalLineY2 - 2) +
+    ", " +
+    (contentRightAtY(totalLineY2) - 46) +
+    " " +
+    totalLineY2 +
+    ", " +
+    (contentRightAtY(totalLineY2) + 4) +
+    " " +
+    (totalLineY2 + 1) +
+    '" />' +
+    '<text class="bill-total" x="' +
+    contentLeftAtY(totalTextY) +
+    '" y="' +
+    totalTextY +
+    '">TOTAL</text>' +
+    '<text class="bill-total-note" x="' +
+    (contentLeftAtY(totalTextY) + 46) +
+    '" y="' +
+    totalTextY +
+    '">越打越长的账单</text>' +
+    "</g>" +
+    '<path class="bill-outline-top" d="' +
+    outerPath +
+    '" />' +
+    "</svg>"
   );
 }
 
 function buildCampReceiptSvg() {
-  var VIEW_W = 305, VIEW_TOP = 108, VIEW_BOTTOM = 508, VIEW_H = VIEW_BOTTOM - VIEW_TOP;
-  var CONTENT_TOP_Y = 150, CONTENT_BOTTOM_Y = 460, INNER_PAD = 10;
+  var VIEW_W = 305,
+    VIEW_TOP = 108,
+    VIEW_BOTTOM = 508,
+    VIEW_H = VIEW_BOTTOM - VIEW_TOP;
+  var CONTENT_TOP_Y = 150,
+    CONTENT_BOTTOM_Y = 460,
+    INNER_PAD = 10;
 
-  var outerPath = "M 287 136 C 231 110 160 90 103 102 C 82 106 69 142 65 204 C 57 310 52 388 44 425 C 36 456 23 478 7 494 L 173 500 C 203 478 222 448 232 408 C 242 364 244 334 252 270 C 259 214 270 168 287 136 Z";
-  var clipPath  = "M 242 168 C 200 148 152 134 113 142 C 102 146 96 162 92 190 C 87 276 82 351 74 398 C 69 428 60 452 47 470 L 166 477 C 188 461 203 438 210 406 C 219 368 222 342 230 280 C 235 232 239 196 242 168 Z";
+  var outerPath =
+    "M 287 136 C 231 110 160 90 103 102 C 82 106 69 142 65 204 C 57 310 52 388 44 425 C 36 456 23 478 7 494 L 173 500 C 203 478 222 448 232 408 C 242 364 244 334 252 270 C 259 214 270 168 287 136 Z";
+  var clipPath =
+    "M 242 168 C 200 148 152 134 113 142 C 102 146 96 162 92 190 C 87 276 82 351 74 398 C 69 428 60 452 47 470 L 166 477 C 188 461 203 438 210 406 C 219 368 222 342 230 280 C 235 232 239 196 242 168 Z";
 
   var clipLeftSegs = [
-    { p0: {x:113, y:142}, p1: {x:102, y:146}, p2: {x:96, y:162}, p3: {x:92, y:190} },
-    { p0: {x:92, y:190}, p1: {x:87, y:276}, p2: {x:82, y:351}, p3: {x:74, y:398} },
-    { p0: {x:74, y:398}, p1: {x:69, y:428}, p2: {x:60, y:452}, p3: {x:47, y:470} }
+    {
+      p0: { x: 113, y: 142 },
+      p1: { x: 102, y: 146 },
+      p2: { x: 96, y: 162 },
+      p3: { x: 92, y: 190 },
+    },
+    {
+      p0: { x: 92, y: 190 },
+      p1: { x: 87, y: 276 },
+      p2: { x: 82, y: 351 },
+      p3: { x: 74, y: 398 },
+    },
+    {
+      p0: { x: 74, y: 398 },
+      p1: { x: 69, y: 428 },
+      p2: { x: 60, y: 452 },
+      p3: { x: 47, y: 470 },
+    },
   ];
   var clipRightSegs = [
-    { p0: {x:166, y:477}, p1: {x:188, y:461}, p2: {x:203, y:438}, p3: {x:210, y:406} },
-    { p0: {x:210, y:406}, p1: {x:219, y:368}, p2: {x:222, y:342}, p3: {x:230, y:280} },
-    { p0: {x:230, y:280}, p1: {x:235, y:232}, p2: {x:239, y:196}, p3: {x:242, y:168} }
+    {
+      p0: { x: 166, y: 477 },
+      p1: { x: 188, y: 461 },
+      p2: { x: 203, y: 438 },
+      p3: { x: 210, y: 406 },
+    },
+    {
+      p0: { x: 210, y: 406 },
+      p1: { x: 219, y: 368 },
+      p2: { x: 222, y: 342 },
+      p3: { x: 230, y: 280 },
+    },
+    {
+      p0: { x: 230, y: 280 },
+      p1: { x: 235, y: 232 },
+      p2: { x: 239, y: 196 },
+      p3: { x: 242, y: 168 },
+    },
   ];
   var leftEdgeAtY = buildContourFn(clipLeftSegs, 130, 508);
   var rightEdgeAtY = buildContourFn(clipRightSegs, 150, 508);
-  var cl = function(y) { return leftEdgeAtY(y) + INNER_PAD; };
-  var cr = function(y) { return rightEdgeAtY(y) - INNER_PAD; };
+  var cl = function (y) {
+    return leftEdgeAtY(y) + INNER_PAD;
+  };
+  var cr = function (y) {
+    return rightEdgeAtY(y) - INNER_PAD;
+  };
 
-  var titleY = 172, subtitleY = 194, miniY = 210;
-  var colLabelY = 230, topBarY = 242, listStartY = 256;
-  var textLineH = 12, detailPad = 8;
+  var titleY = 172,
+    subtitleY = 194,
+    miniY = 210;
+  var colLabelY = 230,
+    topBarY = 242,
+    listStartY = 256;
+  var textLineH = 12,
+    detailPad = 8;
 
   var CAMP_ROWS = [
-    { type: 'pie', label: '费用分担机制',
-      segs: [{pct:75, lbl:'协会承担'}, {pct:25, lbl:'家庭承担'}] },
-    { type: 'bar', label: '竞争程度',
+    {
+      type: "pie",
+      label: "费用分担机制",
+      segs: [
+        { pct: 75, lbl: "协会承担" },
+        { pct: 25, lbl: "家庭承担" },
+      ],
+    },
+    {
+      type: "bar",
+      label: "竞争程度",
       bars: [
-        {n:'5402名', s:'注册运动员', v:5402},
-        {n:'258人',  s:'报名', v:258},
-        {n:'60人',   s:'入营', v:60},
-        {n:'20人',   s:'压茬计划', v:20}
-      ] }
+        { n: "5402名", s: "注册运动员", v: 5402 },
+        { n: "258人", s: "报名", v: 258 },
+        { n: "60人", s: "入营", v: 60 },
+        { n: "20人", s: "压茬计划", v: 20 },
+      ],
+    },
   ];
 
   for (var ri = 0; ri < CAMP_ROWS.length; ri++) {
     var rw = CAMP_ROWS[ri];
-    if (rw.type === 'text') rw.h = 16 + rw.lines.length * textLineH + detailPad;
-    else if (rw.type === 'pie') rw.h = 76;
-    else if (rw.type === 'bar') rw.h = 80;
+    if (rw.type === "text") rw.h = 16 + rw.lines.length * textLineH + detailPad;
+    else if (rw.type === "pie") rw.h = 76;
+    else if (rw.type === "bar") rw.h = 80;
   }
 
   var rowHtml = [];
   var curY = listStartY;
   for (var ri = 0; ri < CAMP_ROWS.length; ri++) {
     var row = CAMP_ROWS[ri];
-    var left = cl(curY), right = cr(curY);
-    var bx = left - 6, dx = left + 16;
+    var left = cl(curY),
+      right = cr(curY);
+    var bx = left - 6,
+      dx = left + 16;
 
-    if (row.type === 'text') {
+    if (row.type === "text") {
       var dp = [];
       for (var li = 0; li < row.lines.length; li++) {
-        dp.push('<text class="bill-detail-text" x="' + dx.toFixed(1) + '" y="' + (curY + 16 + li * textLineH).toFixed(1) + '">' + row.lines[li] + '</text>');
+        dp.push(
+          '<text class="bill-detail-text" x="' +
+            dx.toFixed(1) +
+            '" y="' +
+            (curY + 16 + li * textLineH).toFixed(1) +
+            '">' +
+            row.lines[li] +
+            "</text>",
+        );
       }
       rowHtml.push(
-        '<circle class="bill-bullet" cx="' + bx.toFixed(1) + '" cy="' + (curY - 2) + '" r="2.2" />' +
-        '<text class="bill-row-label" x="' + left.toFixed(1) + '" y="' + (curY + 1) + '">' + row.label + '</text>' +
-        dp.join('')
+        '<circle class="bill-bullet" cx="' +
+          bx.toFixed(1) +
+          '" cy="' +
+          (curY - 2) +
+          '" r="2.2" />' +
+          '<text class="bill-row-label" x="' +
+          left.toFixed(1) +
+          '" y="' +
+          (curY + 1) +
+          '">' +
+          row.label +
+          "</text>" +
+          dp.join(""),
       );
-    } else if (row.type === 'pie') {
+    } else if (row.type === "pie") {
       var pcx = left + 26;
       var pcy = (curY + 38).toFixed(1);
       var pr = 22;
       var lx = pcx + pr + 14;
       rowHtml.push(
-        '<circle class="bill-bullet" cx="' + bx.toFixed(1) + '" cy="' + (curY - 2) + '" r="2.2" />' +
-        '<text class="bill-row-label" x="' + left.toFixed(1) + '" y="' + (curY + 1) + '">' + row.label + '</text>' +
-        '<circle cx="' + pcx.toFixed(1) + '" cy="' + pcy + '" r="' + pr + '" fill="none" stroke="#c4b99a" stroke-width="1" opacity="0.45" />' +
-        '<path d="M' + pcx.toFixed(1) + ' ' + pcy + ' L' + pcx.toFixed(1) + ' ' + (parseFloat(pcy) - pr).toFixed(1) + ' A' + pr + ' ' + pr + ' 0 1 1 ' + (pcx - pr).toFixed(1) + ' ' + pcy + ' Z" fill="#8b7d6b" opacity="0.6" />' +
-        '<circle cx="' + pcx.toFixed(1) + '" cy="' + pcy + '" r="11" fill="#f5eee2" />' +
-        '<circle cx="' + lx.toFixed(1) + '" cy="' + (parseFloat(pcy) - 6) + '" r="3" fill="#8b7d6b" opacity="0.7" />' +
-        '<text x="' + (lx + 7).toFixed(1) + '" y="' + (parseFloat(pcy) - 4) + '" class="bill-detail-text" style="font-size:7px;">75% 协会承担</text>' +
-        '<circle cx="' + lx.toFixed(1) + '" cy="' + (parseFloat(pcy) + 10) + '" r="3" fill="none" stroke="#8b7d6b" stroke-width="1.2" opacity="0.5" />' +
-        '<text x="' + (lx + 7).toFixed(1) + '" y="' + (parseFloat(pcy) + 12) + '" class="bill-detail-text" style="font-size:7px;fill:rgba(26,26,26,0.55);">25% 家庭承担</text>'
+        '<circle class="bill-bullet" cx="' +
+          bx.toFixed(1) +
+          '" cy="' +
+          (curY - 2) +
+          '" r="2.2" />' +
+          '<text class="bill-row-label" x="' +
+          left.toFixed(1) +
+          '" y="' +
+          (curY + 1) +
+          '">' +
+          row.label +
+          "</text>" +
+          '<circle cx="' +
+          pcx.toFixed(1) +
+          '" cy="' +
+          pcy +
+          '" r="' +
+          pr +
+          '" fill="none" stroke="#c4b99a" stroke-width="1" opacity="0.45" />' +
+          '<path d="M' +
+          pcx.toFixed(1) +
+          " " +
+          pcy +
+          " L" +
+          pcx.toFixed(1) +
+          " " +
+          (parseFloat(pcy) - pr).toFixed(1) +
+          " A" +
+          pr +
+          " " +
+          pr +
+          " 0 1 1 " +
+          (pcx - pr).toFixed(1) +
+          " " +
+          pcy +
+          ' Z" fill="#8b7d6b" opacity="0.6" />' +
+          '<circle cx="' +
+          pcx.toFixed(1) +
+          '" cy="' +
+          pcy +
+          '" r="11" fill="#f5eee2" />' +
+          '<circle cx="' +
+          lx.toFixed(1) +
+          '" cy="' +
+          (parseFloat(pcy) - 6) +
+          '" r="3" fill="#8b7d6b" opacity="0.7" />' +
+          '<text x="' +
+          (lx + 7).toFixed(1) +
+          '" y="' +
+          (parseFloat(pcy) - 4) +
+          '" class="bill-detail-text" style="font-size:7px;">75% 协会承担</text>' +
+          '<circle cx="' +
+          lx.toFixed(1) +
+          '" cy="' +
+          (parseFloat(pcy) + 10) +
+          '" r="3" fill="none" stroke="#8b7d6b" stroke-width="1.2" opacity="0.5" />' +
+          '<text x="' +
+          (lx + 7).toFixed(1) +
+          '" y="' +
+          (parseFloat(pcy) + 12) +
+          '" class="bill-detail-text" style="font-size:7px;fill:rgba(26,26,26,0.55);">25% 家庭承担</text>',
       );
-    } else if (row.type === 'bar') {
-      var barStartY = curY + 16, barH = 10, barGap = 20;
+    } else if (row.type === "bar") {
+      var barStartY = curY + 16,
+        barH = 10,
+        barGap = 20;
       var barStartX = left + 4;
       var barMaxW = (right - barStartX) * 0.5;
       var labelX = barStartX + barMaxW + 8;
@@ -2323,15 +2837,47 @@ function buildCampReceiptSvg() {
         var by = barStartY + bi * barGap;
         var alpha = 0.35 + bi * 0.18;
         bparts.push(
-          '<rect x="' + barStartX.toFixed(1) + '" y="' + (by - barH + 4).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + barH + '" rx="2" fill="#8b7d6b" opacity="' + alpha.toFixed(2) + '" />' +
-          '<text x="' + labelX.toFixed(1) + '" y="' + by.toFixed(1) + '" text-anchor="end" class="bill-detail-text" style="fill:rgba(26,26,26,0.48);">' + b.s + '</text>' +
-          '<text x="' + right.toFixed(1) + '" y="' + by.toFixed(1) + '" text-anchor="end" class="bill-detail-text">' + b.n + '</text>'
+          '<rect x="' +
+            barStartX.toFixed(1) +
+            '" y="' +
+            (by - barH + 4).toFixed(1) +
+            '" width="' +
+            bw.toFixed(1) +
+            '" height="' +
+            barH +
+            '" rx="2" fill="#8b7d6b" opacity="' +
+            alpha.toFixed(2) +
+            '" />' +
+            '<text x="' +
+            labelX.toFixed(1) +
+            '" y="' +
+            by.toFixed(1) +
+            '" text-anchor="end" class="bill-detail-text" style="fill:rgba(26,26,26,0.48);">' +
+            b.s +
+            "</text>" +
+            '<text x="' +
+            right.toFixed(1) +
+            '" y="' +
+            by.toFixed(1) +
+            '" text-anchor="end" class="bill-detail-text">' +
+            b.n +
+            "</text>",
         );
       }
       rowHtml.push(
-        '<circle class="bill-bullet" cx="' + bx.toFixed(1) + '" cy="' + (curY - 2) + '" r="2.2" />' +
-        '<text class="bill-row-label" x="' + left.toFixed(1) + '" y="' + (curY + 1) + '">' + row.label + '</text>' +
-        bparts.join('')
+        '<circle class="bill-bullet" cx="' +
+          bx.toFixed(1) +
+          '" cy="' +
+          (curY - 2) +
+          '" r="2.2" />' +
+          '<text class="bill-row-label" x="' +
+          left.toFixed(1) +
+          '" y="' +
+          (curY + 1) +
+          '">' +
+          row.label +
+          "</text>" +
+          bparts.join(""),
       );
     }
     curY += row.h;
@@ -2342,37 +2888,113 @@ function buildCampReceiptSvg() {
   var totalTextY = totalLineY2 + 20;
 
   return (
-    '<svg class="training-bill-svg training-bill-svg--camp" viewBox="0 ' + VIEW_TOP + ' ' + VIEW_W + ' ' + VIEW_H + '" aria-label="National team bill" role="img">' +
-      '<defs>' +
-        '<radialGradient id="campPaperGlow" cx="42%" cy="32%" r="82%">' +
-          '<stop offset="0%" stop-color="#fffdf8" />' +
-          '<stop offset="100%" stop-color="#f5eee2" />' +
-        '</radialGradient>' +
-        '<clipPath id="campScrollClip">' +
-          '<rect x="42" y="' + CONTENT_TOP_Y + '" width="220" height="' + (CONTENT_BOTTOM_Y - CONTENT_TOP_Y) + '" rx="16" ry="16" />' +
-        '</clipPath>' +
-      '</defs>' +
-
-      '<path class="bill-shadow bill-shadow-soft" d="' + outerPath + '" transform="translate(7 8)" />' +
-      '<path class="bill-paper" d="' + outerPath + '" fill="url(#campPaperGlow)" />' +
-      '<path class="bill-content-guide" d="' + clipPath + '" />' +
-
-      '<g clip-path="url(#campScrollClip)">' +
-        '<text class="bill-title" x="' + cl(titleY).toFixed(1) + '" y="' + titleY + '">NATIONAL TEAM</text>' +
-        '<text class="bill-subtitle" x="' + cl(subtitleY).toFixed(1) + '" y="' + subtitleY + '">国家梯队培养投入</text>' +
-        '<text class="bill-mini-note" x="' + cl(miniY).toFixed(1) + '" y="' + miniY + '">2026 camp sketch</text>' +
-
-        '<path class="bill-line" d="M' + (cl(topBarY) - 4).toFixed(1) + ' ' + topBarY + ' C' + (cl(topBarY) + 28).toFixed(1) + ' ' + (topBarY - 1) + ', ' + (cr(topBarY) - 40).toFixed(1) + ' ' + topBarY + ', ' + (cr(topBarY) + 2).toFixed(1) + ' ' + (topBarY + 1) + '" />' +
-
-        rowHtml.join('') +
-
-        '<path class="bill-total-line" d="M' + (cl(totalLineY) - 8).toFixed(1) + ' ' + totalLineY + ' C' + (cl(totalLineY) + 28).toFixed(1) + ' ' + (totalLineY - 1) + ', ' + (cr(totalLineY) - 44).toFixed(1) + ' ' + (totalLineY + 1) + ', ' + (cr(totalLineY) + 2).toFixed(1) + ' ' + totalLineY + '" />' +
-        '<path class="bill-total-line" d="M' + (cl(totalLineY2) - 12).toFixed(1) + ' ' + totalLineY2 + ' C' + (cl(totalLineY2) + 22).toFixed(1) + ' ' + (totalLineY2 - 2) + ', ' + (cr(totalLineY2) - 46).toFixed(1) + ' ' + totalLineY2 + ', ' + (cr(totalLineY2) + 4).toFixed(1) + ' ' + (totalLineY2 + 1) + '" />' +
-        '<text class="bill-total" x="' + cl(totalTextY).toFixed(1) + '" y="' + totalTextY + '">TALENT PIPELINE</text>' +
-      '</g>' +
-
-      '<path class="bill-outline-top" d="' + outerPath + '" />' +
-    '</svg>'
+    '<svg class="training-bill-svg training-bill-svg--camp" viewBox="0 ' +
+    VIEW_TOP +
+    " " +
+    VIEW_W +
+    " " +
+    VIEW_H +
+    '" aria-label="National team bill" role="img">' +
+    "<defs>" +
+    '<radialGradient id="campPaperGlow" cx="42%" cy="32%" r="82%">' +
+    '<stop offset="0%" stop-color="#fffdf8" />' +
+    '<stop offset="100%" stop-color="#f5eee2" />' +
+    "</radialGradient>" +
+    '<clipPath id="campScrollClip">' +
+    '<rect x="42" y="' +
+    CONTENT_TOP_Y +
+    '" width="220" height="' +
+    (CONTENT_BOTTOM_Y - CONTENT_TOP_Y) +
+    '" rx="16" ry="16" />' +
+    "</clipPath>" +
+    "</defs>" +
+    '<path class="bill-shadow bill-shadow-soft" d="' +
+    outerPath +
+    '" transform="translate(7 8)" />' +
+    '<path class="bill-paper" d="' +
+    outerPath +
+    '" fill="url(#campPaperGlow)" />' +
+    '<path class="bill-content-guide" d="' +
+    clipPath +
+    '" />' +
+    '<g clip-path="url(#campScrollClip)">' +
+    '<text class="bill-title" x="' +
+    cl(titleY).toFixed(1) +
+    '" y="' +
+    titleY +
+    '">NATIONAL TEAM</text>' +
+    '<text class="bill-subtitle" x="' +
+    cl(subtitleY).toFixed(1) +
+    '" y="' +
+    subtitleY +
+    '">国家梯队培养投入</text>' +
+    '<text class="bill-mini-note" x="' +
+    cl(miniY).toFixed(1) +
+    '" y="' +
+    miniY +
+    '">2026 camp sketch</text>' +
+    '<path class="bill-line" d="M' +
+    (cl(topBarY) - 4).toFixed(1) +
+    " " +
+    topBarY +
+    " C" +
+    (cl(topBarY) + 28).toFixed(1) +
+    " " +
+    (topBarY - 1) +
+    ", " +
+    (cr(topBarY) - 40).toFixed(1) +
+    " " +
+    topBarY +
+    ", " +
+    (cr(topBarY) + 2).toFixed(1) +
+    " " +
+    (topBarY + 1) +
+    '" />' +
+    rowHtml.join("") +
+    '<path class="bill-total-line" d="M' +
+    (cl(totalLineY) - 8).toFixed(1) +
+    " " +
+    totalLineY +
+    " C" +
+    (cl(totalLineY) + 28).toFixed(1) +
+    " " +
+    (totalLineY - 1) +
+    ", " +
+    (cr(totalLineY) - 44).toFixed(1) +
+    " " +
+    (totalLineY + 1) +
+    ", " +
+    (cr(totalLineY) + 2).toFixed(1) +
+    " " +
+    totalLineY +
+    '" />' +
+    '<path class="bill-total-line" d="M' +
+    (cl(totalLineY2) - 12).toFixed(1) +
+    " " +
+    totalLineY2 +
+    " C" +
+    (cl(totalLineY2) + 22).toFixed(1) +
+    " " +
+    (totalLineY2 - 2) +
+    ", " +
+    (cr(totalLineY2) - 46).toFixed(1) +
+    " " +
+    totalLineY2 +
+    ", " +
+    (cr(totalLineY2) + 4).toFixed(1) +
+    " " +
+    (totalLineY2 + 1) +
+    '" />' +
+    '<text class="bill-total" x="' +
+    cl(totalTextY).toFixed(1) +
+    '" y="' +
+    totalTextY +
+    '">TALENT PIPELINE</text>' +
+    "</g>" +
+    '<path class="bill-outline-top" d="' +
+    outerPath +
+    '" />' +
+    "</svg>"
   );
 }
 
@@ -2533,12 +3155,24 @@ function buildJourneyPrimaryTennisVisual(node) {
     )
     .join("");
 
+  const primaryImageSrc =
+    genderImage(data.imageSrc) || JOURNEY_PRIMARY_TENNIS_IMAGE;
+  const secondaryImageSrc = data.altImageSrc
+    ? genderImage(data.altImageSrc)
+    : "";
+  const imageHtml = secondaryImageSrc
+    ? `<span class="journey-primary-tennis-illus-stack" data-primary-tennis-stack data-frame1-ms="${data.frame1Ms || 1000}" data-frame2-ms="${data.frame2Ms || 3000}">
+          <img class="journey-primary-tennis-illus-img is-active" src="${primaryImageSrc}" alt="${data.imageAlt || "初中网球训练场景"}" />
+          <img class="journey-primary-tennis-illus-img is-secondary" src="${secondaryImageSrc}" alt="${data.altImageAlt || data.imageAlt || "初中网球训练场景"}" />
+        </span>`
+    : `<img src="${primaryImageSrc}" alt="${data.imageAlt || "初中网球训练场景"}" />`;
+
   const illusHtml = data.showBills
     ? `<button class="training-bills-trigger" type="button" data-action="open-training-bills" aria-label="Open training cost bills">
-          <img src="${genderImage(data.imageSrc) || JOURNEY_PRIMARY_TENNIS_IMAGE}" alt="${data.imageAlt || "初中网球训练场景"}" />
-          <span class="training-bills-trigger-label">Tap image for cost bills</span>
+          ${imageHtml}
+          <span class="training-bills-trigger-label">点击图片查看账单</span>
         </button>`
-    : `<img src="${genderImage(data.imageSrc) || JOURNEY_PRIMARY_TENNIS_IMAGE}" alt="${data.imageAlt || "初中网球训练场景"}" />`;
+    : imageHtml;
 
   return `
     <svg class="squiggle-defs" aria-hidden="true">
@@ -2551,6 +3185,7 @@ function buildJourneyPrimaryTennisVisual(node) {
       <section class="illus">${illusHtml}</section>
       <section class="content">
         <div class="narrative">${narrative}</div>
+        ${data.showBills ? `<div class="journey-primary-tennis-bills-hint">${data.billsHint || "点击左侧图片，看看这条路背后的真实开销。"}</div>` : ""}
         <div class="question">${data.question || "你会怎么选择？"}</div>
         <div class="choices">${choices}</div>
       </section>
@@ -2624,6 +3259,31 @@ function activateJourneyPrimaryTennis() {
   img.onload = img.onerror = () => {};
   img.src = JOURNEY_PRIMARY_TENNIS_IMAGE;
 
+  const stackedImages = document.querySelector("[data-primary-tennis-stack]");
+  if (stackedImages) {
+    const images = stackedImages.querySelectorAll(
+      ".journey-primary-tennis-illus-img",
+    );
+    const frame1Ms =
+      Number(stackedImages.getAttribute("data-frame1-ms")) || 1000;
+    const frame2Ms =
+      Number(stackedImages.getAttribute("data-frame2-ms")) || 3000;
+    let frameIndex = 0;
+
+    const renderFrame = () => {
+      images.forEach((imageEl, index) => {
+        imageEl.classList.toggle("is-active", index === frameIndex);
+      });
+      const delay = frameIndex === 0 ? frame1Ms : frame2Ms;
+      journeyPrimaryTennisState.imageTimer = setTimeout(() => {
+        frameIndex = frameIndex === 0 ? 1 : 0;
+        renderFrame();
+      }, delay);
+    };
+
+    renderFrame();
+  }
+
   // Match original: typewriter starts immediately
   typeJourneyPrimaryTennisNarrative();
 }
@@ -2693,7 +3353,7 @@ function buildJourneyFamilyAboardVisual(node) {
         <div class="choices">${choices}</div>
       </section>
       <section class="illus">
-        <img src="${data.imageSrc || JOURNEY_FAMILY_ABOARD_IMAGE}" alt="${data.imageAlt || "家庭投资与海外巡回"}" />
+        <img id="main-anim" src="${data.imageSrc || JOURNEY_FAMILY_ABOARD_IMAGE}" alt="${data.imageAlt || "家庭投资与海外巡回"}" />
       </section>
     </main>
   `;
@@ -2757,11 +3417,23 @@ function activateJourneyFamilyAboard() {
     choicesEl.style.opacity = "";
     choicesEl.style.pointerEvents = "";
   }
-
-  const img = new Image();
-  img.onload = img.onerror = () => {};
-  img.src = JOURNEY_FAMILY_ABOARD_IMAGE;
-
+  const token = journeyFamilyAboardState.token;
+  preloadJourneyFamilyAboardFrames(JOURNEY_FAMILY_ABOARD_LOOP_FRAMES).then(
+    () => {
+      if (token !== journeyFamilyAboardState.token) return;
+      runJourneyFamilyAboardFrames(
+        JOURNEY_FAMILY_ABOARD_LOOP_FRAMES,
+        400,
+        true,
+        900,
+        token,
+      );
+    },
+  );
+  preloadJourneyFamilyAboardFrames([
+    ...JOURNEY_FAMILY_ABOARD_HOME_FRAMES,
+    ...JOURNEY_FAMILY_ABOARD_ABROAD_FRAMES,
+  ]);
   typeJourneyFamilyAboardNarrative();
 }
 
@@ -2778,6 +3450,10 @@ function playJourneyFamilyAboardChoice(nextId, choiceKey) {
     clearTimeout(journeyFamilyAboardState.typingTimer);
     journeyFamilyAboardState.typingTimer = null;
   }
+  if (journeyFamilyAboardState.frameTimer) {
+    clearTimeout(journeyFamilyAboardState.frameTimer);
+    journeyFamilyAboardState.frameTimer = null;
+  }
 
   const fadeEls = [
     document.querySelector(".narrative"),
@@ -2786,9 +3462,24 @@ function playJourneyFamilyAboardChoice(nextId, choiceKey) {
   ];
   fadeEls.forEach((el) => el?.classList.add("fade-out"));
 
-  window.setTimeout(() => {
+  const branchFrames =
+    choiceKey === "A"
+      ? JOURNEY_FAMILY_ABOARD_HOME_FRAMES
+      : JOURNEY_FAMILY_ABOARD_ABROAD_FRAMES;
+  const token = journeyFamilyAboardState.token;
+
+  journeyFamilyAboardState.choicePlaybackTimer = window.setTimeout(() => {
+    preloadJourneyFamilyAboardFrames(branchFrames).then(() => {
+      if (token !== journeyFamilyAboardState.token) return;
+      runJourneyFamilyAboardFrames(branchFrames, 500, false, 0, token);
+    });
+  }, 220);
+
+  const transitionDelay = Math.max(1500, 220 + branchFrames.length * 500 + 200);
+  journeyFamilyAboardState.transitionTimer = window.setTimeout(() => {
+    if (token !== journeyFamilyAboardState.token) return;
     if (nextId) goToJourneyNode(nextId);
-  }, 1500);
+  }, transitionDelay);
 }
 
 function buildJourneyDinnerBizVisual(node) {
@@ -2821,7 +3512,7 @@ function buildJourneyDinnerBizVisual(node) {
     </svg>
     <main class="stage">
       <section class="illus">
-        <img src="${data.imageSrc || JOURNEY_DINNER_BIZ_IMAGE}" alt="${data.imageAlt || "商业晚餐邀约"}" />
+        <img id="main-anim" src="${data.imageSrc || JOURNEY_DINNER_BIZ_IMAGE}" alt="${data.imageAlt || "商业晚餐邀约"}" />
       </section>
       <section class="content">
         <div class="narrative">${narrative}</div>
@@ -2887,9 +3578,21 @@ function activateJourneyDinnerBiz() {
     choicesEl.style.opacity = "";
     choicesEl.style.pointerEvents = "";
   }
-  const img = new Image();
-  img.onload = img.onerror = () => {};
-  img.src = JOURNEY_DINNER_BIZ_IMAGE;
+  const token = journeyDinnerBizState.token;
+  preloadJourneyDinnerBizFrames(JOURNEY_DINNER_BIZ_LOOP_FRAMES).then(() => {
+    if (token !== journeyDinnerBizState.token) return;
+    runJourneyDinnerBizFrames(
+      JOURNEY_DINNER_BIZ_LOOP_FRAMES,
+      400,
+      true,
+      700,
+      token,
+    );
+  });
+  preloadJourneyDinnerBizFrames([
+    ...JOURNEY_DINNER_BIZ_ACCEPT_FRAMES,
+    ...JOURNEY_DINNER_BIZ_DECLINE_FRAMES,
+  ]);
   typeJourneyDinnerBizNarrative();
 }
 
@@ -2904,6 +3607,10 @@ function playJourneyDinnerBizChoice(nextId, choiceKey) {
     clearTimeout(journeyDinnerBizState.typingTimer);
     journeyDinnerBizState.typingTimer = null;
   }
+  if (journeyDinnerBizState.frameTimer) {
+    clearTimeout(journeyDinnerBizState.frameTimer);
+    journeyDinnerBizState.frameTimer = null;
+  }
   [
     document.querySelector(".narrative"),
     document.querySelector(".question"),
@@ -2914,14 +3621,28 @@ function playJourneyDinnerBizChoice(nextId, choiceKey) {
     `.choice[data-choice="${choiceKey}"]`,
   );
   const dinnerAction = activeEl?.dataset.dinnerAction;
+  const branchFrames =
+    choiceKey === "A"
+      ? JOURNEY_DINNER_BIZ_ACCEPT_FRAMES
+      : JOURNEY_DINNER_BIZ_DECLINE_FRAMES;
+  const token = journeyDinnerBizState.token;
 
-  window.setTimeout(() => {
+  journeyDinnerBizState.choicePlaybackTimer = window.setTimeout(() => {
+    preloadJourneyDinnerBizFrames(branchFrames).then(() => {
+      if (token !== journeyDinnerBizState.token) return;
+      runJourneyDinnerBizFrames(branchFrames, 500, false, 0, token);
+    });
+  }, 220);
+
+  const transitionDelay = Math.max(1500, 220 + branchFrames.length * 500 + 200);
+  journeyDinnerBizState.transitionTimer = window.setTimeout(() => {
+    if (token !== journeyDinnerBizState.token) return;
     if (dinnerAction) {
       runJourneyAction(dinnerAction);
       return;
     }
     if (nextId) goToJourneyNode(nextId);
-  }, 1500);
+  }, transitionDelay);
 }
 
 /* ============================================================
@@ -2973,7 +3694,16 @@ function launchEndingConfetti() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  const COLORS = ["#FFD700", "#FF4136", "#0074D9", "#2ECC40", "#B10DC9", "#FF69B4", "#FF851B", "#FFFFFF"];
+  const COLORS = [
+    "#FFD700",
+    "#FF4136",
+    "#0074D9",
+    "#2ECC40",
+    "#B10DC9",
+    "#FF69B4",
+    "#FF851B",
+    "#FFFFFF",
+  ];
   const SHAPES = ["rect", "circle", "ribbon"];
   const randBetween = (a, b) => a + Math.random() * (b - a);
   const randItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -2986,14 +3716,20 @@ function launchEndingConfetti() {
       const angle = Math.random() * Math.PI * 2;
       const speed = randBetween(2, 9);
       particles.push({
-        x: cx, y: cy,
+        x: cx,
+        y: cy,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed - randBetween(1, 4),
         gravity: randBetween(0.06, 0.13),
-        color: randItem(COLORS), shape: randItem(SHAPES),
-        w: randBetween(7, 14), h: randBetween(4, 9),
-        rot: Math.random() * Math.PI * 2, rotV: randBetween(-0.06, 0.06),
-        alpha: 1, decay: randBetween(0.0015, 0.004), drag: randBetween(0.985, 0.998),
+        color: randItem(COLORS),
+        shape: randItem(SHAPES),
+        w: randBetween(7, 14),
+        h: randBetween(4, 9),
+        rot: Math.random() * Math.PI * 2,
+        rotV: randBetween(-0.06, 0.06),
+        alpha: 1,
+        decay: randBetween(0.0015, 0.004),
+        drag: randBetween(0.985, 0.998),
       });
     }
   }
@@ -3004,9 +3740,17 @@ function launchEndingConfetti() {
     ctx.fillStyle = p.color;
     ctx.translate(p.x, p.y);
     ctx.rotate(p.rot);
-    if (p.shape === "circle") { ctx.beginPath(); ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2); ctx.fill(); }
-    else if (p.shape === "ribbon") { ctx.beginPath(); ctx.ellipse(0, 0, p.w / 2, p.h / 4, 0, 0, Math.PI * 2); ctx.fill(); }
-    else { ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); }
+    if (p.shape === "circle") {
+      ctx.beginPath();
+      ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (p.shape === "ribbon") {
+      ctx.beginPath();
+      ctx.ellipse(0, 0, p.w / 2, p.h / 4, 0, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+    }
     ctx.restore();
   }
 
@@ -3014,15 +3758,24 @@ function launchEndingConfetti() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     particles = particles.filter((p) => p.alpha > 0.02);
     for (const p of particles) {
-      p.vx *= p.drag; p.vy *= p.drag; p.vy += p.gravity;
-      p.x += p.vx; p.y += p.vy; p.rot += p.rotV; p.alpha -= p.decay;
+      p.vx *= p.drag;
+      p.vy *= p.drag;
+      p.vy += p.gravity;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.rotV;
+      p.alpha -= p.decay;
       drawParticle(p);
     }
-    if (particles.length > 0) { rafId = requestAnimationFrame(tick); }
-    else { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    if (particles.length > 0) {
+      rafId = requestAnimationFrame(tick);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
   }
 
-  const W = canvas.width, H = canvas.height;
+  const W = canvas.width,
+    H = canvas.height;
   createBurst(W / 2, H * 0.42, 200);
   setTimeout(() => createBurst(W * 0.15, H * 0.35, 100), 400);
   setTimeout(() => createBurst(W * 0.85, H * 0.35, 100), 700);
@@ -3054,7 +3807,14 @@ function activateJourneyEndingFlip() {
   }
 
   scene.addEventListener("click", openCard);
-  scene.addEventListener("touchend", (e) => { e.preventDefault(); openCard(); }, { passive: false });
+  scene.addEventListener(
+    "touchend",
+    (e) => {
+      e.preventDefault();
+      openCard();
+    },
+    { passive: false },
+  );
 
   // 保存 / 分享：截图闪屏 + 左下角缩略图动效
   function triggerScreenshotEffect() {
@@ -3091,7 +3851,11 @@ function activateJourneyEndingFlip() {
   });
   document.getElementById("btn-gallery")?.addEventListener("click", (e) => {
     e.stopPropagation();
-    showPageInstant("photo-wall-page");
+    const page =
+      ratioState.playerGender === "girl"
+        ? "photo-wall-woman-page"
+        : "photo-wall-page";
+    showPageInstant(page);
   });
 }
 
@@ -3240,36 +4004,47 @@ function journeyGraph() {
       ],
     },
     "academic-future": {
-      code: "07-02",
+      code: "07-08",
       pageName: "兴趣线",
       kicker: "Interest Line",
-      title: "初中的你，在日复一日的训练中，网球水平突飞猛进，展现出不凡天赋。",
-      body: "小小的你第一次面临发展道路的选择……",
+      title: "你把学业稳住了，但网球还会以什么方式留在你的未来里？",
+      body: "离开职业赛道之后，网球并没有立刻消失。它可能留在社群里，留在陪伴里，也可能只留在记忆里。",
       kind: "visual",
       visualType: "primary-tennis",
       primaryTennisData: {
-        question: "你会怎么选择？",
+        layoutVariant: "is-primary-tennis-tight",
+        question: "你会怎么选？",
         narrative: [
-          "初中的你，在日复一日的训练中，",
-          "网球水平突飞猛进，展现出不凡天赋。",
-          "小小的你",
-          "第一次面临发展道路的选择……",
+          "你没有把网球往职业方向推进，但它依然是你很喜欢的一件事",
+          "进入中学后，课业越来越重。",
+          "这时，网球社社长邀请你去做继任者：",
+          "组织训练、带新人、策划活动，让更多同学接触网球。",
+          "这会占用不少时间和精力。",
+          "你也很清楚，自己不可能像以前那样，把所有空余时间都交给网球。",
         ],
-        imageSrc: "primary_teinns/primary_tennis_left_bg.png",
-        imageAlt: "初中网球训练场景",
-        showBills: true,
+        imageSrc: "entertainment_line/entertainment_line_left_bg.png",
+        imageAlt: "兴趣线页面插图",
         choices: [
           {
             key: "A",
-            label: "去全国青少年选材训练营",
-            quote: "\"听说那是中国网球协会的后备人才集训，有专业团队，而且可以减小开销，可竞争也太激烈了，我能行吗？\"",
-            next: "camp-result",
+            label: "继任网球社社长",
+            quote:
+              '"我还是想留在球场上。哪怕不走职业路，能和一群喜欢网球的人一起训练、比赛，也许就是我和网球最自然的关系。"',
+            next: "ending-campus",
           },
           {
             key: "B",
-            label: "让家里继续投资我",
-            quote: "\"可以在家人支持下系统训练、参加比赛，路线自由点，但花销真的会很大，压力好重……\"",
-            next: "family-invest",
+            label: "不当社长，自己偶尔打球",
+            quote:
+              '"我不想让网球完全消失，但现在学业更重要。如果只是周末打几场、寒暑假约一约，也许还能把这份喜欢留得久一点。"',
+            next: "ending-casual",
+          },
+          {
+            key: "C",
+            label: "彻底停掉打网球",
+            quote:
+              '"我喜欢过网球，但现在我没有那么多时间和精力了。与其勉强维持，不如先把重心放回学习，把网球留在美好的记忆里。"',
+            next: "ending-memory",
           },
         ],
       },
@@ -3335,7 +4110,8 @@ function journeyGraph() {
       code: "07-05",
       pageName: "落选分岔",
       kicker: "Crossroad",
-      title: "很遗憾，你在全国选材训练营中落选，你暂时没能进入那条最接近职业网球的通道。",
+      title:
+        "很遗憾，你在全国选材训练营中落选，你暂时没能进入那条最接近职业网球的通道。",
       body: "你不甘心就此放弃你的网球生涯。放在你面前的选择有两个。",
       kind: "visual",
       visualType: "primary-tennis",
@@ -3356,13 +4132,15 @@ function journeyGraph() {
           {
             key: "A",
             label: "继续让家庭投资自己的网球发展",
-            quote: "\"我放不下网球。就算要父母继续投入，就算前面还是未知，我也想再给自己一次机会。\"",
+            quote:
+              '"我放不下网球。就算要父母继续投入，就算前面还是未知，我也想再给自己一次机会。"',
             next: "family-invest",
           },
           {
             key: "B",
             label: "试试靠网球考学",
-            quote: "\"职业路太窄了。但网球也许还能帮我去到更好的学校，换一种方式继续留在球场上。\"",
+            quote:
+              '"职业路太窄了。但网球也许还能帮我去到更好的学校，换一种方式继续留在球场上。"',
             next: "camp-competition",
           },
         ],
@@ -3392,13 +4170,15 @@ function journeyGraph() {
           {
             key: "A",
             label: "国内大学高水平运动队",
-            quote: "\"这里有你熟悉的体系，近一点的家，明确一点的目标。但你必须在很少的名额里赢下来。\"",
+            quote:
+              '"这里有你熟悉的体系，近一点的家，明确一点的目标。但你必须在很少的名额里赢下来。"',
             next: "ending-domestic-university",
           },
           {
             key: "B",
             label: "海外升学路径",
-            quote: "\"海外机会更宽，但费用、语言、申请和未知，你要从头开始摸索一套新的体系。\"",
+            quote:
+              '"海外机会更宽，但费用、语言、申请和未知，你要从头开始摸索一套新的体系。"',
             next: "ending-overseas-university",
           },
         ],
@@ -3408,7 +4188,8 @@ function journeyGraph() {
       code: "07-06",
       pageName: "伤病抉择",
       kicker: "Body Check",
-      title: "你选择试试全国选材训练营，并幸运地入选国家青少年集训队。此后，你一路披荆斩棘，顺利进入了国家队。",
+      title:
+        "你选择试试全国选材训练营，并幸运地入选国家青少年集训队。此后，你一路披荆斩棘，顺利进入了国家队。",
       body: "但造化弄人，你在奥运会资格赛的前夕发生了严重的跟腱伤。",
       kind: "visual",
       visualType: "primary-tennis",
@@ -3429,19 +4210,22 @@ function journeyGraph() {
           {
             key: "A",
             label: "退役",
-            quote: "\"受伤后想要再成为顶尖运动员的实在是太难了，我不想拿自己的健康做赌注。不如趁年轻就此退役，寻找其他出路。\"",
+            quote:
+              '"受伤后想要再成为顶尖运动员的实在是太难了，我不想拿自己的健康做赌注。不如趁年轻就此退役，寻找其他出路。"',
             next: "ending-commentator",
           },
           {
             key: "B",
             label: "暂停训练等康复",
-            quote: "\"我不想就这样放弃网球，但也不想把身体赌到再也回不来。先停下来把伤养好，也许会错过一些机会，可只有还能站上球场，才有资格继续往下走。\"",
+            quote:
+              '"我不想就这样放弃网球，但也不想把身体赌到再也回不来。先停下来把伤养好，也许会错过一些机会，可只有还能站上球场，才有资格继续往下走。"',
             next: "ending-domestic-player",
           },
           {
             key: "C",
             label: "坚持训练",
-            quote: "\"都走到国家队了，我不想在离梦想最近的一步放弃。我愿意拿一辈子的病根去赌一个冠军。\"",
+            quote:
+              '"都走到国家队了，我不想在离梦想最近的一步放弃。我愿意拿一辈子的病根去赌一个冠军。"',
             next: "ending-champion",
           },
         ],
@@ -3536,6 +4320,9 @@ function journeyGraph() {
       visualType: "apparel-growth",
       apparelData: {
         imageSrc: "photos/t_shirt.png",
+        iconKind: "tee",
+        iconSize: 33,
+        iconMobileSize: 27,
         title: "\u7f51\u7403\u670d\u6210\u4ea4\u989d\u540c\u6bd4\u589e\u957f",
         valueLabel: "+216%",
         growthCount: 216,
@@ -3559,6 +4346,9 @@ function journeyGraph() {
       visualType: "apparel-growth",
       apparelData: {
         imageSrc: "photos/skirt.png",
+        iconKind: "skirt",
+        iconSize: 34,
+        iconMobileSize: 28,
         title: "\u7f51\u7403\u88d9\u6210\u4ea4\u989d\u540c\u6bd4\u589e\u957f",
         valueLabel: "+160%",
         growthCount: 160,
@@ -3581,6 +4371,9 @@ function journeyGraph() {
       visualType: "apparel-growth",
       apparelData: {
         imageSrc: "photos/bag.png",
+        iconKind: "bag",
+        iconSize: 35,
+        iconMobileSize: 29,
         title: "\u7f51\u7403\u5305\u6210\u4ea4\u989d\u540c\u6bd4\u589e\u957f",
         valueLabel: "+37%",
         growthCount: 37,
@@ -3604,6 +4397,9 @@ function journeyGraph() {
       visualType: "apparel-growth",
       apparelData: {
         imageSrc: "photos/shoe.png",
+        iconKind: "shoe",
+        iconSize: 40,
+        iconMobileSize: 32,
         title: "\u7f51\u7403\u978b\u6210\u4ea4\u989d\u540c\u6bd4\u589e\u957f",
         valueLabel: "+34.6%",
         growthCount: 35,
@@ -3807,6 +4603,7 @@ function renderJourneyNode() {
   optionsEl.classList.remove("is-visual-panel");
   optionsEl.classList.remove("is-desk-gym-panel");
   optionsEl.classList.remove("is-ending-flip-panel");
+  optionsEl.classList.remove("is-dinner-biz-mode");
   optionsEl.classList.remove("is-primary-tennis-wide");
   optionsEl.classList.remove("is-primary-tennis-tight");
 
@@ -3885,6 +4682,9 @@ function renderJourneyNode() {
     node.visualType === "dinner-biz"
   ) {
     optionsEl.classList.add("is-desk-gym-panel");
+    if (node.visualType === "dinner-biz") {
+      optionsEl.classList.add("is-dinner-biz-mode");
+    }
     if (node.visualType === "primary-tennis") {
       const variant = node.primaryTennisData?.layoutVariant;
       if (variant) optionsEl.classList.add(variant);
@@ -4604,7 +5404,7 @@ function drawMap() {
         map: "china-handdrawn",
         roam: false,
         zoom: 1.06,
-        layoutCenter: ["43%", "58%"],
+        layoutCenter: ["40%", "58%"],
         layoutSize: "84%",
         selectedMode: false,
         label: { show: false },
@@ -4742,22 +5542,10 @@ function openMapPage() {
    photo-wall: 结局照片墙（同学原版）
    ============================================================ */
 const photoWallState = { scene: "wall", quoteVisible: false };
-
-const PHOTO_WALL_FEMALE_MAP = {
-  "businessman": { close: "endingphotowallwoman/合伙人_close.png", open: "endingphotowallwoman/合伙人_open.png" },
-  "commentator": { close: "endingphotowallwoman/网球解说员_close.png", open: "endingphotowallwoman/网球解说员_open.png" },
-  "memory": { close: "endingphotowallwoman/记忆网球拍_close.png", open: "endingphotowallwoman/记忆网球拍_open.png" },
-  "coach": { close: "endingphotowallwoman/网球教练_close.png", open: "endingphotowallwoman/网球教练_open.png" },
-  "985": { close: "endingphotowallwoman/酒吧舞大学生_close.png", open: "endingphotowallwoman/酒吧舞大学生_open.png" },
-  "champion": { close: "endingphotowallwoman/世界冠军_close.png", open: "endingphotowallwoman/世界冠军_open.png" },
-  "city-player": { close: "endingphotowallwoman/城市球友_close.png", open: "endingphotowallwoman/城市球友_open.png" },
-  "ivy-league": { close: "endingphotowallwoman/海外大学_close.png", open: "endingphotowallwoman/海外大学_open.png" },
-  "domestic-player": { close: "endingphotowallwoman/国内高水平_close.png", open: "endingphotowallwoman/国内高水平_open.png" },
-  "parent-child": { close: "endingphotowallwoman/网球传递者_close.png", open: "endingphotowallwoman/网球传递者_open.png" },
-};
+const photoWallWomanState = { scene: "wall", quoteVisible: false };
 
 function initPhotoWall() {
-  const quoteEl = document.querySelector(".pw-quote");
+  const quoteEl = document.querySelector("#photo-wall-page .pw-quote");
   if (quoteEl && !photoWallState.quoteVisible) {
     photoWallState.quoteVisible = true;
     window.setTimeout(() => {
@@ -4765,20 +5553,21 @@ function initPhotoWall() {
     }, 120);
   }
 
-  if (ratioState.playerGender === "girl") {
-    document.querySelectorAll(".pw-photo").forEach((photo) => {
-      const femaleImgs = PHOTO_WALL_FEMALE_MAP[photo.dataset.endingId];
-      if (!femaleImgs) return;
-      const img = photo.querySelector("img");
-      if (img) img.src = femaleImgs.close;
-      photo.dataset.photo = femaleImgs.open;
-    });
-    const focusImg = document.getElementById("pwFocusImage");
-    if (focusImg) focusImg.src = "endingphotowallwoman/城市球友_open.png";
+  // Ensure wall scene is shown on entry
+  showPhotoWallScene("wall");
+}
+
+function initPhotoWallWoman() {
+  const quoteEl = document.querySelector("#photo-wall-woman-page .pw-quote");
+  if (quoteEl && !photoWallWomanState.quoteVisible) {
+    photoWallWomanState.quoteVisible = true;
+    window.setTimeout(() => {
+      quoteEl.classList.add("is-visible");
+    }, 120);
   }
 
   // Ensure wall scene is shown on entry
-  showPhotoWallScene("wall");
+  showPhotoWallSceneWoman("wall");
 }
 
 function showPhotoWallScene(name) {
@@ -4795,6 +5584,25 @@ function openPhotoWallPhoto(photoEl) {
   img.src = photoEl.dataset.photo;
   focusEl.style.setProperty("--focus-rotate", photoEl.dataset.rotate || "0deg");
   showPhotoWallScene("focus");
+  focusEl.focus({ preventScroll: true });
+}
+
+function showPhotoWallSceneWoman(name) {
+  document
+    .querySelectorAll("#photo-wall-woman-page .photo-wall-scene")
+    .forEach((s) => {
+      s.classList.toggle("is-active", s.dataset.scene === name);
+    });
+  photoWallWomanState.scene = name;
+}
+
+function openPhotoWallPhotoWoman(photoEl) {
+  const img = document.getElementById("pwFocusImageWoman");
+  const focusEl = document.getElementById("pwFocusPhotoWoman");
+  if (!img || !focusEl || !photoEl) return;
+  img.src = photoEl.dataset.photo;
+  focusEl.style.setProperty("--focus-rotate", photoEl.dataset.rotate || "0deg");
+  showPhotoWallSceneWoman("focus");
   focusEl.focus({ preventScroll: true });
 }
 
@@ -5032,12 +5840,11 @@ function init() {
     }
   });
 
-  // ---- Photo wall event handlers ----
-  document.querySelectorAll(".pw-photo").forEach((photo) => {
+  // ---- Photo wall event handlers (male) ----
+  document.querySelectorAll("#photo-wall-page .pw-photo").forEach((photo) => {
     photo.addEventListener("click", () => openPhotoWallPhoto(photo));
   });
-
-  const pwFocusScene = document.querySelector(".focus-scene");
+  const pwFocusScene = document.querySelector("#photo-wall-page .focus-scene");
   const pwFocusPhoto = document.getElementById("pwFocusPhoto");
   if (pwFocusScene) {
     pwFocusScene.addEventListener("click", () => showPhotoWallScene("wall"));
@@ -5048,9 +5855,46 @@ function init() {
       showPhotoWallScene("wall");
     });
   }
+
+  // ---- Photo wall event handlers (female) ----
+  document
+    .querySelectorAll("#photo-wall-woman-page .pw-photo")
+    .forEach((photo) => {
+      photo.addEventListener("click", () => openPhotoWallPhotoWoman(photo));
+    });
+  const pwFocusSceneWoman = document.querySelector(
+    "#photo-wall-woman-page .focus-scene",
+  );
+  const pwFocusPhotoWoman = document.getElementById("pwFocusPhotoWoman");
+  if (pwFocusSceneWoman) {
+    pwFocusSceneWoman.addEventListener("click", () =>
+      showPhotoWallSceneWoman("wall"),
+    );
+  }
+  if (pwFocusPhotoWoman) {
+    pwFocusPhotoWoman.addEventListener("click", (e) => {
+      e.stopPropagation();
+      showPhotoWallSceneWoman("wall");
+    });
+  }
+
+  // ---- 图鉴页 "再玩一次" 按钮 ----
+  document
+    .getElementById("photo-wall-restart-btn")
+    ?.addEventListener("click", () => {
+      showPageInstant("cover");
+    });
+  document
+    .getElementById("photo-wall-woman-restart-btn")
+    ?.addEventListener("click", () => {
+      showPageInstant("cover");
+    });
+
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && photoWallState.scene === "focus") {
-      showPhotoWallScene("wall");
+    if (e.key === "Escape") {
+      if (photoWallState.scene === "focus") showPhotoWallScene("wall");
+      if (photoWallWomanState.scene === "focus")
+        showPhotoWallSceneWoman("wall");
     }
   });
 
