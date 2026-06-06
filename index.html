@@ -251,6 +251,67 @@
         <img class="industry-illustration-img" src="photos/audience.png" alt="观众插图">
       </aside>
     </section>
+
+    <section id="photo-wall-page" class="photo-wall-page" aria-hidden="true">
+      <div class="page-meta">
+        <div class="page-index">09</div>
+        <div class="page-name">结局图鉴</div>
+      </div>
+      <div class="page-nav" aria-label="页面跳转">
+        <button class="page-nav-btn" type="button" data-dir="prev" data-page="photo-wall-page" aria-label="上一页">&lt;</button>
+        <button class="page-nav-btn" type="button" data-dir="next" data-page="photo-wall-page" aria-label="下一页">&gt;</button>
+      </div>
+
+      <div class="photo-wall-story">
+        <section class="photo-wall-scene scene-wall is-active" data-scene="wall" aria-label="中国网球不同人生的照片墙">
+          <div class="wall-stage">
+            <button class="pw-photo" style="--x: 45.2%; --y: 16.8%; --w: 20.4%; --r: -5deg;" data-photo="endingphotowall/assets/photowall/ending10-商人.png" data-rotate="-5deg" data-ending-id="businessman" aria-label="查看商人照片">
+              <img src="endingphotowall/assets/photowall/ending10-商人.png" alt="" />
+            </button>
+            <button class="pw-photo" style="--x: 14.7%; --y: 21.6%; --w: 18.2%; --r: 4deg;" data-photo="endingphotowall/assets/photowall/ending4-解说员.png" data-rotate="4deg" data-ending-id="commentator" aria-label="查看解说员照片">
+              <img src="endingphotowall/assets/photowall/ending4-解说员.png" alt="" />
+            </button>
+            <button class="pw-photo" style="--x: 84.1%; --y: 20.8%; --w: 18.7%; --r: -7deg;" data-photo="endingphotowall/assets/photowall/ending3-记忆.png" data-rotate="-7deg" data-ending-id="memory" aria-label="查看球拍记忆照片">
+              <img src="endingphotowall/assets/photowall/ending3-记忆.png" alt="" />
+            </button>
+            <button class="pw-photo" style="--x: 30.1%; --y: 38.6%; --w: 19.1%; --r: 0deg;" data-photo="endingphotowall/assets/photowall/ending9-教练.png" data-rotate="0deg" data-ending-id="coach" aria-label="查看教练照片">
+              <img src="endingphotowall/assets/photowall/ending9-教练.png" alt="" />
+            </button>
+            <button class="pw-photo" style="--x: 58.4%; --y: 34.8%; --w: 17.3%; --r: 9deg;" data-photo="endingphotowall/assets/photowall/ending7-985.png" data-rotate="9deg" data-ending-id="985" aria-label="查看校园照片">
+              <img src="endingphotowall/assets/photowall/ending7-985.png" alt="" />
+            </button>
+            <button class="pw-photo" style="--x: 71%; --y: 42.3%; --w: 20.2%; --r: -5deg;" data-photo="endingphotowall/assets/photowall/ending2-亲子.png" data-rotate="-5deg" data-ending-id="parent-child" aria-label="查看亲子照片">
+              <img src="endingphotowall/assets/photowall/ending2-亲子.png" alt="" />
+            </button>
+            <button class="pw-photo" style="--x: 15.1%; --y: 56.2%; --w: 20.5%; --r: -6deg;" data-photo="endingphotowall/assets/photowall/ending6-冠军.png" data-rotate="-6deg" data-ending-id="champion" aria-label="查看冠军照片">
+              <img src="endingphotowall/assets/photowall/ending6-冠军.png" alt="" />
+            </button>
+            <button class="pw-photo" style="--x: 45.0%; --y: 55.5%; --w: 20.8%; --r: 6deg;" data-photo="endingphotowall/assets/photowall/ending1-城市球友.png" data-rotate="6deg" data-ending-id="city-player" aria-label="查看城市球友照片">
+              <img src="endingphotowall/assets/photowall/ending1-城市球友.png" alt="" />
+            </button>
+            <button class="pw-photo" style="--x: 59.9%; --y: 59.2%; --w: 16.1%; --r: -7deg;" data-photo="endingphotowall/assets/photowall/ending8-藤校.png" data-rotate="-7deg" data-ending-id="ivy-league" aria-label="查看藤校照片">
+              <img src="endingphotowall/assets/photowall/ending8-藤校.png" alt="" />
+            </button>
+            <button class="pw-photo" style="--x: 85.0%; --y: 56.5%; --w: 19.5%; --r: 5deg;" data-photo="endingphotowall/assets/photowall/ending5-国内运动员.png" data-rotate="5deg" data-ending-id="domestic-player" aria-label="查看国内运动员照片">
+              <img src="endingphotowall/assets/photowall/ending5-国内运动员.png" alt="" />
+            </button>
+
+            <p class="pw-quote">
+              <span class="pw-quote-s1">"也许不是每个孩子都能成为郑钦文，</span>
+              <span class="pw-quote-s2">但今天的中国网球，至少让这场梦想不再只有一种终点。</span>
+              <span class="pw-quote-s3 pw-quote-gap">更多孩子终于能从一把球拍里，</span>
+              <span class="pw-quote-s4">走向不同但真实的人生。"</span>
+            </p>
+          </div>
+        </section>
+
+        <section class="photo-wall-scene focus-scene" data-scene="focus" aria-label="照片详情">
+          <button class="pw-focus-photo" id="pwFocusPhoto" aria-label="返回照片墙">
+            <img id="pwFocusImage" src="endingphotowall/assets/photowall/ending1-城市球友.png" alt="" />
+          </button>
+        </section>
+      </div>
+    </section>
   </main>
 
   <div class="debug-jump" aria-label="调试跳页">
@@ -265,6 +326,7 @@
       <option value="map-page">06 出生地</option>
       <option value="journey-page">07 未来</option>
       <option value="industry-page">08 产业可视化</option>
+      <option value="photo-wall-page">09 结局图鉴</option>
     </select>
   </div>
 

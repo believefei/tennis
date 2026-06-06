@@ -315,11 +315,11 @@
         if (charIndex < texts[paraIndex].length) {
           p.textContent += texts[paraIndex][charIndex];
           charIndex++;
-          setTimeout(typeNext, 80);
+          setTimeout(typeNext, 40);
         } else {
           paraIndex++;
           charIndex = 0;
-          setTimeout(typeNext, 200);
+          setTimeout(typeNext, 100);
         }
       }
 

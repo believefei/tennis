@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>中国网球照片墙</title>
+  <style>
+    :root {
+      --paper-bg: #F6F1E8;
+      --ink: #23201b;
+      --shadow: rgba(55, 42, 26, 0.18);
+      --font-hand: "PF频凡胡涂体常规", "PF频凡胡涂体", "PF PinFan HuTu", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--paper-bg);
+      color: var(--ink);
+      font-family: var(--font-hand);
+    }
+
+    body {
+      min-height: 100svh;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      padding: 0;
+      font: inherit;
+      color: inherit;
+      background: transparent;
+    }
+
+    .story {
+      position: relative;
+      width: 100vw;
+      height: 100svh;
+      overflow: hidden;
+      background: var(--paper-bg);
+      isolation: isolate;
+    }
+
+    .scene {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      transform: scale(0.985);
+      pointer-events: none;
+      transition: opacity 420ms ease, transform 460ms ease;
+    }
+
+    .scene.is-active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    .wall-stage {
+      position: relative;
+      width: min(100vw, calc(100svh * 1.77));
+      height: min(100svh, calc(100vw / 1.77));
+      min-width: 320px;
+      min-height: 181px;
+    }
+
+    .photo {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      width: var(--w);
+      aspect-ratio: var(--ratio, 1);
+      cursor: pointer;
+      transform: translate(-50%, -50%) rotate(var(--r));
+      transform-origin: 50% 18%;
+      transition: transform 220ms ease, filter 220ms ease;
+      filter: drop-shadow(0 9px 10px var(--shadow));
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .photo::before {
+      content: "";
+      position: absolute;
+      inset: 14% 14% 10%;
+      border-radius: 3px;
+      background: rgba(122, 86, 41, 0.06);
+      transform: translateY(6%);
+      filter: blur(10px);
+      z-index: -1;
+    }
+
+    .photo:hover,
+    .photo:focus-visible {
+      z-index: 5;
+      transform: translate(-50%, -50%) rotate(var(--r)) scale(1.045);
+      filter: drop-shadow(0 14px 14px rgba(55, 42, 26, 0.23));
+      outline: none;
+    }
+
+    .photo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transform-origin: 50% 8%;
+      animation: windSway var(--sway-duration, 6.8s) ease-in-out infinite;
+      animation-delay: var(--sway-delay, 0s);
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .photo:nth-of-type(2n) img {
+      --sway-duration: 7.6s;
+      --sway-delay: -1.4s;
+    }
+
+    .photo:nth-of-type(3n) img {
+      --sway-duration: 8.4s;
+      --sway-delay: -2.2s;
+    }
+
+    .photo:nth-of-type(5n) img {
+      --sway-duration: 6.2s;
+      --sway-delay: -0.7s;
+    }
+
+    .quote {
+      position: absolute;
+      left: 50%;
+      bottom: 6%;
+      width: min(520px, 76vw);
+      transform: translateX(-50%);
+      margin: 0;
+      text-align: center;
+      font-size: clamp(12px, 1.22vw, 17px);
+      font-weight: 400;
+      line-height: 1.72;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    .quote span {
+      display: block;
+      opacity: 0;
+      transform: translateY(10px);
+      filter: blur(2px);
+      transition:
+        opacity 980ms cubic-bezier(0.19, 1, 0.22, 1),
+        transform 980ms cubic-bezier(0.19, 1, 0.22, 1),
+        filter 980ms cubic-bezier(0.19, 1, 0.22, 1);
+      transition-delay: var(--text-delay, 0ms);
+    }
+
+    .quote.is-visible span {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+
+    .quote .gap {
+      margin-top: 1.06em;
+    }
+
+    .focus-scene {
+      background: var(--paper-bg);
+      cursor: zoom-out;
+    }
+
+    .focus-photo {
+      width: min(78vw, 82svh, 900px);
+      aspect-ratio: 1;
+      transform: none;
+      filter: drop-shadow(0 18px 20px rgba(55, 42, 26, 0.2));
+      cursor: zoom-out;
+      transition: transform 280ms ease;
+    }
+
+    .focus-photo:focus-visible {
+      outline: none;
+      transform: scale(1.015);
+    }
+
+    .focus-photo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    @keyframes windSway {
+      0%,
+      100% {
+        transform: rotate(0deg) translateY(0);
+      }
+
+      23% {
+        transform: rotate(0.9deg) translateY(-1px);
+      }
+
+      48% {
+        transform: rotate(-0.65deg) translateY(0);
+      }
+
+      73% {
+        transform: rotate(0.42deg) translateY(-0.5px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .scene,
+      .photo,
+      .focus-photo,
+      .photo img,
+      .quote span {
+        animation: none;
+        transition: none;
+      }
+
+      .quote span {
+        opacity: 1;
+        transform: none;
+        filter: none;
+      }
+    }
+
+    @media (max-width: 760px), (max-aspect-ratio: 4 / 3) {
+      .wall-stage {
+        width: 100vw;
+        height: 100svh;
+      }
+
+      .photo {
+        width: calc(var(--w) * 1.28);
+      }
+
+      .photo:nth-of-type(1) { --x: 17%; --y: 17%; }
+      .photo:nth-of-type(2) { --x: 50%; --y: 15%; }
+      .photo:nth-of-type(3) { --x: 82%; --y: 17%; }
+      .photo:nth-of-type(4) { --x: 18%; --y: 39%; }
+      .photo:nth-of-type(5) { --x: 50%; --y: 36%; }
+      .photo:nth-of-type(6) { --x: 82%; --y: 40%; }
+      .photo:nth-of-type(7) { --x: 19%; --y: 62%; }
+      .photo:nth-of-type(8) { --x: 50%; --y: 60%; }
+      .photo:nth-of-type(9) { --x: 82%; --y: 62%; }
+      .photo:nth-of-type(10) { --x: 50%; --y: 79%; }
+
+      .quote {
+        bottom: 3.8%;
+        width: min(440px, 88vw);
+        font-size: clamp(12px, 3.1vw, 15px);
+        line-height: 1.58;
+      }
+
+      .focus-photo {
+        width: min(94vw, 78svh);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="story" aria-live="polite">
+    <section class="scene scene-wall is-active" data-scene="wall" aria-label="中国网球不同人生的照片墙">
+      <div class="wall-stage">
+        <button class="photo" style="--x: 45.2%; --y: 16.8%; --w: 20.4%; --r: -5deg;" data-photo="assets/photowall/ending10-商人.png" data-rotate="-5deg" aria-label="查看商人照片">
+          <img src="assets/photowall/ending10-商人.png" alt="">
+        </button>
+        <button class="photo" style="--x: 14.7%; --y: 21.6%; --w: 18.2%; --r: 4deg;" data-photo="assets/photowall/ending4-解说员.png" data-rotate="4deg" aria-label="查看解说员照片">
+          <img src="assets/photowall/ending4-解说员.png" alt="">
+        </button>
+        <button class="photo" style="--x: 84.1%; --y: 20.8%; --w: 18.7%; --r: -7deg;" data-photo="assets/photowall/ending3-记忆.png" data-rotate="-7deg" aria-label="查看球拍记忆照片">
+          <img src="assets/photowall/ending3-记忆.png" alt="">
+        </button>
+        <button class="photo" style="--x: 30.1%; --y: 38.6%; --w: 19.1%; --r: 0deg;" data-photo="assets/photowall/ending9-教练.png" data-rotate="0deg" aria-label="查看教练照片">
+          <img src="assets/photowall/ending9-教练.png" alt="">
+        </button>
+        <button class="photo" style="--x: 58.4%; --y: 34.8%; --w: 17.3%; --r: 9deg;" data-photo="assets/photowall/ending7-985.png" data-rotate="9deg" aria-label="查看校园照片">
+          <img src="assets/photowall/ending7-985.png" alt="">
+        </button>
+        <button class="photo" style="--x: 71%; --y: 42.3%; --w: 20.2%; --r: -5deg;" data-photo="assets/photowall/ending2-亲子.png" data-rotate="-5deg" aria-label="查看亲子照片">
+          <img src="assets/photowall/ending2-亲子.png" alt="">
+        </button>
+        <button class="photo" style="--x: 15.1%; --y: 56.2%; --w: 20.5%; --r: -6deg;" data-photo="assets/photowall/ending6-冠军.png" data-rotate="-6deg" aria-label="查看冠军照片">
+          <img src="assets/photowall/ending6-冠军.png" alt="">
+        </button>
+        <button class="photo" style="--x: 45.0%; --y: 55.5%; --w: 20.8%; --r: 6deg;" data-photo="assets/photowall/ending1-城市球友.png" data-rotate="6deg" aria-label="查看城市球友照片">
+          <img src="assets/photowall/ending1-城市球友.png" alt="">
+        </button>
+        <button class="photo" style="--x: 59.9%; --y: 59.2%; --w: 16.1%; --r: -7deg;" data-photo="assets/photowall/ending8-藤校.png" data-rotate="-7deg" aria-label="查看藤校照片">
+          <img src="assets/photowall/ending8-藤校.png" alt="">
+        </button>
+        <button class="photo" style="--x: 85.0%; --y: 56.5%; --w: 19.5%; --r: 5deg;" data-photo="assets/photowall/ending5-国内运动员.png" data-rotate="5deg" aria-label="查看国内运动员照片">
+          <img src="assets/photowall/ending5-国内运动员.png" alt="">
+        </button>
+
+        <p class="quote">
+          <span style="--text-delay: 360ms;">“也许不是每个孩子都能成为郑钦文，</span>
+          <span style="--text-delay: 620ms;">但今天的中国网球，至少让这场梦想不再只有一种终点。</span>
+          <span class="gap" style="--text-delay: 980ms;">更多孩子终于能从一把球拍里，</span>
+          <span style="--text-delay: 1240ms;">走向不同但真实的人生。”</span>
+        </p>
+      </div>
+    </section>
+
+    <section class="scene focus-scene" data-scene="focus" aria-label="照片详情">
+      <button class="focus-photo" id="focusPhoto" aria-label="返回照片墙">
+        <img id="focusImage" src="assets/photowall/ending1-城市球友.png" alt="">
+      </button>
+    </section>
+  </main>
+
+  <script>
+    const scenes = document.querySelectorAll(".scene");
+    const photos = document.querySelectorAll(".photo");
+    const focusScene = document.querySelector(".focus-scene");
+    const focusPhoto = document.querySelector("#focusPhoto");
+    const focusImage = document.querySelector("#focusImage");
+    const quote = document.querySelector(".quote");
+
+    function showScene(name) {
+      scenes.forEach((scene) => {
+        scene.classList.toggle("is-active", scene.dataset.scene === name);
+      });
+    }
+
+    function openPhoto(photo) {
+      focusImage.src = photo.dataset.photo;
+      focusPhoto.style.setProperty("--focus-rotate", photo.dataset.rotate || "0deg");
+      showScene("focus");
+      focusPhoto.focus({ preventScroll: true });
+    }
+
+    photos.forEach((photo) => {
+      photo.addEventListener("click", () => openPhoto(photo));
+    });
+
+    window.addEventListener("load", () => {
+      window.setTimeout(() => {
+        quote.classList.add("is-visible");
+      }, 120);
+    });
+
+    focusScene.addEventListener("click", () => showScene("wall"));
+    focusPhoto.addEventListener("click", (event) => {
+      event.stopPropagation();
+      showScene("wall");
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        showScene("wall");
+      }
+    });
+  </script>
+</body>
+</html>

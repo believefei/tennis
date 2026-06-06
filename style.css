@@ -1570,6 +1570,24 @@ body {
   margin-top: 4px;
 }
 
+/* primary-tennis wide variant: 落选分岔 / 竞技去向 — 更多文字空间 */
+.is-desk-gym-panel.is-primary-tennis-wide .illus { flex: 1 1 42%; }
+.is-desk-gym-panel.is-primary-tennis-wide .content { flex: 1 1 58%; max-width: 760px; }
+.is-desk-gym-panel.is-primary-tennis-wide .choice { width: clamp(320px, 40vw, 560px); }
+.is-desk-gym-panel.is-primary-tennis-wide .narrative { padding: clamp(18px, 2.4vw, 28px) clamp(8px, 1.2vw, 16px); }
+
+/* primary-tennis tight variant: 伤病抉择 — 三选项 + 六段叙事，最紧凑 */
+.is-desk-gym-panel.is-primary-tennis-tight .illus { flex: 1 1 42%; }
+.is-desk-gym-panel.is-primary-tennis-tight .content { flex: 1 1 58%; max-width: 760px; gap: clamp(14px, 2vw, 24px); }
+.is-desk-gym-panel.is-primary-tennis-tight .choice { width: clamp(320px, 40vw, 560px); }
+.is-desk-gym-panel.is-primary-tennis-tight .narrative { font-size: clamp(15px, 1.4vw, 21px); padding: clamp(14px, 2vw, 24px) clamp(8px, 1.2vw, 16px); }
+.is-desk-gym-panel.is-primary-tennis-tight .question { font-size: clamp(18px, 1.7vw, 26px); }
+.is-desk-gym-panel.is-primary-tennis-tight .choices { gap: clamp(12px, 1.6vw, 20px); }
+.is-desk-gym-panel.is-primary-tennis-tight .choice-box { padding: 18px 24px 20px; min-height: clamp(100px, 12vh, 130px); }
+.is-desk-gym-panel.is-primary-tennis-tight .opt { font-size: clamp(16px, 1.5vw, 22px); }
+.is-desk-gym-panel.is-primary-tennis-tight .hint { font-size: clamp(12px, 1.05vw, 15px); }
+.is-desk-gym-panel.is-primary-tennis-tight .hint .quote { font-size: clamp(12px, 1.05vw, 15px); }
+
 /* family-aboard: 图片在右，靠右侧对齐 */
 .is-family-aboard-mode .stage .illus {
   justify-content: flex-end;
@@ -1731,6 +1749,44 @@ body {
   100% { filter: drop-shadow(0 8px 24px rgba(0,0,0,0.13)) brightness(1); }
 }
 
+/* ---- 截图闪屏效果 ---- */
+.screenshot-flash {
+  position: fixed;
+  inset: 0;
+  background: white;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s ease;
+}
+.screenshot-flash.active {
+  opacity: 1;
+  transition: opacity 0s;
+}
+
+.screenshot-thumb {
+  position: fixed;
+  bottom: 28px;
+  left: 28px;
+  z-index: 9998;
+  width: 130px;
+  opacity: 0;
+  transform: scale(0.55) translateY(24px);
+  transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 10px;
+  box-shadow: 0 12px 38px rgba(0,0,0,0.28);
+  pointer-events: none;
+}
+.screenshot-thumb.show {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+.screenshot-thumb img {
+  width: 100%;
+  display: block;
+  border-radius: 10px;
+}
+
 .training-bills-trigger {
   position: relative;
   border: none;
@@ -1783,7 +1839,7 @@ body {
   z-index: 90;
   display: grid;
   place-items: center;
-  padding: 5vh 4vw;
+  padding: 2vh 2.4vw;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.22s ease;
@@ -1805,10 +1861,10 @@ body {
 .training-bills-dialog {
   position: relative;
   z-index: 1;
-  width: min(1500px, calc(100vw - 40px));
-  max-height: 94vh;
-  overflow: auto;
-  padding: clamp(20px, 2vw, 28px) clamp(18px, 2vw, 26px) clamp(18px, 1.8vw, 24px);
+  width: min(1180px, 94vw);
+  max-height: min(86vh, 920px);
+  overflow: hidden;
+  padding: clamp(14px, 1.4vw, 20px) clamp(18px, 1.8vw, 26px) clamp(12px, 1.4vw, 18px);
   border-radius: 28px;
   border: 1.5px solid rgba(26, 26, 26, 0.14);
   background:
@@ -1824,9 +1880,8 @@ body {
   right: 16px;
   width: 42px;
   height: 42px;
-  border: 1.5px solid rgba(26, 26, 26, 0.18);
-  border-radius: 50%;
-  background: rgba(255, 252, 246, 0.96);
+  border: none;
+  background: none;
   color: var(--ink);
   font-family: inherit;
   font-size: 26px;
@@ -1836,29 +1891,68 @@ body {
 
 .training-bills-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(300px, 0.84fr);
-  gap: clamp(12px, 1.6vw, 22px);
-  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(18px, 2vw, 28px);
+  align-items: start;
+  padding-top: 30px;
+}
+
+.training-bill-card {
+  position: relative;
+  min-width: 0;
+  height: clamp(420px, 70vh, 760px);
+  padding: clamp(12px, 1.2vw, 18px) clamp(8px, 0.8vw, 14px) clamp(12px, 1.2vw, 18px) clamp(12px, 1.2vw, 18px);
+  border-radius: 28px;
+  border: 1.5px solid rgba(26, 26, 26, 0.12);
+  background: rgba(255, 252, 246, 0.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 10px 28px rgba(26, 26, 26, 0.06);
+}
+
+.training-bill-card-scroll {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px 2px 10px 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(26, 26, 26, 0.32) rgba(0, 0, 0, 0);
+}
+
+.training-bill-card-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.training-bill-card-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.training-bill-card-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(26, 26, 26, 0.24);
 }
 
 .training-bill-figure {
   position: relative;
-  min-height: 0;
   display: flex;
   align-items: flex-start;
+  justify-content: center;
 }
 
 .training-bill-figure--family {
-  transform: translate(-10px, -6px) rotate(-2deg);
+  padding-top: 18px;
+  transform: rotate(-1.6deg);
 }
 
 .training-bill-figure--camp {
-  transform: translate(-8px, 30px) rotate(2deg);
+  padding-top: 20px;
+  transform: rotate(2deg);
 }
 
 .training-bill-svg {
   display: block;
-  width: 100%;
+  width: min(100%, 500px);
   height: auto;
   overflow: visible;
   filter: url(#hand-drawn);
@@ -2041,7 +2135,6 @@ body {
 
 .training-bill-svg--family {
   overflow: visible;
-  width: 94%;
   max-width: none;
 }
 
@@ -2050,8 +2143,24 @@ body {
 }
 
 .training-bill-svg--camp {
-  width: 94%;
-  margin-left: auto;
+  overflow: visible;
+  max-width: none;
+}
+
+.training-bill-card--family .training-bill-svg {
+  width: 100%;
+}
+
+.training-bill-card--camp .training-bill-svg {
+  width: 100%;
+}
+
+.training-bills-hint {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 18px;
+  line-height: 1.2;
+  color: rgba(26, 26, 26, 0.62);
 }
 
 .training-bill-svg--family .bill-title--overlay {
@@ -2213,35 +2322,35 @@ body {
 
 /* Family bill — compact typography for dense item list */
 .training-bill-svg--family .bill-title {
-  font-size: 22px;
+  font-size: 20px;
   letter-spacing: 0.06em;
 }
 
 .training-bill-svg--family .bill-subtitle {
-  font-size: 12px;
+  font-size: 11px;
   fill: rgba(26, 26, 26, 0.62);
 }
 
 .training-bill-svg--family .bill-mini-note {
-  font-size: 10px;
+  font-size: 9px;
   fill: rgba(26, 26, 26, 0.42);
 }
 
 .training-bill-svg--family .bill-column-label {
-  font-size: 11px;
+  font-size: 10px;
   fill: rgba(26, 26, 26, 0.56);
 }
 
 .training-bill-svg--family .bill-row-label {
-  font-size: 10.5px;
+  font-size: 9.5px;
 }
 
 .training-bill-svg--family .bill-amount {
-  font-size: 10.5px;
+  font-size: 9.5px;
 }
 
 .training-bill-svg--family .bill-amount--small {
-  font-size: 9px;
+  font-size: 8.3px;
   letter-spacing: 0.01em;
 }
 
@@ -2259,6 +2368,48 @@ body {
 .training-bill-svg--family .bill-bullet {
   stroke-width: 1.6px;
 }
+
+/* --- camp bill (National Team) --- */
+.training-bill-svg--camp .bill-title {
+  font-size: 18px;
+  letter-spacing: 0.06em;
+}
+
+.training-bill-svg--camp .bill-subtitle {
+  font-size: 10px;
+  fill: rgba(26, 26, 26, 0.6);
+}
+
+.training-bill-svg--camp .bill-mini-note {
+  font-size: 8px;
+  fill: rgba(26, 26, 26, 0.4);
+}
+
+.training-bill-svg--camp .bill-column-label {
+  font-size: 9.5px;
+  fill: rgba(26, 26, 26, 0.54);
+}
+
+.training-bill-svg--camp .bill-row-label {
+  font-size: 9.5px;
+  fill: #1a1a1a;
+}
+
+.training-bill-svg--camp .bill-detail-text {
+  font-size: 8px;
+  fill: rgba(26, 26, 26, 0.72);
+}
+
+.training-bill-svg--camp .bill-total {
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  fill: #1a1a1a;
+}
+
+.training-bill-svg--camp .bill-bullet {
+  stroke-width: 1.5px;
+}
+
 
 /* 初始隐藏状态 */
 .is-desk-gym-panel .question,
@@ -2307,17 +2458,33 @@ body {
   }
   .training-bills-grid {
     grid-template-columns: 1fr;
+    gap: 14px;
+    padding-top: 26px;
   }
   .training-bills-dialog {
+    width: min(96vw, 680px);
     max-height: 92vh;
-    padding: 22px 16px 18px;
+    padding: 18px 14px 14px;
+  }
+  .training-bill-card {
+    height: min(39vh, 420px);
+    padding: 14px;
+  }
+  .training-bill-card-scroll {
+    padding: 2px 2px 8px;
   }
   .training-bill-figure--family,
   .training-bill-figure--camp {
+    padding-top: 0;
     transform: none;
   }
-  .training-bill-svg--family {
-    width: 100%;
+  .training-bill-card--family .training-bill-svg,
+  .training-bill-card--camp .training-bill-svg {
+    width: min(100%, 360px);
+  }
+  .training-bills-hint {
+    margin-top: 8px;
+    font-size: 15px;
   }
 }
 

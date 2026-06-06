@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>分镜 · 网球社的选择</title>
+<style>
+  @font-face {
+    font-family: "PFanHuTu";
+    src: url("../PFanHuTuTi 0.680.ttf") format("truetype");
+    font-display: swap;
+  }
+
+  :root {
+    --paper: #f4efe1;
+    --ink: #2b2a26;
+    --highlight: rgba(240, 228, 150, 0.664);
+    --line: #2b2a26;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+  }
+
+  body {
+    font-family: "PFanHuTu", "KaiTi", "STKaiti", serif;
+    color: var(--ink);
+    background: #f6f1e8;
+    min-height: 100vh;
+    display: flex;
+    align-items: stretch;
+  }
+
+  .squiggle-defs { position: absolute; width: 0; height: 0; }
+
+  .stage {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    gap: clamp(16px, 3vw, 48px);
+    padding: clamp(20px, 4vw, 56px);
+  }
+
+  /* ---------- 左侧：插画 ---------- */
+  .illus {
+    flex: 1 1 42%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    align-self: stretch;
+  }
+
+  .illus img {
+    max-width: 100%;
+    max-height: 90vh;
+  }
+
+  /* ---------- 右侧：叙事文本 ---------- */
+  .content {
+    flex: 1 1 58%;
+    max-width: 760px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: clamp(14px, 2vw, 24px);
+  }
+
+  .narrative {
+    position: relative;
+    align-self: center;
+    padding: clamp(14px, 2vw, 24px) clamp(8px, 1.2vw, 16px);
+    line-height: 2.05;
+    font-size: clamp(15px, 1.4vw, 21px);
+    letter-spacing: 0.4px;
+    transform: rotate(-0.4deg);
+  }
+
+  .narrative p {
+    margin: 0;
+    text-indent: 0;
+  }
+
+  .question {
+    align-self: center;
+    font-size: clamp(18px, 1.7vw, 26px);
+    font-weight: 700;
+    padding: 6px 14px 4px;
+    background: linear-gradient(transparent 58%, #f1d94e 58%);
+    transform: rotate(-0.6deg);
+  }
+
+  /* ---------- 选择框 ---------- */
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 1.6vw, 20px);
+    margin-top: 2px;
+  }
+
+  .choice {
+    position: relative;
+    width: clamp(320px, 40vw, 560px);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .choice-box {
+    position: relative;
+    background: #fffdf8;
+    border: 2.5px solid var(--line);
+    border-radius: 4px;
+    padding: 18px 24px 20px;
+    min-height: clamp(100px, 12vh, 130px);
+    filter: url(#hand-drawn);
+    transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .choice:hover .choice-box {
+    transform: translate(-2px, -3px) rotate(-0.5deg);
+    box-shadow: 4px 6px 0 rgba(0, 0, 0, 0.12);
+  }
+
+  .choice.active .choice-box {
+    background: #fbf2bf;
+    box-shadow: 4px 6px 0 rgba(0, 0, 0, 0.16);
+  }
+
+  .opt {
+    font-size: clamp(16px, 1.5vw, 22px);
+  }
+
+  .choice .tag { font-weight: 700; margin-right: 4px; }
+
+  .hint {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1.5px dashed rgba(43, 42, 38, 0.35);
+    font-size: clamp(12px, 1.05vw, 15px);
+    line-height: 1.8;
+    color: #5a564b;
+  }
+
+  .hint .quote {
+    display: block;
+    color: var(--ink);
+    font-style: italic;
+  }
+
+  /* 每行保留行高占位，初始不可见；问题和选项初始隐藏 */
+  .narrative p {
+    min-height: 2em;
+    visibility: hidden;
+  }
+  .question, .choices {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  /* ---------- 内容淡出过渡 ---------- */
+  .narrative, .question, .choices {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .fade-out {
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+  }
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width: 860px) {
+    .stage { flex-direction: column; justify-content: center; }
+    .content { flex: none; max-width: 560px; width: 100%; align-items: center; text-align: center; }
+    .narrative, .question { align-self: center; }
+    .choices { align-items: center; }
+    .illus img { max-height: 42vh; }
+  }
+</style>
+</head>
+<body>
+
+  <svg class="squiggle-defs" aria-hidden="true">
+    <filter id="hand-drawn">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="noise" seed="7" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.5" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+
+  <main class="stage">
+    <section class="illus">
+      <img src="entertainment_line_left_bg.png" alt="网球社场景" />
+    </section>
+
+    <section class="content">
+      <div class="narrative">
+        <p>你没有把网球往职业方向推进，但它依然是你很喜欢的一件事</p>
+        <p>进入中学后，课业越来越重。</p>
+        <p>这时，网球社社长邀请你去做继任者：</p>
+        <p>组织训练、带新人、策划活动，让更多同学接触网球。</p>
+        <p>这会占用不少时间和精力。</p>
+        <p>你也很清楚，自己不可能像以前那样，把所有空余时间都交给网球。</p>
+      </div>
+
+      <div class="question">你会怎么选？</div>
+
+      <div class="choices">
+        <div class="choice" data-choice="A">
+          <div class="choice-box">
+            <div class="opt"><span class="tag">A.</span>继任网球社长</div>
+            <div class="hint">
+              <span class="quote">我还是想留在球场上。哪怕不走职业路，能和一群喜欢网球的人一起训练、比赛，也许就是我和网球最自然的关系。</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="choice" data-choice="B">
+          <div class="choice-box">
+            <div class="opt"><span class="tag">B.</span>不当社长，自己偶尔打打</div>
+            <div class="hint">
+              <span class="quote">我不想让网球完全消失，但现在学业更重要。如果只是周末打几场、寒暑假约一约，也许还能把这份喜欢留得久一点。</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="choice" data-choice="C">
+          <div class="choice-box">
+            <div class="opt"><span class="tag">C.</span>彻底停掉打网球</div>
+            <div class="hint">
+              <span class="quote">我喜欢过网球，但现在我没有那么多时间和精力了。与其勉强维持，不如先把重心放回学习，把网球留在美好的记忆里。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function typewriterNarrative() {
+      const paras = Array.from(document.querySelectorAll(".narrative p"));
+      const questionEl = document.querySelector(".question");
+      const choicesEl  = document.querySelector(".choices");
+
+      const texts = paras.map(p => {
+        const t = p.textContent;
+        p.textContent = "";
+        return t;
+      });
+
+      let paraIndex = 0;
+      let charIndex = 0;
+
+      function typeNext() {
+        if (paraIndex >= paras.length) {
+          questionEl.style.opacity = "1";
+          choicesEl.style.opacity  = "1";
+          choicesEl.style.pointerEvents = "auto";
+          return;
+        }
+
+        const p = paras[paraIndex];
+        p.style.visibility = "visible";
+
+        if (charIndex < texts[paraIndex].length) {
+          p.textContent += texts[paraIndex][charIndex];
+          charIndex++;
+          setTimeout(typeNext, 40);
+        } else {
+          paraIndex++;
+          charIndex = 0;
+          setTimeout(typeNext, 100);
+        }
+      }
+
+      typeNext();
+    }
+
+    typewriterNarrative();
+
+    const choices = document.querySelectorAll(".choice");
+    choices.forEach((choice) => {
+      choice.addEventListener("click", () => {
+        const isActive = choice.classList.contains("active");
+        choices.forEach((c) => c.classList.remove("active"));
+        if (!isActive) {
+          choice.classList.add("active");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
