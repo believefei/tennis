@@ -366,6 +366,7 @@
         </div>
 
         <div id="map-chart" class="map-layer" aria-hidden="true"></div>
+        <canvas id="c-map-grass" class="map-grass-layer"></canvas>
         <div id="map-hint" class="map-hint">点击地图，选择你的出生地</div>
 
         <div id="map-copy" class="map-copy" aria-hidden="true">
@@ -378,6 +379,11 @@
           <span>场地少</span>
           <span class="map-legend-bar"></span>
           <span>场地多</span>
+        </div>
+        <div id="map-legend-pop" class="map-legend-pop" aria-hidden="true">
+          <span>人口少</span>
+          <span class="map-legend-grass-icon"></span>
+          <span>人口多</span>
         </div>
       </section>
 
@@ -809,6 +815,7 @@
     <script src="data/slam-breakthroughs.js"></script>
     <script src="data/achievement-extra.js"></script>
     <script src="data/industry-metrics.js"></script>
+    <script src="data/tennis-population.js"></script>
     <script src="sketch.js"></script>
   </body>
 </html>

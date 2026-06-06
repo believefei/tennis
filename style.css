@@ -1119,6 +1119,41 @@ body {
   background: linear-gradient(90deg, #efe7d2, var(--accent));
 }
 
+/* ---- Grass canvas overlay ---- */
+.map-grass-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ---- Population grass legend ---- */
+.map-legend-pop {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: 2vh;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  opacity: 0;
+  pointer-events: none;
+  font-family: inherit;
+  font-size: clamp(12px, 1.2vw, 16px);
+  color: rgba(26, 26, 26, 0.55);
+}
+
+.map-legend-grass-icon {
+  display: inline-block;
+  width: clamp(40px, 6vw, 80px);
+  height: 20px;
+  flex-shrink: 0;
+  position: relative;
+}
+
 .journey-page {
   position: fixed;
   inset: 0;
@@ -3060,6 +3095,9 @@ body {
   }
   .map-legend {
     bottom: 7vh;
+  }
+  .map-legend-pop {
+    bottom: 3.5vh;
   }
 
   .industry-left {

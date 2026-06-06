@@ -22,6 +22,16 @@ let W = 0,
   H = 0;
 
 const SEED = 42;
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6d2b79f5 | 0;
+    var t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
 const ink = "#1a1a1a";
 const accent = "#c2410c";
 const ballColour = "#c9d83a";
@@ -699,6 +709,7 @@ function showPageInstant(id) {
     gsap.set("#map-copy", { opacity: hasSelection ? 1 : 0 });
     gsap.set("#map-copy > *", { opacity: hasSelection ? 1 : 0, y: 0 });
     gsap.set("#map-legend", { opacity: hasSelection ? 1 : 0 });
+    gsap.set("#map-legend-pop", { opacity: hasSelection ? 1 : 0 });
     ensureMapChart();
     computeMapGeom();
     drawMap();
@@ -860,6 +871,7 @@ const ratioState = {
 };
 
 let cEqual, ctxEqual, rEqual;
+let cMapGrass, ctxMapGrass, rMapGrass;
 let equalTween = null;
 const equalState = {
   active: false,
@@ -1830,6 +1842,10 @@ const mapState = {
   ranking: [],
   chart: null,
   registered: false,
+  minPop: 0,
+  maxPop: 1,
+  popRanking: [],
+  grassBlades: [],
 };
 
 const journeyState = {
@@ -5477,6 +5493,11 @@ function mapCourtCount(name) {
   return typeof v === "number" ? v : null;
 }
 
+function mapPopulationCount(name) {
+  const v = window.TENNIS_POPULATION ? window.TENNIS_POPULATION[name] : undefined;
+  return typeof v === "number" ? v : null;
+}
+
 // 场地数 → 颜色：浅米(#efe7d2) → 深橙(accent)；无数据省份给浅灰
 function mapColorOf(name) {
   const n = mapCourtCount(name);
@@ -5499,6 +5520,18 @@ function displayRegionName(name) {
     .replace(/自治区$/, "")
     .replace(/省$/, "")
     .replace(/市$/, "");
+}
+
+function resizeMapGrass() {
+  if (!cMapGrass) {
+    cMapGrass = document.getElementById("c-map-grass");
+    if (!cMapGrass) return;
+    ctxMapGrass = cMapGrass.getContext("2d");
+  }
+  cMapGrass.width = W * DPR;
+  cMapGrass.height = H * DPR;
+  ctxMapGrass.setTransform(DPR, 0, 0, DPR, 0, 0);
+  rMapGrass = rough.canvas(cMapGrass);
 }
 
 function ensureMapChart() {
@@ -5542,6 +5575,46 @@ function computeMapGeom() {
   mapState.ranking = Object.keys(window.TENNIS_COURTS).sort(
     (a, b) => window.TENNIS_COURTS[b] - window.TENNIS_COURTS[a],
   );
+
+  // Population range + ranking
+  const popCounts = mapState.features
+    .map((f) => mapPopulationCount(f.properties && f.properties.name))
+    .filter((n) => n != null);
+  if (popCounts.length) {
+    mapState.minPop = Math.min(...popCounts);
+    mapState.maxPop = Math.max(...popCounts);
+    mapState.popRanking = Object.keys(window.TENNIS_POPULATION || {}).sort(
+      (a, b) => (window.TENNIS_POPULATION[b] || 0) - (window.TENNIS_POPULATION[a] || 0),
+    );
+  }
+
+  // Generate grass blades per province
+  mapState.grassBlades = [];
+  const rng = mulberry32(42);
+  mapState.features.forEach((f) => {
+    const name = f.properties && f.properties.name;
+    const pop = mapPopulationCount(name);
+    if (pop == null) return;
+    const center = f.properties.center;
+    if (!center) return;
+    const popFactor = mapState.maxPop > mapState.minPop
+      ? Math.sqrt((pop - mapState.minPop) / (mapState.maxPop - mapState.minPop))
+      : 0.5;
+    const clusterR = 0.25 + popFactor * 2.2; // degrees radius
+    const nBlades = Math.round(15 + popFactor * 130);
+    for (let i = 0; i < nBlades; i++) {
+      const angle = rng() * Math.PI * 2;
+      const dist = rng() * clusterR;
+      const lng = center[0] + dist * Math.cos(angle);
+      const lat = center[1] + dist * Math.sin(angle) * 0.7;
+      const h = 2 + popFactor * (1.5 + rng() * 5);
+      const lean = (rng() - 0.5) * 0.25;
+      mapState.grassBlades.push({
+        lng, lat, h, lean,
+        seed: Math.round(rng() * 10000),
+      });
+    }
+  });
 }
 
 function mapSeriesData() {
@@ -5555,6 +5628,46 @@ function mapSeriesData() {
   });
 }
 
+function drawMapGrass(chart) {
+  if (!ctxMapGrass || !rMapGrass || !chart) return;
+  if (!mapState.grassBlades.length) return;
+
+  ctxMapGrass.clearRect(0, 0, W, H);
+
+  // Batch convert geo coords to pixels
+  const blades = mapState.grassBlades;
+  const pixels = [];
+  for (let i = 0; i < blades.length; i++) {
+    const b = blades[i];
+    const px = chart.convertToPixel({ geoIndex: 0 }, [b.lng, b.lat]);
+    if (px) {
+      pixels.push({ ...b, px: px[0], py: px[1] });
+    }
+  }
+
+  for (let i = 0; i < pixels.length; i++) {
+    const b = pixels[i];
+    const tipX = b.px + b.lean * b.h * 1.8;
+    const tipY = b.py - b.h;
+    // Main stem — short stubby stroke
+    rMapGrass.line(b.px, b.py, tipX, tipY, {
+      stroke: "#6d8e2a",
+      strokeWidth: 0.85,
+      roughness: 1.2,
+      bowing: 0.8,
+      seed: b.seed,
+    });
+    // Highlight
+    rMapGrass.line(b.px + 0.8, b.py, tipX + 1, tipY + b.h * 0.08, {
+      stroke: "rgba(201, 216, 58, 0.72)",
+      strokeWidth: 0.6,
+      roughness: 1.0,
+      bowing: 0.6,
+      seed: b.seed + 1,
+    });
+  }
+}
+
 function drawMap() {
   const chart = ensureMapChart();
   if (!chart || !mapState.features.length) return;
@@ -5565,6 +5678,58 @@ function drawMap() {
     animationDuration: 350,
     animationDurationUpdate: 700,
     animationEasingUpdate: "cubicOut",
+    geo: {
+      map: "china-handdrawn",
+      roam: false,
+      zoom: 1.06,
+      layoutCenter: ["40%", "58%"],
+      layoutSize: "84%",
+      label: { show: false },
+      emphasis: {
+        label: { show: false },
+        itemStyle: {
+          areaColor: heatVisible ? undefined : "#e6decb",
+          borderColor: accent,
+          borderWidth: 2,
+          shadowColor: "rgba(194,65,12,0.18)",
+          shadowBlur: 10,
+        },
+      },
+      itemStyle: {
+        areaColor: "#f0ece1",
+        borderColor: ink,
+        borderWidth: 1.2,
+        shadowBlur: 0,
+      },
+      regions: mapState.selected
+        ? [
+            {
+              name: mapState.selected,
+              itemStyle: {
+                areaColor: heatVisible
+                  ? mapColorOf(mapState.selected)
+                  : "#f0ece1",
+                borderColor: accent,
+                borderWidth: 3.2,
+                shadowColor: "rgba(194,65,12,0.38)",
+                shadowBlur: 28,
+                shadowOffsetX: 0,
+                shadowOffsetY: 0,
+              },
+              emphasis: {
+                itemStyle: {
+                  borderColor: accent,
+                  borderWidth: 3.2,
+                  shadowColor: "rgba(194,65,12,0.42)",
+                  shadowBlur: 32,
+                  shadowOffsetX: 0,
+                  shadowOffsetY: 0,
+                },
+              },
+            },
+          ]
+        : [],
+    },
     tooltip: {
       show: true,
       trigger: "item",
@@ -5583,13 +5748,19 @@ function drawMap() {
         const rawName = params.name || "";
         const name = displayRegionName(rawName);
         const count = mapCourtCount(rawName);
-        if (count == null) return `${name}<br/>暂无场地数据`;
-        return `${name}<br/>网球场地：${count.toLocaleString()} 片`;
+        const pop = mapPopulationCount(rawName);
+        const lines = [name];
+        if (count != null) lines.push(`网球场地：${count.toLocaleString()} 片`);
+        else lines.push("暂无场地数据");
+        if (pop != null) lines.push(`网球人口：${pop.toLocaleString()} 人`);
+        else lines.push("暂无人口数据");
+        return lines.join("<br/>");
       },
     },
     visualMap: heatVisible
       ? {
           show: false,
+          seriesIndex: 0,
           min: mapState.minN,
           max: mapState.maxN,
           calculable: false,
@@ -5599,64 +5770,21 @@ function drawMap() {
     series: [
       {
         type: "map",
-        map: "china-handdrawn",
-        roam: false,
-        zoom: 1.06,
-        layoutCenter: ["40%", "58%"],
-        layoutSize: "84%",
+        geoIndex: 0,
         selectedMode: false,
-        label: { show: false },
-        emphasis: {
-          label: { show: false },
-          itemStyle: {
-            areaColor: heatVisible ? undefined : "#e6decb",
-            borderColor: accent,
-            borderWidth: 2,
-            shadowColor: "rgba(194,65,12,0.18)",
-            shadowBlur: 10,
-          },
-        },
-        itemStyle: {
-          areaColor: "#f0ece1",
-          borderColor: ink,
-          borderWidth: 1.2,
-          shadowBlur: 0,
-        },
         data: mapSeriesData(),
-        regions: mapState.selected
-          ? [
-              {
-                name: mapState.selected,
-                itemStyle: {
-                  areaColor: heatVisible
-                    ? mapColorOf(mapState.selected)
-                    : "#f0ece1",
-                  borderColor: accent,
-                  borderWidth: 3.2,
-                  shadowColor: "rgba(194,65,12,0.38)",
-                  shadowBlur: 28,
-                  shadowOffsetX: 0,
-                  shadowOffsetY: 0,
-                },
-                emphasis: {
-                  itemStyle: {
-                    borderColor: accent,
-                    borderWidth: 3.2,
-                    shadowColor: "rgba(194,65,12,0.42)",
-                    shadowBlur: 32,
-                    shadowOffsetX: 0,
-                    shadowOffsetY: 0,
-                  },
-                },
-              },
-            ]
-          : [],
       },
     ],
   };
 
   chart.setOption(option, true);
   chart.resize();
+
+  // Draw grass overlay after render
+  requestAnimationFrame(() => {
+    resizeMapGrass();
+    drawMapGrass(chart);
+  });
 }
 
 function selectRegion(name) {
@@ -5680,14 +5808,25 @@ function selectRegion(name) {
     const total2 = mapState.ranking.length;
     const safeRank2 = rank2 > 0 ? rank2 : total2;
     const pct2 = total2 > 0 ? Math.max(1, Math.round((safeRank2 / total2) * 100)) : 100;
+    const pop2 = mapPopulationCount(name);
+    const popRank2 = mapState.popRanking.indexOf(name) + 1;
+    const popTotal2 = mapState.popRanking.length;
+    const safePopRank2 = popRank2 > 0 ? popRank2 : popTotal2;
+    const popPct2 = popTotal2 > 0 ? Math.max(1, Math.round((safePopRank2 / popTotal2) * 100)) : 100;
     if (titleEl2) titleEl2.textContent = `你出生在「${displayRegionName(name)}」。`;
-    if (bodyEl2) bodyEl2.innerHTML = `这里拥有 ${safeCount2.toLocaleString()} 片网球场地，<br>网球资源数量位于全国前 ${pct2}%。`;
+    let bodyHTML2 = `拥有 ${safeCount2.toLocaleString()} 片网球场地，<br>场地数量位于全国前 ${pct2}%。`;
+    if (pop2 != null) {
+      bodyHTML2 += `<br>网球人口约 ${pop2.toLocaleString()} 人，`;
+      bodyHTML2 += `<br>人口规模位于全国前 ${popPct2}%。`;
+    }
+    if (bodyEl2) bodyEl2.innerHTML = bodyHTML2;
     setPageNavReady("map-page", true);
     updatePageNav();
     gsap.set("#map-hint", { opacity: 0, y: -10 });
     gsap.set("#map-copy", { opacity: 1 });
     gsap.set("#map-copy > *", { opacity: 1, y: 0 });
     gsap.set("#map-legend", { opacity: 1 });
+    gsap.set("#map-legend-pop", { opacity: 1 });
     // 清除旅程状态（回溯到出生地时后续旅程需要重选）
     journeyState.currentNodeId = "";
     journeyState.history = [];
@@ -5701,10 +5840,22 @@ function selectRegion(name) {
   const pct =
     total > 0 ? Math.max(1, Math.round((safeRank / total) * 100)) : 100;
 
+  const pop = mapPopulationCount(name);
+  const popRank = mapState.popRanking.indexOf(name) + 1;
+  const popTotal = mapState.popRanking.length;
+  const safePopRank = popRank > 0 ? popRank : popTotal;
+  const popPct =
+    popTotal > 0 ? Math.max(1, Math.round((safePopRank / popTotal) * 100)) : 100;
+
   const titleEl = document.getElementById("map-title");
   const bodyEl = document.getElementById("map-body");
   titleEl.textContent = `你出生在「${displayRegionName(name)}」。`;
-  bodyEl.innerHTML = `这里拥有 ${safeCount.toLocaleString()} 片网球场地，<br>网球资源数量位于全国前 ${pct}%。`;
+  let bodyHTML = `拥有 ${safeCount.toLocaleString()} 片网球场地，<br>场地数量位于全国前 ${pct}%。`;
+  if (pop != null) {
+    bodyHTML += `<br>网球人口约 ${pop.toLocaleString()} 人，`;
+    bodyHTML += `<br>人口规模位于全国前 ${popPct}%。`;
+  }
+  bodyEl.innerHTML = bodyHTML;
 
   const tl = gsap.timeline();
   tl.to(
@@ -5721,6 +5872,7 @@ function selectRegion(name) {
     0.25,
   );
   tl.to("#map-legend", { opacity: 1, duration: 0.5, ease: "power2.out" }, 0.35);
+  tl.to("#map-legend-pop", { opacity: 1, duration: 0.5, ease: "power2.out" }, 0.42);
   tl.add(() => {
     setPageNavReady("map-page", true);
     updatePageNav();
