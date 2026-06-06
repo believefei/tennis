@@ -742,34 +742,38 @@ body {
 .achievement-side-nav {
   position: absolute;
   z-index: 4;
-  left: max(20px, calc(50% - 490px - 154px));
+  left: max(20px, calc(50% - 490px - 220px));
   top: 39vh;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .achievement-view-btn {
-  border: none;
+  padding: 0.45em 1.1em;
+  border: 1.5px solid rgba(26, 26, 26, 0.18);
+  border-radius: 16px 14px 18px 13px / 14px 17px 13px 16px;
   background: transparent;
-  color: rgba(26, 26, 26, 0.66);
+  color: rgba(26, 26, 26, 0.58);
   font-family: inherit;
-  font-size: 28px;
+  font-size: clamp(14px, 1.1vw, 17px);
   line-height: 1.2;
   text-align: left;
   cursor: pointer;
   transition:
     color 0.18s ease,
-    transform 0.18s ease;
+    border-color 0.18s ease;
 }
 
 .achievement-view-btn:hover {
-  color: rgba(26, 26, 26, 0.9);
-  transform: translateX(2px);
+  color: var(--ink);
+  border-color: rgba(194, 65, 12, 0.32);
 }
 
 .achievement-view-btn.is-active {
-  color: var(--ink);
+  color: var(--accent);
+  border-color: rgba(194, 65, 12, 0.45);
+  background: rgba(255, 249, 239, 0.6);
 }
 
 .achievement-title {
@@ -945,7 +949,7 @@ body {
 .achievement-legend {
   position: absolute;
   z-index: 4;
-  right: max(20px, calc(50% - 490px - 154px));
+  right: max(20px, calc(50% - 490px - 220px));
   top: 39vh;
   display: flex;
   flex-direction: column;
@@ -1843,7 +1847,7 @@ body {
 .journey-primary-tennis-illus-img.is-secondary {
   position: absolute;
   inset: 0;
-  transform: translate(10px, 6px);
+  transform: translate(0, 0);
 }
 
 .journey-primary-tennis-bills-hint {
@@ -2989,7 +2993,7 @@ body {
     width: 86vw;
   }
   .achievement-view-btn {
-    font-size: 18px;
+    font-size: 14px;
   }
   .achievement-court {
     top: 34vh;
@@ -3430,4 +3434,115 @@ body {
   25%      { transform: rotate(1.1deg) translateY(-1.5px); }
   52%      { transform: rotate(-0.8deg) translateY(0); }
   76%      { transform: rotate(0.55deg) translateY(-0.8px); }
+}
+
+/* ========== 面包屑回溯小网球 ========== */
+.breadcrumb-ball-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.breadcrumb-trail {
+  position: fixed;
+  z-index: 80;
+  top: 8px;
+  left: 24px;
+  max-width: calc(100vw - 48px);
+  pointer-events: none;
+}
+
+.breadcrumb-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.breadcrumb-node {
+  display: flex;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.breadcrumb-node.is-future {
+  opacity: 0.45;
+}
+
+.breadcrumb-ball-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 48px;
+  padding: 4px 2px 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.22s ease;
+}
+
+.breadcrumb-ball-wrap:hover {
+  transform: scale(1.15);
+}
+
+.breadcrumb-ball-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  transition: box-shadow 0.22s ease, background 0.22s ease;
+}
+
+.breadcrumb-ball-wrap:hover .breadcrumb-ball-icon {
+  box-shadow: 0 2px 10px rgba(201, 216, 58, 0.5);
+  background: rgba(201, 216, 58, 0.12);
+}
+
+.breadcrumb-ball-icon.is-active {
+  box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.2);
+  background: rgba(26, 26, 26, 0.06);
+}
+
+.breadcrumb-ball-icon.is-active ~ .breadcrumb-label {
+  color: rgba(26, 26, 26, 0.85);
+  font-weight: 600;
+}
+
+.breadcrumb-ball-icon svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+}
+
+.breadcrumb-label {
+  font-family: "PF HuTu", "Songti SC", serif;
+  font-size: 11px;
+  color: rgba(26, 26, 26, 0.65);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  max-width: 44px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.breadcrumb-sep {
+  color: rgba(26, 26, 26, 0.25);
+  font-size: 13px;
+  line-height: 1;
+  flex-shrink: 0;
+  pointer-events: none;
+  user-select: none;
+  padding-bottom: 16px;
+}
+
+.breadcrumb-sep.is-future {
+  color: rgba(26, 26, 26, 0.12);
 }

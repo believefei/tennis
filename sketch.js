@@ -737,6 +737,11 @@ function navigatePage(dir, fromPage) {
     return;
   }
   if (fromPage === "industry-page") {
+    // 面包屑：离开产业页时清除产业面包屑
+    if (breadcrumbTrail.length > 0 && breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "industry-page") {
+      popBreadcrumb();
+      renderBreadcrumb();
+    }
     if (dir === "prev") {
       debugOpenJourneyNode("overseas-tour");
       return;
@@ -750,6 +755,11 @@ function navigatePage(dir, fromPage) {
   if (fromPage === "photo-wall-page" && dir === "next") return;
   if (fromPage === "photo-wall-woman-page") {
     if (dir === "prev") {
+      // 面包屑：离开结局图鉴回到产业页
+      if (breadcrumbTrail.length > 0 && breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "photo-wall-woman-page") {
+        popBreadcrumb();
+        renderBreadcrumb();
+      }
       showPageInstant("industry-page");
     }
     return;
@@ -765,6 +775,20 @@ function navigatePage(dir, fromPage) {
     !document.querySelector(".gender-option.is-selected")
   )
     return;
+  // 面包屑：从性别页回到封面
+  if (fromPage === "gender-page" && dir === "prev" && target === "cover") {
+    if (breadcrumbTrail.length > 0 && breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "gender-page") {
+      popBreadcrumb();
+      renderBreadcrumb();
+    }
+  }
+  // 面包屑：从地图页回到前面
+  if (fromPage === "map-page" && dir === "prev") {
+    if (breadcrumbTrail.length > 0 && breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "map-page") {
+      popBreadcrumb();
+      renderBreadcrumb();
+    }
+  }
   if (fromPage === "ratio-page" && dir === "next" && target === "equal-page") {
     openEqualPage();
     return;
@@ -1813,6 +1837,112 @@ const journeyState = {
   currentNodeId: "",
   history: [],
 };
+
+/* ============================================================
+   面包屑回溯：记录每次选择，支持回溯到对应界面
+   — 点击过往节点跳转但保留后续节点（除非做出不同选择）
+   ============================================================ */
+const breadcrumbTrail = [];
+let breadcrumbCurrentIndex = -1;
+
+function renderBreadcrumb() {
+  const list = document.getElementById("breadcrumb-list");
+  if (!list) return;
+
+  let html = "";
+  for (let i = 0; i < breadcrumbTrail.length; i++) {
+    const entry = breadcrumbTrail[i];
+    const isActive = i === breadcrumbCurrentIndex;
+    const isFuture = i > breadcrumbCurrentIndex;
+    if (i > 0) {
+      html += `<li class="breadcrumb-sep${isFuture ? " is-future" : ""}" aria-hidden="true">›</li>`;
+    }
+    const tooltip = entry.detail || entry.label;
+    html += `<li class="breadcrumb-node${isFuture ? " is-future" : ""}">`;
+    html += `<span class="breadcrumb-ball-wrap" data-breadcrumb-index="${i}" title="${tooltip.replace(/"/g, "&quot;")}">`;
+    html += `<span class="breadcrumb-ball-icon${isActive ? " is-active" : ""}">`;
+    html += `<svg viewBox="0 0 20 20" width="20" height="20"><use href="#breadcrumb-ball"/></svg>`;
+    html += `</span>`;
+    html += `<span class="breadcrumb-label">${entry.label}</span>`;
+    html += `</span>`;
+    html += `</li>`;
+  }
+  list.innerHTML = html;
+
+  // 点击任意节点跳转（包括当前节点，点击不响应）
+  list.querySelectorAll(".breadcrumb-ball-wrap").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const idx = parseInt(el.dataset.breadcrumbIndex, 10);
+      if (!Number.isNaN(idx) && idx !== breadcrumbCurrentIndex) {
+        goToBreadcrumb(idx);
+      }
+    });
+  });
+}
+
+function pushBreadcrumb(label, pageId, restoreFn, detail) {
+  detail = detail || label;
+
+  // 如果在末尾，正常追加
+  if (breadcrumbCurrentIndex >= breadcrumbTrail.length - 1) {
+    const last = breadcrumbTrail[breadcrumbTrail.length - 1];
+    if (last && last.pageId === pageId && last.label === label) return;
+    breadcrumbTrail.push({ label, pageId, restore: restoreFn, detail });
+    breadcrumbCurrentIndex = breadcrumbTrail.length - 1;
+    renderBreadcrumb();
+    return;
+  }
+
+  // 不在末尾：从回溯点做出了选择
+  const current = breadcrumbTrail[breadcrumbCurrentIndex];
+
+  // 同一 pageId → 替换当前节点的选择（如改性别、改出生地）
+  if (current && current.pageId === pageId) {
+    if (current.label === label) return;
+    breadcrumbTrail[breadcrumbCurrentIndex] = { label, pageId, restore: restoreFn, detail };
+    breadcrumbTrail.length = breadcrumbCurrentIndex + 1;
+    renderBreadcrumb();
+    return;
+  }
+
+  // 与下一个已有节点相同 → 沿原有路径前进
+  const nextExisting = breadcrumbTrail[breadcrumbCurrentIndex + 1];
+  if (nextExisting && nextExisting.pageId === pageId && nextExisting.label === label) {
+    breadcrumbCurrentIndex++;
+    renderBreadcrumb();
+    return;
+  }
+
+  // 不同选择 → 清除后续节点，开新分支
+  breadcrumbTrail.length = breadcrumbCurrentIndex + 1;
+  breadcrumbTrail.push({ label, pageId, restore: restoreFn, detail });
+  breadcrumbCurrentIndex = breadcrumbTrail.length - 1;
+  renderBreadcrumb();
+}
+
+function goToBreadcrumb(index) {
+  const entry = breadcrumbTrail[index];
+  if (!entry || index === breadcrumbCurrentIndex) return;
+  breadcrumbCurrentIndex = index;
+  renderBreadcrumb();
+  if (entry.restore) entry.restore();
+}
+
+function popBreadcrumb() {
+  if (breadcrumbTrail.length === 0) return;
+  breadcrumbTrail.pop();
+  if (breadcrumbCurrentIndex >= breadcrumbTrail.length) {
+    breadcrumbCurrentIndex = Math.max(0, breadcrumbTrail.length - 1);
+  }
+}
+
+// 重置面包屑（清空所有记录）
+function resetBreadcrumb() {
+  breadcrumbTrail.length = 0;
+  breadcrumbCurrentIndex = -1;
+  renderBreadcrumb();
+}
 
 const industryState = {
   active: false,
@@ -3282,6 +3412,15 @@ function activateJourneyPrimaryTennis() {
     };
 
     renderFrame();
+
+    // Click image to stop flashing, keep only first image
+    stackedImages.addEventListener("click", () => {
+      if (journeyPrimaryTennisState.imageTimer) {
+        clearTimeout(journeyPrimaryTennisState.imageTimer);
+        journeyPrimaryTennisState.imageTimer = null;
+      }
+      images.forEach((el, i) => el.classList.toggle("is-active", i === 0));
+    });
   }
 
   // Match original: typewriter starts immediately
@@ -3855,6 +3994,12 @@ function activateJourneyEndingFlip() {
       ratioState.playerGender === "girl"
         ? "photo-wall-woman-page"
         : "photo-wall-page";
+    // 面包屑：记录结局图鉴
+    pushBreadcrumb("结局", page, () => {
+      showPageInstant(page);
+      if (page === "photo-wall-page") initPhotoWall();
+      else initPhotoWallWoman();
+    }, "结局图鉴");
     showPageInstant(page);
   });
 }
@@ -4067,6 +4212,10 @@ function journeyGraph() {
         ],
         imageSrc: "primary_teinns/primary_tennis_left_bg.png",
         imageAlt: "初中网球训练场景",
+        altImageSrc: "primary_teinns/scene2.png",
+        altImageAlt: "训练线插图2",
+        frame1Ms: 500,
+        frame2Ms: 1000,
         showBills: true,
         choices: [
           {
@@ -4742,6 +4891,19 @@ function goToJourneyNode(nextId) {
   journeyState.currentNodeId = nextId;
   journeyState.history.push(nextId);
   renderJourneyNode();
+
+  // 面包屑：记录旅程选择
+  const node = graph[nextId];
+  const shortLabel = node && node.pageName ? node.pageName : (node ? (node.title || nextId) : nextId);
+  const journeyDetail = node ? (node.title || nextId) : nextId;
+  pushBreadcrumb(shortLabel, "journey-page", () => {
+    // 回溯：恢复到该旅程节点
+    journeyState.currentNodeId = nextId;
+    journeyState.history = ["root", nextId];
+    showPageInstant("journey-page");
+    renderJourneyNode();
+  }, journeyDetail);
+
   gsap.fromTo(
     ".journey-paper",
     { opacity: 0.68, y: 24 },
@@ -5225,6 +5387,18 @@ function playIndustryAnimation() {
 
 /* ---- 页面入口 ---- */
 function openIndustryPage() {
+  // 面包屑：记录产业可视化
+  pushBreadcrumb("产业", "industry-page", () => {
+    showPageInstant("industry-page");
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        initIndustryCanvas();
+        if (industryState.canvasReady) {
+          drawIndustryChart(industryState.currentKey, 1);
+        }
+      });
+    });
+  }, "产业可视化：网球产业的增长轨迹");
   showPageInstant("industry-page");
   // canvas 初始化需要等元素可见且有尺寸
   requestAnimationFrame(() => {
@@ -5242,9 +5416,20 @@ function navigateJourneyBack() {
     journeyState.history.pop();
     journeyState.currentNodeId =
       journeyState.history[journeyState.history.length - 1];
+    // 面包屑同步：仅回退当前位置，保留后续节点
+    breadcrumbCurrentIndex = Math.max(0, breadcrumbCurrentIndex - 1);
+    renderBreadcrumb();
     renderJourneyNode();
     return;
   }
+  // 回到出生地页面：保留旅程面包屑，仅将当前位置切到出生地
+  for (let i = breadcrumbTrail.length - 1; i >= 0; i--) {
+    if (breadcrumbTrail[i].pageId === "map-page") {
+      breadcrumbCurrentIndex = i;
+      break;
+    }
+  }
+  renderBreadcrumb();
   showPageInstant("map-page");
 }
 
@@ -5253,6 +5438,19 @@ function debugOpenJourneyNode(nodeId) {
   if (!graph[nodeId]) return;
   journeyState.currentNodeId = nodeId;
   journeyState.history = ["root", nodeId];
+  // 面包屑：清除之前的旅程面包屑，加入新的入口节点
+  while (breadcrumbTrail.length > 0 && breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "journey-page") {
+    popBreadcrumb();
+  }
+  const node = graph[nodeId];
+  const shortLabel = node && node.pageName ? node.pageName : (node ? (node.title || nodeId) : nodeId);
+  const journeyDetail = node ? (node.title || nodeId) : nodeId;
+  pushBreadcrumb(shortLabel, "journey-page", () => {
+    journeyState.currentNodeId = nodeId;
+    journeyState.history = ["root", nodeId];
+    showPageInstant("journey-page");
+    renderJourneyNode();
+  }, journeyDetail);
   showPageInstant("journey-page");
 }
 
@@ -5465,6 +5663,35 @@ function selectRegion(name) {
   mapState.selected = name;
   mapState.reveal = 1;
   drawMap();
+
+  // 面包屑：记录出生地选择
+  const provinceLabel = displayRegionName(name);
+  const provinceDetail = `出生地：${provinceLabel}`;
+  pushBreadcrumb(provinceLabel, "map-page", () => {
+    mapState.selected = name;
+    mapState.reveal = 1;
+    showPageInstant("map-page");
+    drawMap();
+    const titleEl2 = document.getElementById("map-title");
+    const bodyEl2 = document.getElementById("map-body");
+    const count2 = mapCourtCount(name);
+    const safeCount2 = typeof count2 === "number" ? count2 : 0;
+    const rank2 = mapState.ranking.indexOf(name) + 1;
+    const total2 = mapState.ranking.length;
+    const safeRank2 = rank2 > 0 ? rank2 : total2;
+    const pct2 = total2 > 0 ? Math.max(1, Math.round((safeRank2 / total2) * 100)) : 100;
+    if (titleEl2) titleEl2.textContent = `你出生在「${displayRegionName(name)}」。`;
+    if (bodyEl2) bodyEl2.innerHTML = `这里拥有 ${safeCount2.toLocaleString()} 片网球场地，<br>网球资源数量位于全国前 ${pct2}%。`;
+    setPageNavReady("map-page", true);
+    updatePageNav();
+    gsap.set("#map-hint", { opacity: 0, y: -10 });
+    gsap.set("#map-copy", { opacity: 1 });
+    gsap.set("#map-copy > *", { opacity: 1, y: 0 });
+    gsap.set("#map-legend", { opacity: 1 });
+    // 清除旅程状态（回溯到出生地时后续旅程需要重选）
+    journeyState.currentNodeId = "";
+    journeyState.history = [];
+  }, provinceDetail);
 
   const count = mapCourtCount(name);
   const safeCount = typeof count === "number" ? count : 0;
@@ -5707,6 +5934,22 @@ function init() {
         item.classList.toggle("is-selected", item === button);
       });
       updatePageNav();
+      // 面包屑：记录性别选择
+      const genderLabel = button.dataset.gender === "girl" ? "女孩" : "男孩";
+      const genderDetail = `性别选择：${genderLabel}`;
+      pushBreadcrumb(genderLabel, "gender-page", () => {
+        // 回溯：恢复性别选择并跳转到性别页，清除后续省份/旅程
+        document.querySelectorAll(".gender-option").forEach((item) => {
+          item.classList.toggle("is-selected", item.dataset.gender === button.dataset.gender);
+        });
+        ratioState.playerGender = button.dataset.gender === "girl" ? "girl" : "boy";
+        mapState.selected = null;
+        mapState.reveal = 0;
+        journeyState.currentNodeId = "";
+        journeyState.history = [];
+        showPageInstant("gender-page");
+        updatePageNav();
+      }, genderDetail);
       // 选完短暂停顿，自动过场到第三幕
       gsap.delayedCall(0.45, openRatioPage);
     });
@@ -5734,9 +5977,25 @@ function init() {
     .getElementById("journey-restart-btn")
     ?.addEventListener("click", () => {
       resetJourney();
+      // 面包屑：回到旅程起点，保留后续节点（除非做出不同选择）
+      for (let i = breadcrumbTrail.length - 1; i >= 0; i--) {
+        if (breadcrumbTrail[i].pageId !== "journey-page") {
+          breadcrumbCurrentIndex = i;
+          break;
+        }
+      }
+      renderBreadcrumb();
       renderJourneyNode();
     });
   document.getElementById("journey-map-btn")?.addEventListener("click", () => {
+    // 面包屑：回到出生地，保留后续节点（除非做出不同选择）
+    for (let i = breadcrumbTrail.length - 1; i >= 0; i--) {
+      if (breadcrumbTrail[i].pageId === "map-page") {
+        breadcrumbCurrentIndex = i;
+        break;
+      }
+    }
+    renderBreadcrumb();
     showPageInstant("map-page");
   });
   document.getElementById("industry-page")?.addEventListener("click", (e) => {
@@ -5882,11 +6141,13 @@ function init() {
   document
     .getElementById("photo-wall-restart-btn")
     ?.addEventListener("click", () => {
+      resetBreadcrumb();
       showPageInstant("cover");
     });
   document
     .getElementById("photo-wall-woman-restart-btn")
     ?.addEventListener("click", () => {
+      resetBreadcrumb();
       showPageInstant("cover");
     });
 
