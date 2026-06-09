@@ -62,7 +62,9 @@ const PAGE_ORDER = [
   "achievement-page",
   "map-page",
   "journey-page",
+  "objects-page",
   "industry-page",
+  "coach-page",
   "photo-wall-page",
   "photo-wall-woman-page",
 ];
@@ -572,6 +574,8 @@ function showOnlyPage(id) {
   const map = document.getElementById("map-page");
   const journey = document.getElementById("journey-page");
   const industry = document.getElementById("industry-page");
+  const coach = document.getElementById("coach-page");
+  const objects = document.getElementById("objects-page");
   const photoWall = document.getElementById("photo-wall-page");
   const photoWallWoman = document.getElementById("photo-wall-woman-page");
 
@@ -620,6 +624,16 @@ function showOnlyPage(id) {
     id === "industry-page" ? "false" : "true",
   );
 
+  coach.classList.toggle("is-active", id === "coach-page");
+  coach.style.visibility = id === "coach-page" ? "visible" : "hidden";
+  coach.style.opacity = id === "coach-page" ? "1" : "0";
+  coach.setAttribute("aria-hidden", id === "coach-page" ? "false" : "true");
+
+  objects.classList.toggle("is-active", id === "objects-page");
+  objects.style.visibility = id === "objects-page" ? "visible" : "hidden";
+  objects.style.opacity = id === "objects-page" ? "1" : "0";
+  objects.setAttribute("aria-hidden", id === "objects-page" ? "false" : "true");
+
   photoWall.classList.toggle("is-active", id === "photo-wall-page");
   photoWall.style.visibility = id === "photo-wall-page" ? "visible" : "hidden";
   photoWall.style.opacity = id === "photo-wall-page" ? "1" : "0";
@@ -643,6 +657,14 @@ function showOnlyPage(id) {
   mapState.active = id === "map-page";
   journeyState.active = id === "journey-page";
   industryState.active = id === "industry-page";
+  objectsState.active = id === "objects-page";
+  coachState.active = id === "coach-page";
+  if (id !== "coach-page") {
+    cleanupCoachPage();
+  }
+  if (id !== "objects-page") {
+    cleanupObjectsPage();
+  }
   if (id !== "equal-page" && equalTween) {
     equalTween.kill();
     equalTween = null;
@@ -721,6 +743,9 @@ function showPageInstant(id) {
     renderJourneyNode();
     gsap.set(".journey-paper", { opacity: 1, y: 0, scale: 1 });
   }
+  if (id === "objects-page") {
+    initObjectsPage();
+  }
   if (id === "industry-page") {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -747,6 +772,22 @@ function navigatePage(dir, fromPage) {
     }
     return;
   }
+  if (fromPage === "coach-page") {
+    cleanupCoachPage();
+    if (dir === "prev") {
+      debugOpenJourneyNode("family-invest");
+      return;
+    }
+    if (dir === "next") {
+      pushBreadcrumb("培训机构教练", "journey-page", () => {
+        showPageInstant("journey-page");
+        goToJourneyNode("ending-coach");
+      }, "培训机构教练");
+      showPageInstant("journey-page");
+      goToJourneyNode("ending-coach");
+      return;
+    }
+  }
   if (fromPage === "industry-page") {
     // 面包屑：离开产业页时清除产业面包屑
     if (breadcrumbTrail.length > 0 && breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "industry-page") {
@@ -759,6 +800,21 @@ function navigatePage(dir, fromPage) {
     }
     if (dir === "next") {
       debugOpenJourneyNode("ending-business");
+      return;
+    }
+  }
+  if (fromPage === "objects-page") {
+    // 面包屑：离开兴趣消费页时清除面包屑
+    if (breadcrumbTrail.length > 0 && breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "objects-page") {
+      popBreadcrumb();
+      renderBreadcrumb();
+    }
+    if (dir === "prev") {
+      debugOpenJourneyNode("overseas-tour");
+      return;
+    }
+    if (dir === "next") {
+      debugOpenJourneyNode("apparel-growth");
       return;
     }
   }
@@ -1969,9 +2025,34 @@ const industryState = {
   _metric: null,
 };
 
+const objectsState = {
+  active: false,
+  typingTimer: null,
+  typed: false,
+};
+
 let cIndustry, ctxIndustry, rIndustry;
 let industryW = 0,
   industryH = 0;
+
+const coachState = {
+  active: false,
+  phase: "intro", // intro | coach | narrative | done
+  introTimer: null,
+  coachFrameTimer: null,
+  narrativeTimer: null,
+  chartsReady: false,
+  chartKey: "market",
+  animating: false,
+};
+
+const COACH_FRAMES = [
+  "coach/coach1.png",
+  "coach/coach2.png",
+  "coach/coach3.png",
+  "coach/coach4.png",
+  "coach/coach5.png",
+];
 
 const JOURNEY_APPAREL_BASE_COUNT = 100;
 const JOURNEY_APPAREL_GROWTH_COUNT = 216;
@@ -2381,6 +2462,8 @@ function buildJourneyApparelVisual(node) {
           ${baseIcons}${growthIcons}
         </div>
       </div>
+
+      <button class="apparel-back-btn" type="button" data-action="back-to-objects">← 返回</button>
     </div>
   `;
 }
@@ -3633,6 +3716,10 @@ function playJourneyFamilyAboardChoice(nextId, choiceKey) {
   const transitionDelay = Math.max(1500, 220 + branchFrames.length * 500 + 200);
   journeyFamilyAboardState.transitionTimer = window.setTimeout(() => {
     if (token !== journeyFamilyAboardState.token) return;
+    if (nextId === "coach-transition") {
+      openCoachPage();
+      return;
+    }
     if (nextId) goToJourneyNode(nextId);
   }, transitionDelay);
 }
@@ -4424,7 +4511,7 @@ function journeyGraph() {
             label: "留在国内参赛",
             fact: "中国正在拥有越来越多国际职业赛事。",
             quote: '"先在家门口把球打出来。"',
-            next: "ending-coach",
+            next: "coach-transition",
           },
           {
             key: "B",
@@ -4462,7 +4549,7 @@ function journeyGraph() {
             label: "接受邀请",
             fact: "奖金、代言、曝光度…… 你开始真正进入职业体育商业体系。",
             quote: "”也许网球之外，我还能拥有更大的影响力。”",
-            action: "open-industry",
+            action: "open-objects",
           },
           {
             key: "B",
@@ -4813,6 +4900,12 @@ function renderJourneyNode() {
       node.visualType === "apparel-growth" || isFullWidthVisual,
     );
 
+  // 隐藏底部 page-nav（仅限 apparel 详情页，只能通过返回按钮离开）
+  var pageNav = pageEl ? pageEl.querySelector(".page-nav") : null;
+  if (pageNav) {
+    pageNav.classList.toggle("is-hidden", node.visualType === "apparel-growth");
+  }
+
   kickerEl.textContent = node.kicker || "";
   titleEl.textContent = node.title || "";
   bodyEl.textContent = node.body || "";
@@ -4966,6 +5059,12 @@ function runJourneyAction(action, payload = {}) {
   }
   if (action === "open-industry") {
     openIndustryPage();
+  }
+  if (action === "open-objects") {
+    openObjectsPage();
+  }
+  if (action === "back-to-objects") {
+    backToObjectsPage();
   }
 }
 
@@ -5307,8 +5406,9 @@ function drawIndustryData(progress) {
       seed: seed + 200,
     });
 
-    // 网球本体（手绘）
-    const ballR = Math.round(Math.max(7, W * 0.013));
+    // 网球本体（手绘，coach 页稍大）
+    const ballScale = coachState.active ? 1.55 : 1;
+    const ballR = Math.round(Math.max(7, W * 0.013 * ballScale));
     rIndustry.circle(ballPos.x, ballPos.y, ballR * 2, {
       stroke: ink,
       strokeWidth: 2,
@@ -5424,6 +5524,443 @@ function openIndustryPage() {
         drawIndustryChart(industryState.currentKey, 1);
       }
     });
+  });
+}
+
+/* ---- 兴趣消费过渡页 ---- */
+function backToObjectsPage() {
+  if (breadcrumbTrail.length > 0 && breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "journey-page") {
+    popBreadcrumb();
+    renderBreadcrumb();
+  }
+  // 恢复左侧叙事文案（清除 cleanup 造成的空白）
+  var ids = [
+    "o-p0", "o-p1", "o-p2", "o-p3", "o-p4", "o-p5",
+    "o-p6", "o-p7", "o-p8", "o-p9", "o-p10", "o-p11", "o-p12",
+  ];
+  var paras = ids.map(function (id) { return document.getElementById(id); }).filter(Boolean);
+  paras.forEach(function (p, i) {
+    p.textContent = OBJECTS_NARRATIVE[i] || "";
+    p.style.visibility = "visible";
+  });
+  // 恢复底部提示
+  var hint = document.getElementById("objects-hint");
+  if (hint) hint.classList.add("show");
+  var endBtn = document.getElementById("objects-ending-btn");
+  if (endBtn) endBtn.classList.add("is-ready");
+  objectsState.typed = true;
+  startObjectsImageFloat();
+  showOnlyPage("objects-page");
+  setCurrentPage("objects-page");
+  updatePageNav();
+}
+
+function openObjectsPage() {
+  pushBreadcrumb("兴趣消费", "objects-page", () => {
+    showPageInstant("objects-page");
+  }, "网球用品店：从赛场装备到时尚符号");
+  showPageInstant("objects-page");
+}
+
+const OBJECTS_ITEM_PAGE = {
+  shirt: "apparel-growth",
+  dress: "skirt-growth",
+  shoe: "shoe-growth",
+  bag: "bag-growth",
+};
+
+var OBJECTS_NARRATIVE = [
+  "你接受了网球用品总裁的晚餐邀请。",
+  "那一晚，他没有只和你聊比赛，",
+  "而是聊起了网球之外的另一片赛场：",
+  "球拍、球鞋、运动服、网球裙……",
+  "这些曾经只是比赛装备的东西，",
+  "正在成为年轻人日常生活里的时尚符号。",
+  "你意识到，",
+  "职业网球带来的不只是奖杯和奖金，",
+  "还有被看见之后产生的商业影响力。",
+  "你决定开一家属于自己的网球用品店。",
+  "而时代的蓝海，正好向你打开。",
+  "越来越多人开始走进球场，",
+  "也越来越多人开始购买属于自己的第一件网球装备。",
+];
+
+function cleanupObjectsPage() {
+  if (objectsState.typingTimer) {
+    clearTimeout(objectsState.typingTimer);
+    objectsState.typingTimer = null;
+  }
+  objectsState.typed = false;
+  var hint = document.getElementById("objects-hint");
+  if (hint) hint.classList.remove("show");
+  var endBtn = document.getElementById("objects-ending-btn");
+  if (endBtn) endBtn.classList.remove("is-ready");
+  // Reset narrative visibility
+  document.querySelectorAll(".objects-narrative p:not(.blank)").forEach(function (p) {
+    p.textContent = "";
+    p.style.visibility = "hidden";
+  });
+}
+
+function initObjectsPage() {
+  objectsState.typed = false;
+  if (objectsState.typingTimer) {
+    clearTimeout(objectsState.typingTimer);
+    objectsState.typingTimer = null;
+  }
+
+  /* 打字机效果 */
+  var ids = [
+    "o-p0", "o-p1", "o-p2", "o-p3", "o-p4", "o-p5",
+    "o-p6", "o-p7", "o-p8", "o-p9", "o-p10", "o-p11", "o-p12",
+  ];
+  var paras = ids.map(function (id) { return document.getElementById(id); }).filter(Boolean);
+  var texts = OBJECTS_NARRATIVE;
+  paras.forEach(function (p, i) {
+    p.textContent = "";
+    p.style.visibility = "hidden";
+  });
+
+  var paraIndex = 0;
+  var charIndex = 0;
+
+  function typeNext() {
+    if (paraIndex >= paras.length) {
+      objectsState.typed = true;
+      objectsState.typingTimer = window.setTimeout(function () {
+        var hint = document.getElementById("objects-hint");
+        if (hint) hint.classList.add("show");
+        var endBtn = document.getElementById("objects-ending-btn");
+        if (endBtn) endBtn.classList.add("is-ready");
+      }, 400);
+      return;
+    }
+    var p = paras[paraIndex];
+    p.style.visibility = "visible";
+
+    if (charIndex < texts[paraIndex].length) {
+      p.textContent += texts[paraIndex][charIndex];
+      charIndex++;
+      objectsState.typingTimer = window.setTimeout(typeNext, 80);
+    } else {
+      paraIndex++;
+      charIndex = 0;
+      objectsState.typingTimer = window.setTimeout(typeNext, 200);
+    }
+  }
+
+  typeNext();
+
+  /* 图片点击跳转 */
+  document.querySelectorAll(".objects-illus img").forEach(function (img) {
+    img.onclick = null;
+    img.addEventListener("click", function () {
+      var item = img.dataset.item;
+      var pageKey = OBJECTS_ITEM_PAGE[item];
+      if (!pageKey) return;
+      pushBreadcrumb("消费详情", "journey-page", function () {
+        showPageInstant("journey-page");
+        goToJourneyNode(pageKey);
+      }, "网球用品消费增长数据");
+      showPageInstant("journey-page");
+      goToJourneyNode(pageKey);
+    });
+  });
+
+  /* 图片晃动效果 */
+  startObjectsImageFloat();
+}
+
+function startObjectsImageFloat() {
+  gsap.killTweensOf("#img-shirt, #img-dress, #img-shoe, #img-bag");
+  gsap.set("#img-shirt, #img-dress, #img-shoe, #img-bag", { clearProps: "rotation,scale,transformOrigin" });
+
+  gsap.to("#img-shirt", {
+    rotation: -2.2,
+    duration: 2.4,
+    repeat: -1,
+    yoyo: true,
+    ease: "sine.inOut",
+    transformOrigin: "50% 8%",
+  });
+  gsap.to("#img-dress", {
+    rotation: 1.8,
+    duration: 2.8,
+    repeat: -1,
+    yoyo: true,
+    ease: "sine.inOut",
+    transformOrigin: "50% 12%",
+  });
+  gsap.to("#img-shoe", {
+    rotation: -1.6,
+    duration: 2.2,
+    repeat: -1,
+    yoyo: true,
+    ease: "sine.inOut",
+    transformOrigin: "50% 40%",
+  });
+  gsap.to("#img-bag", {
+    rotation: 1.5,
+    duration: 3.0,
+    repeat: -1,
+    yoyo: true,
+    ease: "sine.inOut",
+    transformOrigin: "50% 60%",
+  });
+}
+
+/* ---- 教练转型过渡页 ---- */
+function openCoachPage() {
+  coachState.chartKey = "market";
+  coachState.animating = false;
+  document.querySelectorAll(".coach-chart-nav-btn").forEach((btn) => {
+    btn.classList.toggle("is-active", btn.dataset.key === "market");
+  });
+  pushBreadcrumb("转型", "coach-page", () => {
+    showPageInstant("coach-page");
+    initCoachChart();
+    startCoachIntro();
+  }, "留在国内，转型教练");
+  showPageInstant("coach-page");
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      initCoachChart();
+      startCoachIntro();
+    });
+  });
+}
+
+function cleanupCoachPage() {
+  coachState.phase = "intro";
+  if (coachState.introTimer) { clearTimeout(coachState.introTimer); coachState.introTimer = null; }
+  if (coachState.coachFrameTimer) { clearTimeout(coachState.coachFrameTimer); coachState.coachFrameTimer = null; }
+  if (coachState.narrativeTimer) { clearTimeout(coachState.narrativeTimer); coachState.narrativeTimer = null; }
+
+  const intro = document.getElementById("coach-intro");
+  if (intro) { intro.classList.remove("fade-out"); intro.style.display = ""; }
+  const img = document.getElementById("coach-img");
+  if (img) { img.classList.remove("hide"); img.src = COACH_FRAMES[0]; }
+  const wrap = document.getElementById("coach-narrative-wrap");
+  if (wrap) wrap.classList.remove("show");
+  const btn = document.getElementById("coach-continue-btn");
+  if (btn) btn.classList.remove("is-ready");
+
+  // 重置叙事文本
+  ["ci0","ci1","ci2","ci3","ci4","ci5","ci6","ci7","ci8"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) { el.style.visibility = "hidden"; el.textContent = el.textContent || ""; }
+  });
+  ["cn0","cn1","cn2","cn3","cn4","cn5","cn6","cn7","cn8","cn9","cn10"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) { el.style.visibility = "hidden"; el.textContent = el.textContent || ""; }
+  });
+}
+
+function startCoachIntro() {
+  coachState.phase = "intro";
+  const intro = document.getElementById("coach-intro");
+  if (intro) {
+    intro.classList.remove("fade-out");
+    intro.style.display = "";
+  }
+  const btn = document.getElementById("coach-continue-btn");
+  if (btn) btn.classList.remove("is-ready");
+
+  const introIds = ["ci0","ci1","ci2","ci3","ci4","ci5","ci6","ci7","ci8"];
+  const paras = introIds.map((id) => document.getElementById(id)).filter(Boolean);
+  const texts = paras.map((p) => {
+    const t = p.textContent;
+    p.textContent = "";
+    p.style.visibility = "hidden";
+    return t;
+  });
+
+  let paraIdx = 0, charIdx = 0;
+  function typeNext() {
+    if (paraIdx >= paras.length) {
+      // 打字完成，停留 1.8s 后淡出
+      coachState.introTimer = window.setTimeout(() => {
+        const introEl = document.getElementById("coach-intro");
+        if (introEl) {
+          introEl.classList.add("fade-out");
+          introEl.addEventListener("transitionend", function handler() {
+            introEl.removeEventListener("transitionend", handler);
+            introEl.style.display = "none";
+            startCoachScene();
+          });
+        }
+      }, 1800);
+      return;
+    }
+    const p = paras[paraIdx];
+    p.style.visibility = "visible";
+    if (charIdx < texts[paraIdx].length) {
+      p.textContent += texts[paraIdx][charIdx];
+      charIdx++;
+      coachState.introTimer = window.setTimeout(typeNext, 80);
+    } else {
+      paraIdx++;
+      charIdx = 0;
+      coachState.introTimer = window.setTimeout(typeNext, 200);
+    }
+  }
+  typeNext();
+}
+
+function startCoachScene() {
+  coachState.phase = "coach";
+  const img = document.getElementById("coach-img");
+  if (!img) return;
+
+  let current = 0;
+  img.classList.remove("hide");
+  img.src = COACH_FRAMES[0];
+
+  function nextFrame() {
+    current++;
+    if (current >= COACH_FRAMES.length) {
+      // 最后一帧停留 3.2s
+      coachState.coachFrameTimer = window.setTimeout(() => {
+        img.classList.add("hide");
+        img.addEventListener("transitionend", function handler() {
+          img.removeEventListener("transitionend", handler);
+          const wrap = document.getElementById("coach-narrative-wrap");
+          if (wrap) wrap.classList.add("show");
+          typewriterCoachNarrative();
+        });
+      }, 3200);
+      return;
+    }
+    img.src = COACH_FRAMES[current];
+    const extra = current === 2 ? 600 : 0;
+    coachState.coachFrameTimer = window.setTimeout(nextFrame, 380 + extra);
+  }
+  coachState.coachFrameTimer = window.setTimeout(nextFrame, 380);
+}
+
+function typewriterCoachNarrative() {
+  coachState.phase = "narrative";
+  const typedIds = ["cn0","cn1","cn2","cn3","cn4","cn5","cn6","cn7","cn8","cn9","cn10"];
+  const paras = typedIds.map((id) => document.getElementById(id)).filter(Boolean);
+  const texts = paras.map((p) => {
+    const t = p.textContent;
+    p.textContent = "";
+    p.style.visibility = "hidden";
+    return t;
+  });
+
+  let paraIdx = 0, charIdx = 0;
+  function typeNext() {
+    if (paraIdx >= paras.length) {
+      // 叙事完成，显示继续按钮，延迟后自动播放图表动画
+      coachState.phase = "done";
+      const btn = document.getElementById("coach-continue-btn");
+      if (btn) btn.classList.add("is-ready");
+      coachState.narrativeTimer = window.setTimeout(function () {
+        playCoachChartAnimation();
+      }, 1600);
+      return;
+    }
+    const p = paras[paraIdx];
+    p.style.visibility = "visible";
+    if (charIdx < texts[paraIdx].length) {
+      p.textContent += texts[paraIdx][charIdx];
+      charIdx++;
+      coachState.narrativeTimer = window.setTimeout(typeNext, 80);
+    } else {
+      paraIdx++;
+      charIdx = 0;
+      coachState.narrativeTimer = window.setTimeout(typeNext, 200);
+    }
+  }
+  typeNext();
+}
+
+/* ---- 教练页右侧产业图表（复用 industry 渲染管线） ---- */
+let cCoachChart, ctxCoachChart, rCoachChart;
+let coachChartW = 0, coachChartH = 0;
+
+function initCoachChart() {
+  cCoachChart = document.getElementById("coach-chart-canvas");
+  if (!cCoachChart) return;
+  ctxCoachChart = cCoachChart.getContext("2d");
+  sizeCoachChartCanvas();
+  coachState.chartsReady = true;
+  // 绘制默认图表
+  drawCoachChart(coachState.chartKey, 1);
+}
+
+function sizeCoachChartCanvas() {
+  if (!cCoachChart) return;
+  const rect = cCoachChart.getBoundingClientRect();
+  if (rect.width < 1 || rect.height < 1) return;
+  coachChartW = rect.width;
+  coachChartH = rect.height;
+  cCoachChart.width = coachChartW * DPR;
+  cCoachChart.height = coachChartH * DPR;
+  ctxCoachChart.setTransform(DPR, 0, 0, DPR, 0, 0);
+  rCoachChart = rough.canvas(cCoachChart);
+}
+
+/* 将 industry 全局变量临时切换到 coach canvas，调用现有渲染函数 */
+function drawCoachChart(metricKey, progress = 1) {
+  if (!cCoachChart || !ctxCoachChart || !rCoachChart) return;
+
+  // 临时接管 industry 渲染目标
+  const _cI = cIndustry, _ctxI = ctxIndustry, _rI = rIndustry;
+  const _w = industryW, _h = industryH;
+  const _key = industryState.currentKey;
+  const _pts = industryState._points;
+  const _met = industryState._metric;
+  const _geom = industryState._geom;
+
+  cIndustry = cCoachChart;
+  ctxIndustry = ctxCoachChart;
+  rIndustry = rCoachChart;
+  industryW = coachChartW;
+  industryH = coachChartH;
+  industryState.currentKey = metricKey;
+
+  drawIndustryChart(metricKey, progress);
+
+  // 恢复
+  cIndustry = _cI; ctxIndustry = _ctxI; rIndustry = _rI;
+  industryW = _w; industryH = _h;
+  industryState.currentKey = _key;
+  industryState._points = _pts;
+  industryState._metric = _met;
+  industryState._geom = _geom;
+}
+
+function setCoachChartMetric(key) {
+  if (coachState.animating) return;
+  coachState.chartKey = key;
+  document.querySelectorAll(".coach-chart-nav-btn").forEach((btn) => {
+    btn.classList.toggle("is-active", btn.dataset.key === key);
+  });
+  if (coachState.chartsReady) {
+    drawCoachChart(key, 1);
+  }
+}
+
+function playCoachChartAnimation() {
+  if (coachState.animating || !coachState.chartsReady) return;
+  coachState.animating = true;
+
+  const key = coachState.chartKey;
+  drawCoachChart(key, 0);
+
+  const tracker = { progress: 0 };
+  gsap.to(tracker, {
+    progress: 1,
+    duration: 1.6,
+    ease: "power2.out",
+    onUpdate: () => {
+      drawCoachChart(key, tracker.progress);
+    },
+    onComplete: () => {
+      coachState.animating = false;
+    },
   });
 }
 
@@ -6067,6 +6604,10 @@ function init() {
       playIndustryAnimation();
       return;
     }
+    if (coachState.active) {
+      playCoachChartAnimation();
+      return;
+    }
     swing();
   });
   document.getElementById("cover").addEventListener("click", (e) => {
@@ -6112,6 +6653,28 @@ function init() {
   if (ratioNext) ratioNext.addEventListener("click", openEqualPage);
   const equalNext = document.getElementById("equal-next-btn");
   if (equalNext) equalNext.addEventListener("click", openMapPage);
+  const coachContinue = document.getElementById("coach-continue-btn");
+  if (coachContinue) {
+    coachContinue.addEventListener("click", () => {
+      pushBreadcrumb("培训机构教练", "journey-page", () => {
+        showPageInstant("journey-page");
+        goToJourneyNode("ending-coach");
+      }, "培训机构教练");
+      showPageInstant("journey-page");
+      goToJourneyNode("ending-coach");
+    });
+  }
+  var objectsEndBtn = document.getElementById("objects-ending-btn");
+  if (objectsEndBtn) {
+    objectsEndBtn.addEventListener("click", function () {
+      pushBreadcrumb("结局", "journey-page", function () {
+        showPageInstant("journey-page");
+        goToJourneyNode("ending-business");
+      }, "商业大亨");
+      showPageInstant("journey-page");
+      goToJourneyNode("ending-business");
+    });
+  }
   const journeyOptions = document.getElementById("journey-options");
   if (journeyOptions) {
     journeyOptions.addEventListener("click", (e) => {
@@ -6189,6 +6752,25 @@ function init() {
     });
   });
 
+  document.querySelectorAll(".coach-chart-nav-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      setCoachChartMetric(button.dataset.key);
+    });
+  });
+
+  document.getElementById("coach-page")?.addEventListener("click", (e) => {
+    if (
+      e.target.closest(".page-nav") ||
+      e.target.closest(".debug-jump") ||
+      e.target.closest(".coach-chart-nav") ||
+      e.target.closest("#coach-continue-btn")
+    )
+      return;
+    if (coachState.active) {
+      playCoachChartAnimation();
+    }
+  });
+
   document.querySelectorAll(".page-nav-btn").forEach((button) => {
     button.addEventListener("click", () => {
       navigatePage(button.dataset.dir, button.dataset.page);
@@ -6248,6 +6830,10 @@ function init() {
     if (industryState.active && industryState.canvasReady) {
       sizeIndustryCanvas();
       drawIndustryChart(industryState.currentKey, 1);
+    }
+    if (coachState.active && coachState.chartsReady) {
+      sizeCoachChartCanvas();
+      drawCoachChart(coachState.chartKey, 1);
     }
   });
 

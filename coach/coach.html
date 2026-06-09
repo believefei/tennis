@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>分镜 · 网球热潮与转型</title>
+<style>
+  @font-face {
+    font-family: "PFanHuTu";
+    src: url("../PFanHuTuTi 0.680.ttf") format("truetype");
+    font-display: swap;
+  }
+
+  :root {
+    --paper: #f4efe1;
+    --ink: #2b2a26;
+    --highlight: rgba(240, 228, 150, 0.664);
+    --line: #2b2a26;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+  }
+
+  body {
+    font-family: "PFanHuTu", "KaiTi", "STKaiti", serif;
+    color: var(--ink);
+    background: #f6f1e8;
+    min-height: 100vh;
+    display: flex;
+    align-items: stretch;
+  }
+
+  .squiggle-defs { position: absolute; width: 0; height: 0; }
+
+  /* ========== 前置遮罩：全屏打字页 ========== */
+  #intro {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: #f6f1e8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 1.6s ease;
+  }
+
+  #intro.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .intro-narrative {
+    line-height: 2.05;
+    font-size: clamp(17px, 1.55vw, 23px);
+    letter-spacing: 0.4px;
+    transform: rotate(-0.4deg);
+    text-align: center;
+    padding: clamp(20px, 4vw, 56px);
+    max-width: 640px;
+    width: 100%;
+  }
+
+  .intro-narrative p {
+    margin: 0;
+    min-height: 2em;
+    visibility: hidden;
+  }
+
+  .intro-narrative p.blank {
+    min-height: 1em;
+    visibility: visible;
+  }
+
+  .stage {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    gap: clamp(16px, 3vw, 48px);
+    padding: clamp(20px, 4vw, 56px);
+  }
+
+  /* ---------- 左侧：动画区 / 文本区 ---------- */
+  .left-panel {
+    flex: 1 1 46%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    align-self: stretch;
+    position: relative;
+    padding-bottom: clamp(16px, 3vh, 40px);
+  }
+
+  /* coach 动画图片 */
+  #coach-img {
+    max-width: 90%;
+    max-height: 78vh;
+    display: block;
+    transition: opacity 0.6s ease;
+  }
+
+  #coach-img.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ---------- 叙事文本 ---------- */
+  .narrative-wrap {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+  }
+
+  .narrative-wrap.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .narrative {
+    position: relative;
+    padding: clamp(18px, 2.4vw, 28px) clamp(8px, 1.2vw, 16px);
+    line-height: 2.05;
+    font-size: clamp(17px, 1.55vw, 23px);
+    letter-spacing: 0.4px;
+    transform: rotate(-0.4deg);
+    max-width: 520px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .narrative p {
+    margin: 0;
+    min-height: 2em;
+    visibility: hidden;
+  }
+
+  .narrative p.blank {
+    min-height: 1em;
+    visibility: visible;
+  }
+
+  /* ---------- 右侧：Excel 图表 ---------- */
+  .illus {
+    flex: 1 1 54%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    align-self: stretch;
+  }
+
+  .illus img {
+    max-width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+  }
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width: 860px) {
+    .stage { flex-direction: column; justify-content: center; gap: 24px; }
+    .left-panel { flex: none; width: 100%; min-height: 50vw; }
+    .illus { flex: none; width: 100%; justify-content: center; }
+    .illus img { max-height: 45vh; }
+    #coach-img { max-height: 38vh; max-width: 80%; }
+    .narrative { font-size: clamp(14px, 3.8vw, 18px); }
+  }
+</style>
+</head>
+<body>
+
+  <!-- 前置全屏打字遮罩 -->
+  <div id="intro">
+    <div class="intro-narrative">
+      <p id="i0">你在国内赛事体系中打了三年球，</p>
+      <p id="i1">成为了一名优秀的本土职业球员。</p>
+      <p class="blank"></p>
+      <p id="i2">但你也渐渐明白，</p>
+      <p id="i3">真正能站上聚光灯中央的人，毕竟只是少数。</p>
+      <p class="blank"></p>
+      <p id="i4">随着年纪渐长，</p>
+      <p id="i5">伤病开始一次次打断你的训练和比赛。</p>
+      <p class="blank"></p>
+      <p id="i6">你不得不停下来思考：</p>
+      <p id="i7">如果有一天，自己不能再靠打比赛生活，</p>
+      <p id="i8">那未来的路，又该走向哪里？</p>
+    </div>
+  </div>
+
+  <svg class="squiggle-defs" aria-hidden="true">
+    <filter id="hand-drawn">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="noise" seed="7" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.5" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+
+  <main class="stage">
+    <!-- 左侧：coach 逐帧动画 → 文字叙事 -->
+    <section class="left-panel">
+      <img id="coach-img" src="coach1.png" alt="网球教练" />
+
+      <div class="narrative-wrap" id="narrative-wrap">
+        <div class="narrative" id="narrative">
+          <p id="p0">随着郑钦文夺冠，</p>
+          <p id="p1">国内掀起了一股网球热。</p>
+          <p class="blank"></p>
+          <p id="p2">网球不再只是小众运动，</p>
+          <p id="p3">越来越多的人开始走进球场、学习网球。</p>
+          <p class="blank"></p>
+          <p id="p4">网球市场也随之不断扩大，</p>
+          <p id="p5">到 2024 年已达到 367.5 亿元。</p>
+          <p class="blank"></p>
+          <p id="p6">你渐渐发现，即使离开职业赛场，</p>
+          <p id="p7">也并不意味着离开网球。</p>
+          <p class="blank"></p>
+          <p id="p8">你依然可以靠这项热爱的运动谋生，</p>
+          <p id="p9">在球场之外，</p>
+          <p id="p10">找到属于自己的新位置。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 右侧：Excel 图表 -->
+    <section class="illus">
+      <img src="execl.png" alt="网球市场数据图表" />
+    </section>
+  </main>
+
+  <script>
+    /* 预加载图片组 */
+    function preload(srcs) {
+      return Promise.all(srcs.map(src => new Promise(resolve => {
+        const img = new Image();
+        img.onload = img.onerror = resolve;
+        img.src = src;
+      })));
+    }
+
+    /* 逐帧播放，播完最后一帧停在那里，在 holdMs 后执行 onDone 回调
+       frameHolds: { 帧索引: 额外停留ms } 可指定某帧额外停留 */
+    function playFramesOnce(frames, interval, holdMs, onDone, frameHolds) {
+      const el = document.getElementById("coach-img");
+      el.src = frames[0];
+      let current = 0;
+
+      function next() {
+        current++;
+        if (current >= frames.length) {
+          setTimeout(() => { if (onDone) onDone(); }, holdMs);
+          return;
+        }
+        el.src = frames[current];
+        const extra = (frameHolds && frameHolds[current]) || 0;
+        setTimeout(next, interval + extra);
+      }
+
+      setTimeout(next, interval);
+    }
+
+    /* 打字机效果：与 sad.html 统一 */
+    function typewriterNarrative() {
+      const typedIds = ["p0","p1","p2","p3","p4","p5","p6","p7","p8","p9","p10"];
+      const paras = typedIds.map(id => document.getElementById(id));
+
+      const texts = paras.map(p => {
+        const t = p.textContent;
+        p.textContent = "";
+        return t;
+      });
+
+      let paraIndex = 0;
+      let charIndex = 0;
+
+      function typeNext() {
+        if (paraIndex >= paras.length) return;
+
+        const p = paras[paraIndex];
+        p.style.visibility = "visible";
+
+        if (charIndex < texts[paraIndex].length) {
+          p.textContent += texts[paraIndex][charIndex];
+          charIndex++;
+          setTimeout(typeNext, 80);
+        } else {
+          paraIndex++;
+          charIndex = 0;
+          setTimeout(typeNext, 200);
+        }
+      }
+
+      typeNext();
+    }
+
+    /* ---------- 前置打字：intro 遮罩 ---------- */
+    function typewriterIntro(onDone) {
+      const introIds = ["i0","i1","i2","i3","i4","i5","i6","i7","i8"];
+      const paras = introIds.map(id => document.getElementById(id));
+
+      const texts = paras.map(p => {
+        const t = p.textContent;
+        p.textContent = "";
+        return t;
+      });
+
+      let paraIndex = 0;
+      let charIndex = 0;
+
+      function typeNext() {
+        if (paraIndex >= paras.length) {
+          if (onDone) onDone();
+          return;
+        }
+        const p = paras[paraIndex];
+        p.style.visibility = "visible";
+        if (charIndex < texts[paraIndex].length) {
+          p.textContent += texts[paraIndex][charIndex];
+          charIndex++;
+          setTimeout(typeNext, 80);
+        } else {
+          paraIndex++;
+          charIndex = 0;
+          setTimeout(typeNext, 200);
+        }
+      }
+
+      typeNext();
+    }
+
+    /* ---------- 主流程 ---------- */
+    const coachFrames = [
+      "coach1.png",
+      "coach2.png",
+      "coach3.png",
+      "coach4.png",
+      "coach5.png"
+    ];
+
+    /* 预加载 coach 帧（后台静默，不阻塞前置打字） */
+    preload(coachFrames);
+
+    function startCoachScene() {
+      playFramesOnce(coachFrames, 380, 3200, () => {
+        const coachImg = document.getElementById("coach-img");
+        coachImg.classList.add("hide");
+
+        coachImg.addEventListener("transitionend", () => {
+          const wrap = document.getElementById("narrative-wrap");
+          wrap.classList.add("show");
+          typewriterNarrative();
+        }, { once: true });
+      }, { 2: 600 });
+    }
+
+    /* 页面加载：先播前置打字，打字完停留 1.8s 后遮罩淡出，然后启动 coach */
+    typewriterIntro(() => {
+      setTimeout(() => {
+        const intro = document.getElementById("intro");
+        intro.classList.add("fade-out");
+        intro.addEventListener("transitionend", () => {
+          intro.style.display = "none";
+          startCoachScene();
+        }, { once: true });
+      }, 1800);
+    });
+  </script>
+</body>
+</html>
