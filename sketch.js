@@ -744,6 +744,13 @@ function showPageInstant(id) {
     drawEqualScene();
   }
   if (id === "achievement-page") {
+    const isGirl = ratioState.playerGender === "girl";
+    const bodyEl = document.getElementById("achievement-body");
+    if (bodyEl) {
+      bodyEl.innerHTML = isGirl
+        ? "1. 中国女网在世界赛场上留下了许多很亮的脚印。<br>从大满贯冠军，到奥运会突破，再到越来越多年轻球员被世界看见，<br>在网球的赛场上，女孩子的你拿起球拍，也可以一路打到很远的地方。"
+        : "中国女网的成绩比男网更耀眼，也把中国网球带到了更大的舞台。<br>你还在追赶，但每一次发球、每一次坚持，都是继续向前的机会。<br>加油，网球赛场的下一次突破也可能由你写下。";
+    }
     gsap.set(".achievement-copy > *", { opacity: 1, y: 0 });
     renderAchievementPlot(true);
   }
