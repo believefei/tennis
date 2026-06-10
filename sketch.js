@@ -709,7 +709,7 @@ function hydrateRatioStatic() {
   const body = document.getElementById("ratio-body");
   if (body) {
     const g = ratioState.playerGender === "boy" ? "男生" : "女生";
-    body.textContent = `每 100 个网球人口里，就有一个是你。\n也就是说，每100个网球人里，就有一个"${g}"的你。`;
+    body.innerHTML = `每 100 个网球人口里，就有一个是你。<br>也就是说，每100个网球人里，就有一个"${g}"的你。`;
   }
   const btn = document.getElementById("ratio-next-btn");
   if (btn) btn.classList.add("is-ready");
@@ -1306,7 +1306,7 @@ function runRatioFill() {
   // 文案收尾
   tl.add(() => {
     const g = ratioState.playerGender === "boy" ? "男生" : "女生";
-    body.textContent = `每 100 个网球人口里，就有一个是你。\n也就是说，每100个网球人里，就有一个"${g}"的你。`;
+    body.innerHTML = `每 100 个网球人口里，就有一个是你。<br>也就是说，每100个网球人里，就有一个"${g}"的你。`;
   }, "<");
 
   // 收尾后浮出「去看看你的家乡」按钮
@@ -1383,9 +1383,8 @@ function runRatioFillNarrative() {
 
   tl.add(() => {
     if (body) {
-      const common =
-        "我国网球人口总数达 25,188,388 人（2024年数据）。<br>其中 53% 是男性，47% 是女性。";
-      body.innerHTML = common;
+      const g = ratioState.playerGender === "boy" ? "男生" : "女生";
+      body.innerHTML = `每 100 个网球人口里，就有一个是你。<br>也就是说，每100个网球人里，就有一个"${g}"的你。`;
     }
   }, "<");
 
