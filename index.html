@@ -7,16 +7,52 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <svg class="breadcrumb-ball-defs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      class="breadcrumb-ball-defs"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <defs>
         <filter id="breadcrumb-rough">
-          <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="12" result="noise"/>
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" xChannelSelector="R" yChannelSelector="G"/>
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.05"
+            numOctaves="3"
+            seed="12"
+            result="noise"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="noise"
+            scale="1.2"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
         </filter>
         <g id="breadcrumb-ball">
-          <circle cx="10" cy="10" r="8.5" fill="#c9d83a" stroke="#1a1a1a" stroke-width="1.4" filter="url(#breadcrumb-rough)"/>
-          <path d="M 14.2 4.2 Q 10.5 10 14.2 15.8" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" filter="url(#breadcrumb-rough)"/>
-          <path d="M 5.8 4.2 Q 9.5 10 5.8 15.8" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" filter="url(#breadcrumb-rough)"/>
+          <circle
+            cx="10"
+            cy="10"
+            r="8.5"
+            fill="#c9d83a"
+            stroke="#1a1a1a"
+            stroke-width="1.4"
+            filter="url(#breadcrumb-rough)"
+          />
+          <path
+            d="M 14.2 4.2 Q 10.5 10 14.2 15.8"
+            fill="none"
+            stroke="rgba(255,255,255,0.85)"
+            stroke-width="1.3"
+            filter="url(#breadcrumb-rough)"
+          />
+          <path
+            d="M 5.8 4.2 Q 9.5 10 5.8 15.8"
+            fill="none"
+            stroke="rgba(255,255,255,0.85)"
+            stroke-width="1.3"
+            filter="url(#breadcrumb-rough)"
+          />
         </g>
       </defs>
     </svg>
@@ -175,7 +211,6 @@
         <canvas id="c-ratio" class="ratio-layer"></canvas>
 
         <div class="ratio-copy">
-          <h2 class="ratio-title">每100个网球人里——</h2>
           <p id="ratio-body" class="ratio-body"></p>
         </div>
 
@@ -222,12 +257,12 @@
         <canvas id="c-equal" class="equal-layer"></canvas>
 
         <div class="equal-copy">
-          <h2 class="equal-title">35年，一条通往同工同酬的时间轴</h2>
           <p class="equal-body">
-            1968年，温网男单冠军奖金为 £2,000，而女单冠军仅有
-            £750，不足前者四成。<br /><br />
-            此后，四大满贯陆续推进奖金平等。从1972年美网率先破局，到2007年温网完成改革，网球用了35年，才让男女选手站上同一条奖金线。<br /><br />
-            这条时间轴记录的，不只是奖金数字的变化，更是一场持续数十年的公平争取。
+            你选择了一项很早就开始认真讨论"公平"的运动。<br />
+            你或许不知道，网球是大满贯赛事中最早实现男女同工同酬的主流运动。<br />
+            1968年，温网男单冠军奖金还是￡2,000，而女单冠军仅有￡750，不足前者四成。<br />
+            此后，四大满贯陆续推进奖金平等。<br />
+            从1972年美网率先破局，到2007年温网完成改革，网球用了35年，让男女选手站上同一条奖金线。
           </p>
         </div>
 
@@ -471,6 +506,13 @@
             </button>
           </div>
         </div>
+        <button
+          id="journey-restart-once-btn"
+          class="journey-restart-once-btn"
+          type="button"
+        >
+          重玩一次
+        </button>
       </section>
 
       <section id="objects-page" class="objects-page" aria-hidden="true">
@@ -479,8 +521,24 @@
           <div id="objects-page-name" class="page-name">兴趣消费</div>
         </div>
         <div class="page-nav" aria-label="页面跳转">
-          <button class="page-nav-btn" type="button" data-dir="prev" data-page="objects-page" aria-label="上一页">&lt;</button>
-          <button class="page-nav-btn" type="button" data-dir="next" data-page="objects-page" aria-label="下一页">&gt;</button>
+          <button
+            class="page-nav-btn"
+            type="button"
+            data-dir="prev"
+            data-page="objects-page"
+            aria-label="上一页"
+          >
+            &lt;
+          </button>
+          <button
+            class="page-nav-btn"
+            type="button"
+            data-dir="next"
+            data-page="objects-page"
+            aria-label="下一页"
+          >
+            &gt;
+          </button>
         </div>
         <div class="objects-stage">
           <section class="objects-content">
@@ -505,14 +563,46 @@
             </div>
           </section>
           <section class="objects-illus">
-            <img id="img-shirt" src="objects/shirt.png" alt="网球polo衫" data-item="shirt" title="网球服成交额同比增长 216%" />
-            <img id="img-dress" src="objects/dress.png" alt="网球裙" data-item="dress" title="网球裙成交额同比增长 160%" />
-            <img id="img-shoe" src="objects/shoe.png" alt="网球鞋" data-item="shoe" title="网球鞋成交额同比增长 34.6%" />
-            <img id="img-bag" src="objects/bag.png" alt="网球包" data-item="bag" title="网球包成交额同比增长 37%" />
+            <img
+              id="img-shirt"
+              src="objects/shirt.png"
+              alt="网球polo衫"
+              data-item="shirt"
+              title="网球服成交额同比增长 216%"
+            />
+            <img
+              id="img-dress"
+              src="objects/dress.png"
+              alt="网球裙"
+              data-item="dress"
+              title="网球裙成交额同比增长 160%"
+            />
+            <img
+              id="img-shoe"
+              src="objects/shoe.png"
+              alt="网球鞋"
+              data-item="shoe"
+              title="网球鞋成交额同比增长 34.6%"
+            />
+            <img
+              id="img-bag"
+              src="objects/bag.png"
+              alt="网球包"
+              data-item="bag"
+              title="网球包成交额同比增长 37%"
+            />
           </section>
         </div>
-        <div id="objects-hint" class="objects-hint">点击看看 2024 年网球市场的快速扩张</div>
-        <button id="objects-ending-btn" class="objects-ending-btn" type="button">查看结局</button>
+        <div id="objects-hint" class="objects-hint">
+          点击看看 2024 年网球市场的快速扩张
+        </div>
+        <button
+          id="objects-ending-btn"
+          class="objects-ending-btn"
+          type="button"
+        >
+          查看结局
+        </button>
       </section>
 
       <section id="industry-page" class="industry-page" aria-hidden="true">
@@ -651,13 +741,25 @@
 
           <div class="coach-right">
             <nav class="coach-chart-nav" aria-label="产业指标切换">
-              <button class="coach-chart-nav-btn is-active" type="button" data-key="market">
+              <button
+                class="coach-chart-nav-btn is-active"
+                type="button"
+                data-key="market"
+              >
                 市场规模
               </button>
-              <button class="coach-chart-nav-btn" type="button" data-key="players">
+              <button
+                class="coach-chart-nav-btn"
+                type="button"
+                data-key="players"
+              >
                 网球人口
               </button>
-              <button class="coach-chart-nav-btn" type="button" data-key="courts">
+              <button
+                class="coach-chart-nav-btn"
+                type="button"
+                data-key="courts"
+              >
                 球场数量
               </button>
             </nav>
@@ -670,8 +772,12 @@
           </div>
         </div>
 
-        <button id="coach-continue-btn" class="coach-continue-btn start-btn" type="button">
-          看看结局
+        <button
+          id="coach-continue-btn"
+          class="coach-continue-btn start-btn"
+          type="button"
+        >
+          查看结局
         </button>
       </section>
 
@@ -684,10 +790,15 @@
           <button
             class="page-nav-btn"
             type="button"
+            id="photo-wall-back-btn"
+            aria-label="返回"
+          ></button>
+          <button
+            class="page-nav-btn"
+            type="button"
             id="photo-wall-restart-btn"
-            aria-label="再玩一次"
-          >
-          </button>
+            aria-label="重玩一次"
+          ></button>
         </div>
 
         <div class="photo-wall-story">
@@ -863,62 +974,152 @@
         </div>
       </section>
 
-      <section id="photo-wall-woman-page" class="photo-wall-woman-page photo-wall-page" aria-hidden="true">
+      <section
+        id="photo-wall-woman-page"
+        class="photo-wall-woman-page photo-wall-page"
+        aria-hidden="true"
+      >
         <div class="page-meta">
           <div class="page-index">09</div>
           <div class="page-name">结局图鉴</div>
         </div>
         <div class="page-nav" aria-label="页面操作">
-          <button class="page-nav-btn" type="button" id="photo-wall-woman-restart-btn" aria-label="再玩一次">
-          </button>
+          <button
+            class="page-nav-btn"
+            type="button"
+            id="photo-wall-woman-restart-btn"
+            aria-label="重玩一次"
+          ></button>
         </div>
 
         <div class="photo-wall-story">
-          <section class="photo-wall-scene scene-wall is-active" data-scene="wall" aria-label="中国网球不同人生的照片墙">
+          <section
+            class="photo-wall-scene scene-wall is-active"
+            data-scene="wall"
+            aria-label="中国网球不同人生的照片墙"
+          >
             <div class="wall-stage">
-              <button class="pw-photo" style="--x: 45.2%; --y: 16.8%; --w: 20.4%; --r: -5deg" data-photo="womancard/ending10-商人woman.png" data-rotate="-5deg" aria-label="查看商人照片">
+              <button
+                class="pw-photo"
+                style="--x: 45.2%; --y: 16.8%; --w: 20.4%; --r: -5deg"
+                data-photo="womancard/ending10-商人woman.png"
+                data-rotate="-5deg"
+                aria-label="查看商人照片"
+              >
                 <img src="womancard/ending10-商人woman.png" alt="" />
               </button>
-              <button class="pw-photo" style="--x: 14.7%; --y: 21.6%; --w: 18.2%; --r: 4deg" data-photo="womancard/ending4-解说员woman.png" data-rotate="4deg" aria-label="查看解说员照片">
+              <button
+                class="pw-photo"
+                style="--x: 14.7%; --y: 21.6%; --w: 18.2%; --r: 4deg"
+                data-photo="womancard/ending4-解说员woman.png"
+                data-rotate="4deg"
+                aria-label="查看解说员照片"
+              >
                 <img src="womancard/ending4-解说员woman.png" alt="" />
               </button>
-              <button class="pw-photo" style="--x: 84.1%; --y: 20.8%; --w: 18.7%; --r: -7deg" data-photo="womancard/ending3-记忆.png" data-rotate="-7deg" aria-label="查看球拍记忆照片">
+              <button
+                class="pw-photo"
+                style="--x: 84.1%; --y: 20.8%; --w: 18.7%; --r: -7deg"
+                data-photo="womancard/ending3-记忆.png"
+                data-rotate="-7deg"
+                aria-label="查看球拍记忆照片"
+              >
                 <img src="womancard/ending3-记忆.png" alt="" />
               </button>
-              <button class="pw-photo" style="--x: 30.1%; --y: 38.6%; --w: 19.1%; --r: 0deg" data-photo="womancard/ending9-教练woman.png" data-rotate="0deg" aria-label="查看教练照片">
+              <button
+                class="pw-photo"
+                style="--x: 30.1%; --y: 38.6%; --w: 19.1%; --r: 0deg"
+                data-photo="womancard/ending9-教练woman.png"
+                data-rotate="0deg"
+                aria-label="查看教练照片"
+              >
                 <img src="womancard/ending9-教练woman.png" alt="" />
               </button>
-              <button class="pw-photo" style="--x: 58.4%; --y: 34.8%; --w: 17.3%; --r: 9deg" data-photo="womancard/ending7-985woman.png" data-rotate="9deg" aria-label="查看校园照片">
+              <button
+                class="pw-photo"
+                style="--x: 58.4%; --y: 34.8%; --w: 17.3%; --r: 9deg"
+                data-photo="womancard/ending7-985woman.png"
+                data-rotate="9deg"
+                aria-label="查看校园照片"
+              >
                 <img src="womancard/ending7-985woman.png" alt="" />
               </button>
-              <button class="pw-photo" style="--x: 71%; --y: 42.3%; --w: 20.2%; --r: -5deg" data-photo="womancard/ending2-亲子woman.png" data-rotate="-5deg" aria-label="查看亲子照片">
+              <button
+                class="pw-photo"
+                style="--x: 71%; --y: 42.3%; --w: 20.2%; --r: -5deg"
+                data-photo="womancard/ending2-亲子woman.png"
+                data-rotate="-5deg"
+                aria-label="查看亲子照片"
+              >
                 <img src="womancard/ending2-亲子woman.png" alt="" />
               </button>
-              <button class="pw-photo" style="--x: 15.1%; --y: 56.2%; --w: 20.5%; --r: -6deg" data-photo="womancard/ending6-冠军woman.png" data-rotate="-6deg" aria-label="查看冠军照片">
+              <button
+                class="pw-photo"
+                style="--x: 15.1%; --y: 56.2%; --w: 20.5%; --r: -6deg"
+                data-photo="womancard/ending6-冠军woman.png"
+                data-rotate="-6deg"
+                aria-label="查看冠军照片"
+              >
                 <img src="womancard/ending6-冠军woman.png" alt="" />
               </button>
-              <button class="pw-photo" style="--x: 45.0%; --y: 55.5%; --w: 20.8%; --r: 6deg" data-photo="womancard/ending1-城市球友woman.png" data-rotate="6deg" aria-label="查看城市球友照片">
+              <button
+                class="pw-photo"
+                style="--x: 45%; --y: 55.5%; --w: 20.8%; --r: 6deg"
+                data-photo="womancard/ending1-城市球友woman.png"
+                data-rotate="6deg"
+                aria-label="查看城市球友照片"
+              >
                 <img src="womancard/ending1-城市球友woman.png" alt="" />
               </button>
-              <button class="pw-photo" style="--x: 59.9%; --y: 59.2%; --w: 16.1%; --r: -7deg" data-photo="womancard/ending8-藤校woman.png" data-rotate="-7deg" aria-label="查看藤校照片">
+              <button
+                class="pw-photo"
+                style="--x: 59.9%; --y: 59.2%; --w: 16.1%; --r: -7deg"
+                data-photo="womancard/ending8-藤校woman.png"
+                data-rotate="-7deg"
+                aria-label="查看藤校照片"
+              >
                 <img src="womancard/ending8-藤校woman.png" alt="" />
               </button>
-              <button class="pw-photo" style="--x: 85.0%; --y: 56.5%; --w: 19.5%; --r: 5deg" data-photo="womancard/ending5-国内运动员woman.png" data-rotate="5deg" aria-label="查看国内运动员照片">
+              <button
+                class="pw-photo"
+                style="--x: 85%; --y: 56.5%; --w: 19.5%; --r: 5deg"
+                data-photo="womancard/ending5-国内运动员woman.png"
+                data-rotate="5deg"
+                aria-label="查看国内运动员照片"
+              >
                 <img src="womancard/ending5-国内运动员woman.png" alt="" />
               </button>
 
               <p class="pw-quote">
-                <span class="pw-quote-s1">"也许不是每个孩子都能成为郑钦文，</span>
-                <span class="pw-quote-s2">但今天的中国网球，至少让这场梦想不再只有一种终点。</span>
-                <span class="pw-quote-s3 pw-quote-gap">更多孩子终于能从一把球拍里，</span>
+                <span class="pw-quote-s1"
+                  >"也许不是每个孩子都能成为郑钦文，</span
+                >
+                <span class="pw-quote-s2"
+                  >但今天的中国网球，至少让这场梦想不再只有一种终点。</span
+                >
+                <span class="pw-quote-s3 pw-quote-gap"
+                  >更多孩子终于能从一把球拍里，</span
+                >
                 <span class="pw-quote-s4">走向不同但真实的人生。"</span>
               </p>
             </div>
           </section>
 
-          <section class="photo-wall-scene focus-scene" data-scene="focus" aria-label="照片详情">
-            <button class="pw-focus-photo" id="pwFocusPhotoWoman" aria-label="返回照片墙">
-              <img id="pwFocusImageWoman" src="womancard/ending1-城市球友woman.png" alt="" />
+          <section
+            class="photo-wall-scene focus-scene"
+            data-scene="focus"
+            aria-label="照片详情"
+          >
+            <button
+              class="pw-focus-photo"
+              id="pwFocusPhotoWoman"
+              aria-label="返回照片墙"
+            >
+              <img
+                id="pwFocusImageWoman"
+                src="womancard/ending1-城市球友woman.png"
+                alt=""
+              />
             </button>
           </section>
         </div>

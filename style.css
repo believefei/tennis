@@ -47,6 +47,17 @@ body {
   pointer-events: none;
 }
 
+/* 游戏模式：隐藏左上角页面编号 + 右下角调试下拉框 */
+body.is-game-mode .page-meta,
+body.is-game-mode .debug-jump {
+  display: none !important;
+}
+
+/* 封面：始终隐藏上一页/下一页按钮（封面只能通过开始按钮进入下一页） */
+#cover .page-nav {
+  display: none !important;
+}
+
 .page-index {
   font-size: clamp(22px, 2.2vw, 34px);
   line-height: 1;
@@ -523,7 +534,7 @@ body {
   line-height: 1.8;
   letter-spacing: 0.01em;
   color: rgba(26, 26, 26, 0.78);
-  max-width: 30em;
+  max-width: 40em;
   min-height: 1.8em;
 }
 
@@ -617,14 +628,6 @@ body {
   text-align: center;
   gap: 0.7rem;
   pointer-events: none;
-}
-
-.equal-title {
-  font-family: inherit;
-  font-size: clamp(28px, 3.4vw, 50px);
-  line-height: 1.35;
-  color: var(--ink);
-  margin: 0;
 }
 
 .equal-body {
@@ -735,7 +738,7 @@ body {
 .achievement-court {
   position: absolute;
   left: 50%;
-  top: 28vh;
+  top: 24vh;
   transform: translateX(-50%);
   width: min(80vw, 980px);
   aspect-ratio: 1096 / 659;
@@ -1025,9 +1028,8 @@ body {
 .map-legend {
   position: absolute;
   z-index: 2;
-  left: 50%;
-  bottom: 5vh;
-  transform: translateX(-50%);
+  left: 24px;
+  bottom: 22px;
   display: flex;
   align-items: center;
   gap: 0.6em;
@@ -1051,29 +1053,12 @@ body {
 
 /* ---- Grass canvas overlay ---- */
 .map-grass-layer {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  pointer-events: none;
+  display: none;
 }
 
 /* ---- Population grass legend ---- */
 .map-legend-pop {
-  position: absolute;
-  z-index: 2;
-  left: 50%;
-  bottom: 2vh;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-  opacity: 0;
-  pointer-events: none;
-  font-family: inherit;
-  font-size: clamp(12px, 1.2vw, 16px);
-  color: rgba(26, 26, 26, 0.55);
+  display: none;
 }
 
 .map-legend-grass-icon {
@@ -1122,7 +1107,11 @@ body {
   border-radius: 34px;
   color: var(--ink);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(255, 250, 243, 0.92)),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.75),
+      rgba(255, 250, 243, 0.92)
+    ),
     var(--paper);
   box-shadow: 0 18px 48px rgba(26, 26, 26, 0.09);
   display: flex;
@@ -1228,7 +1217,11 @@ body {
   text-align: left;
   font-family: inherit;
   cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
   box-shadow: 0 10px 26px rgba(26, 26, 26, 0.06);
 }
 
@@ -1242,7 +1235,11 @@ body {
 }
 
 .journey-option.is-ending {
-  background: linear-gradient(180deg, rgba(255, 247, 236, 0.98), rgba(255, 255, 255, 0.86));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 247, 236, 0.98),
+    rgba(255, 255, 255, 0.86)
+  );
 }
 
 .journey-option-tag {
@@ -1325,7 +1322,10 @@ body {
   font-family: inherit;
   font-size: 14px;
   cursor: pointer;
-  transition: transform 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+  transition:
+    transform 0.16s ease,
+    border-color 0.16s ease,
+    color 0.16s ease;
 }
 
 .journey-debug-btn:hover {
@@ -1345,7 +1345,10 @@ body {
   font-family: inherit;
   font-size: 18px;
   cursor: pointer;
-  transition: transform 0.16s ease, opacity 0.16s ease, background 0.16s ease;
+  transition:
+    transform 0.16s ease,
+    opacity 0.16s ease,
+    background 0.16s ease;
 }
 
 .journey-action-btn:hover {
@@ -1403,7 +1406,11 @@ body {
   color: #2b2a26;
 }
 
-.squiggle-defs { position: absolute; width: 0; height: 0; }
+.squiggle-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
 .is-desk-gym-panel .squiggle-defs {
   position: absolute;
   width: 0;
@@ -1490,7 +1497,10 @@ body {
   padding: 22px 28px 26px;
   min-height: clamp(120px, 15vh, 150px);
   filter: url(#hand-drawn);
-  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 .is-desk-gym-panel .choice:hover .choice-box {
@@ -1537,23 +1547,60 @@ body {
 }
 
 /* primary-tennis wide variant: 落选分岔 / 竞技去向 — 更多文字空间 */
-.is-desk-gym-panel.is-primary-tennis-wide .illus { flex: 1 1 42%; }
-.is-desk-gym-panel.is-primary-tennis-wide .content { flex: 1 1 58%; max-width: 760px; }
-.is-desk-gym-panel.is-primary-tennis-wide .choice { width: clamp(320px, 40vw, 560px); }
-.is-desk-gym-panel.is-primary-tennis-wide .narrative { padding: clamp(18px, 2.4vw, 28px) clamp(8px, 1.2vw, 16px); }
+.is-desk-gym-panel.is-primary-tennis-wide .illus {
+  flex: 1 1 42%;
+}
+.is-desk-gym-panel.is-primary-tennis-wide .content {
+  flex: 1 1 58%;
+  max-width: 760px;
+}
+.is-desk-gym-panel.is-primary-tennis-wide .choice {
+  width: clamp(320px, 40vw, 560px);
+}
+.is-desk-gym-panel.is-primary-tennis-wide .narrative {
+  padding: clamp(18px, 2.4vw, 28px) clamp(8px, 1.2vw, 16px);
+}
 
 /* primary-tennis tight variant: 伤病抉择 — 三选项 + 六段叙事，最紧凑 */
-.is-desk-gym-panel.is-primary-tennis-tight .illus { flex: 1 1 42%; }
-.is-desk-gym-panel.is-primary-tennis-tight .content { flex: 1 1 58%; max-width: 760px; gap: clamp(14px, 2vw, 24px); }
-.is-desk-gym-panel.is-primary-tennis-tight .choice { width: clamp(320px, 40vw, 560px); }
-.is-desk-gym-panel.is-primary-tennis-tight .narrative { font-size: clamp(15px, 1.4vw, 21px); padding: clamp(14px, 2vw, 24px) clamp(8px, 1.2vw, 16px); }
-.is-desk-gym-panel.is-primary-tennis-tight .question { font-size: clamp(18px, 1.7vw, 26px); }
-.is-desk-gym-panel.is-primary-tennis-tight .choices { gap: clamp(12px, 1.6vw, 20px); }
-.is-desk-gym-panel.is-primary-tennis-tight .choice-box { padding: 18px 24px 20px; min-height: clamp(100px, 12vh, 130px); }
-.is-desk-gym-panel.is-primary-tennis-tight .opt { font-size: clamp(16px, 1.5vw, 22px); }
-.is-desk-gym-panel.is-primary-tennis-tight .hint { margin-top: 8px; padding-top: 8px; font-size: clamp(12px, 1.05vw, 15px); }
-.is-desk-gym-panel.is-primary-tennis-tight .hint .quote { font-size: clamp(12px, 1.05vw, 15px); }
-.is-desk-gym-panel.is-primary-tennis-tight .choices { margin-top: 2px; }
+.is-desk-gym-panel.is-primary-tennis-tight .illus {
+  flex: 1 1 42%;
+}
+.is-desk-gym-panel.is-primary-tennis-tight .content {
+  flex: 1 1 58%;
+  max-width: 760px;
+  gap: clamp(14px, 2vw, 24px);
+}
+.is-desk-gym-panel.is-primary-tennis-tight .choice {
+  width: clamp(320px, 40vw, 560px);
+}
+.is-desk-gym-panel.is-primary-tennis-tight .narrative {
+  font-size: clamp(15px, 1.4vw, 21px);
+  padding: clamp(14px, 2vw, 24px) clamp(8px, 1.2vw, 16px);
+}
+.is-desk-gym-panel.is-primary-tennis-tight .question {
+  font-size: clamp(18px, 1.7vw, 26px);
+}
+.is-desk-gym-panel.is-primary-tennis-tight .choices {
+  gap: clamp(12px, 1.6vw, 20px);
+}
+.is-desk-gym-panel.is-primary-tennis-tight .choice-box {
+  padding: 18px 24px 20px;
+  min-height: clamp(100px, 12vh, 130px);
+}
+.is-desk-gym-panel.is-primary-tennis-tight .opt {
+  font-size: clamp(16px, 1.5vw, 22px);
+}
+.is-desk-gym-panel.is-primary-tennis-tight .hint {
+  margin-top: 8px;
+  padding-top: 8px;
+  font-size: clamp(12px, 1.05vw, 15px);
+}
+.is-desk-gym-panel.is-primary-tennis-tight .hint .quote {
+  font-size: clamp(12px, 1.05vw, 15px);
+}
+.is-desk-gym-panel.is-primary-tennis-tight .choices {
+  margin-top: 2px;
+}
 
 /* family-aboard: 图片在右，靠右侧对齐 */
 .is-family-aboard-mode .stage .illus {
@@ -1564,14 +1611,28 @@ body {
   font-size: clamp(18px, 1.6vw, 20px);
 }
 
-.is-desk-gym-panel.is-dinner-biz-mode .illus { flex: 1 1 48%; }
-.is-desk-gym-panel.is-dinner-biz-mode .content { flex: 1 1 52%; max-width: 760px; }
-.is-desk-gym-panel.is-dinner-biz-mode .narrative { font-size: clamp(15px, 1.35vw, 18px); }
-.is-desk-gym-panel.is-dinner-biz-mode .question { font-size: clamp(20px, 1.9vw, 28px); }
-.is-desk-gym-panel.is-dinner-biz-mode .choice-box { padding: 22px 28px 26px; min-height: clamp(120px, 15vh, 150px); }
+.is-desk-gym-panel.is-dinner-biz-mode .illus {
+  flex: 1 1 48%;
+}
+.is-desk-gym-panel.is-dinner-biz-mode .content {
+  flex: 1 1 52%;
+  max-width: 760px;
+}
+.is-desk-gym-panel.is-dinner-biz-mode .narrative {
+  font-size: clamp(15px, 1.35vw, 18px);
+}
+.is-desk-gym-panel.is-dinner-biz-mode .question {
+  font-size: clamp(20px, 1.9vw, 28px);
+}
+.is-desk-gym-panel.is-dinner-biz-mode .choice-box {
+  padding: 22px 28px 26px;
+  min-height: clamp(120px, 15vh, 150px);
+}
 
 @media (max-width: 860px) {
-  .is-desk-gym-panel.is-dinner-biz-mode .illus img { max-height: 42vh; }
+  .is-desk-gym-panel.is-dinner-biz-mode .illus img {
+    max-height: 42vh;
+  }
 }
 
 /* ========== ending-flip: 同学原版翻页卡片 + 礼花 ========== */
@@ -1605,7 +1666,7 @@ body {
   width: 100%;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.85s cubic-bezier(0.4, 0.0, 0.2, 1);
+  transition: transform 0.85s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center center;
 }
 
@@ -1623,7 +1684,7 @@ body {
   width: 100%;
   height: auto;
   display: block;
-  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.13));
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.13));
   border-radius: 4px;
 }
 
@@ -1704,14 +1765,17 @@ body {
   cursor: pointer;
   letter-spacing: 2px;
   filter: url(#hand-drawn);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
   white-space: nowrap;
   user-select: none;
 }
 
 .is-ending-flip-panel .side-btn:hover {
   transform: translate(-2px, -2px) rotate(-0.5deg);
-  box-shadow: 3px 4px 0 rgba(0,0,0,0.12);
+  box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.12);
   background: #fbf2bf;
 }
 
@@ -1721,13 +1785,22 @@ body {
 }
 
 @keyframes endingArrowFloat {
-  0%, 100% { transform: translateX(0px); }
-  50%       { transform: translateX(-7px); }
+  0%,
+  100% {
+    transform: translateX(0px);
+  }
+  50% {
+    transform: translateX(-7px);
+  }
 }
 
 @keyframes endingShimmer {
-  0%   { filter: drop-shadow(0 8px 24px rgba(0,0,0,0.13)) brightness(1.18); }
-  100% { filter: drop-shadow(0 8px 24px rgba(0,0,0,0.13)) brightness(1); }
+  0% {
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.13)) brightness(1.18);
+  }
+  100% {
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.13)) brightness(1);
+  }
 }
 
 /* ---- 截图闪屏效果 ---- */
@@ -1755,7 +1828,7 @@ body {
   transform: scale(0.55) translateY(24px);
   transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
   border-radius: 10px;
-  box-shadow: 0 12px 38px rgba(0,0,0,0.28);
+  box-shadow: 0 12px 38px rgba(0, 0, 0, 0.28);
   pointer-events: none;
 }
 .screenshot-thumb.show {
@@ -1784,7 +1857,9 @@ body {
 
 .training-bills-trigger img,
 .training-bills-trigger-label {
-  transition: transform 0.18s ease, opacity 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease;
 }
 
 .training-bills-trigger img {
@@ -1875,12 +1950,21 @@ body {
   width: min(1180px, 94vw);
   max-height: min(86vh, 920px);
   overflow: hidden;
-  padding: clamp(14px, 1.4vw, 20px) clamp(18px, 1.8vw, 26px) clamp(12px, 1.4vw, 18px);
+  padding: clamp(14px, 1.4vw, 20px) clamp(18px, 1.8vw, 26px)
+    clamp(12px, 1.4vw, 18px);
   border-radius: 28px;
   border: 1.5px solid rgba(26, 26, 26, 0.14);
   background:
-    radial-gradient(circle at 16% 18%, rgba(194, 65, 12, 0.07), transparent 24%),
-    radial-gradient(circle at 80% 22%, rgba(91, 156, 102, 0.08), transparent 24%),
+    radial-gradient(
+      circle at 16% 18%,
+      rgba(194, 65, 12, 0.07),
+      transparent 24%
+    ),
+    radial-gradient(
+      circle at 80% 22%,
+      rgba(91, 156, 102, 0.08),
+      transparent 24%
+    ),
     rgba(248, 242, 232, 0.98);
   box-shadow: 0 24px 58px rgba(26, 26, 26, 0.18);
 }
@@ -1912,7 +1996,8 @@ body {
   position: relative;
   min-width: 0;
   height: clamp(420px, 70vh, 760px);
-  padding: clamp(12px, 1.2vw, 18px) clamp(8px, 0.8vw, 14px) clamp(12px, 1.2vw, 18px) clamp(12px, 1.2vw, 18px);
+  padding: clamp(12px, 1.2vw, 18px) clamp(8px, 0.8vw, 14px)
+    clamp(12px, 1.2vw, 18px) clamp(12px, 1.2vw, 18px);
   border-radius: 28px;
   border: 1.5px solid rgba(26, 26, 26, 0.12);
   background: rgba(255, 252, 246, 0.68);
@@ -2421,7 +2506,6 @@ body {
   stroke-width: 1.5px;
 }
 
-
 /* 初始隐藏状态 */
 .is-desk-gym-panel .question,
 .is-desk-gym-panel .choices {
@@ -2432,7 +2516,9 @@ body {
 .is-desk-gym-panel .narrative,
 .is-desk-gym-panel .question,
 .is-desk-gym-panel .choices {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .is-desk-gym-panel .fade-out {
@@ -2547,7 +2633,11 @@ body {
   width: min(24vw, 330px);
   height: 26px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(26, 26, 26, 0.14), rgba(26, 26, 26, 0));
+  background: radial-gradient(
+    circle,
+    rgba(26, 26, 26, 0.14),
+    rgba(26, 26, 26, 0)
+  );
   transform: translateX(-50%);
 }
 
@@ -2729,7 +2819,9 @@ body {
   font-family: inherit;
   font-size: clamp(14px, 1.1vw, 17px);
   cursor: pointer;
-  transition: color 0.18s ease, border-color 0.18s ease;
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease;
 }
 
 .industry-nav-btn:hover {
@@ -2910,9 +3002,6 @@ body {
     top: 11vh;
     width: 88vw;
   }
-  .equal-title {
-    font-size: clamp(24px, 6vw, 34px);
-  }
   .equal-body {
     font-size: clamp(14px, 3.8vw, 18px);
     line-height: 1.6;
@@ -3007,12 +3096,6 @@ body {
     text-align: center;
     width: 90vw;
   }
-  .map-legend {
-    bottom: 7vh;
-  }
-  .map-legend-pop {
-    bottom: 3.5vh;
-  }
 
   .industry-left {
     padding: 4vh 4vw 4vh;
@@ -3075,8 +3158,11 @@ body {
   }
   .journey-page.is-apparel-growth-mode {
     padding: 0;
-    background:
-      linear-gradient(180deg, rgba(247, 241, 228, 0.98), rgba(243, 236, 220, 0.98));
+    background: linear-gradient(
+      180deg,
+      rgba(247, 241, 228, 0.98),
+      rgba(243, 236, 220, 0.98)
+    );
   }
   .journey-page.is-desk-gym-mode {
     padding: 0;
@@ -3280,7 +3366,9 @@ body {
   font-family: inherit;
   font-size: clamp(14px, 1.1vw, 17px);
   cursor: pointer;
-  transition: color 0.18s ease, border-color 0.18s ease;
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease;
 }
 
 .coach-chart-nav-btn:hover {
@@ -3401,7 +3489,9 @@ body {
   opacity: 0;
   transform: scale(0.985);
   pointer-events: none;
-  transition: opacity 420ms ease, transform 460ms ease;
+  transition:
+    opacity 420ms ease,
+    transform 460ms ease;
 }
 
 .photo-wall-scene.is-active {
@@ -3427,7 +3517,9 @@ body {
   cursor: pointer;
   transform: translate(-50%, -50%) rotate(var(--r));
   transform-origin: 50% 18%;
-  transition: transform 220ms ease, filter 220ms ease;
+  transition:
+    transform 220ms ease,
+    filter 220ms ease;
   filter: drop-shadow(0 9px 10px rgba(55, 42, 26, 0.18));
   -webkit-tap-highlight-color: transparent;
   appearance: none;
@@ -3504,9 +3596,10 @@ body {
   opacity: 0;
   transform: translateY(10px);
   filter: blur(2px);
-  transition: opacity 980ms cubic-bezier(0.19, 1, 0.22, 1),
-              transform 980ms cubic-bezier(0.19, 1, 0.22, 1),
-              filter 980ms cubic-bezier(0.19, 1, 0.22, 1);
+  transition:
+    opacity 980ms cubic-bezier(0.19, 1, 0.22, 1),
+    transform 980ms cubic-bezier(0.19, 1, 0.22, 1),
+    filter 980ms cubic-bezier(0.19, 1, 0.22, 1);
   transition-delay: var(--text-delay, 0ms);
 }
 
@@ -3555,10 +3648,19 @@ body {
 }
 
 @keyframes pwWindSway {
-  0%, 100% { transform: rotate(0deg) translateY(0); }
-  23%      { transform: rotate(0.9deg) translateY(-1px); }
-  48%      { transform: rotate(-0.65deg) translateY(0); }
-  73%      { transform: rotate(0.42deg) translateY(-0.5px); }
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  23% {
+    transform: rotate(0.9deg) translateY(-1px);
+  }
+  48% {
+    transform: rotate(-0.65deg) translateY(0);
+  }
+  73% {
+    transform: rotate(0.42deg) translateY(-0.5px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3580,17 +3682,49 @@ body {
     height: 100vh;
   }
 
-  .photo-wall-page .pw-photo { width: calc(var(--w) * 1.28); }
-  .photo-wall-page .pw-photo:nth-of-type(1)  { --x: 17%; --y: 17%; }
-  .photo-wall-page .pw-photo:nth-of-type(2)  { --x: 50%; --y: 15%; }
-  .photo-wall-page .pw-photo:nth-of-type(3)  { --x: 82%; --y: 17%; }
-  .photo-wall-page .pw-photo:nth-of-type(4)  { --x: 18%; --y: 39%; }
-  .photo-wall-page .pw-photo:nth-of-type(5)  { --x: 50%; --y: 36%; }
-  .photo-wall-page .pw-photo:nth-of-type(6)  { --x: 82%; --y: 40%; }
-  .photo-wall-page .pw-photo:nth-of-type(7)  { --x: 19%; --y: 62%; }
-  .photo-wall-page .pw-photo:nth-of-type(8)  { --x: 50%; --y: 60%; }
-  .photo-wall-page .pw-photo:nth-of-type(9)  { --x: 82%; --y: 62%; }
-  .photo-wall-page .pw-photo:nth-of-type(10) { --x: 50%; --y: 79%; }
+  .photo-wall-page .pw-photo {
+    width: calc(var(--w) * 1.28);
+  }
+  .photo-wall-page .pw-photo:nth-of-type(1) {
+    --x: 17%;
+    --y: 17%;
+  }
+  .photo-wall-page .pw-photo:nth-of-type(2) {
+    --x: 50%;
+    --y: 15%;
+  }
+  .photo-wall-page .pw-photo:nth-of-type(3) {
+    --x: 82%;
+    --y: 17%;
+  }
+  .photo-wall-page .pw-photo:nth-of-type(4) {
+    --x: 18%;
+    --y: 39%;
+  }
+  .photo-wall-page .pw-photo:nth-of-type(5) {
+    --x: 50%;
+    --y: 36%;
+  }
+  .photo-wall-page .pw-photo:nth-of-type(6) {
+    --x: 82%;
+    --y: 40%;
+  }
+  .photo-wall-page .pw-photo:nth-of-type(7) {
+    --x: 19%;
+    --y: 62%;
+  }
+  .photo-wall-page .pw-photo:nth-of-type(8) {
+    --x: 50%;
+    --y: 60%;
+  }
+  .photo-wall-page .pw-photo:nth-of-type(9) {
+    --x: 82%;
+    --y: 62%;
+  }
+  .photo-wall-page .pw-photo:nth-of-type(10) {
+    --x: 50%;
+    --y: 79%;
+  }
 
   .photo-wall-page .pw-quote {
     bottom: 10%;
@@ -3611,7 +3745,7 @@ body {
 }
 
 .photo-wall-woman-page .pw-photo:nth-of-type(2n) img {
-  --sway-duration: 8.0s;
+  --sway-duration: 8s;
   --sway-delay: -1.8s;
 }
 
@@ -3626,10 +3760,19 @@ body {
 }
 
 @keyframes pwWindSwayFem {
-  0%, 100% { transform: rotate(0deg) translateY(0); }
-  25%      { transform: rotate(1.1deg) translateY(-1.5px); }
-  52%      { transform: rotate(-0.8deg) translateY(0); }
-  76%      { transform: rotate(0.55deg) translateY(-0.8px); }
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  25% {
+    transform: rotate(1.1deg) translateY(-1.5px);
+  }
+  52% {
+    transform: rotate(-0.8deg) translateY(0);
+  }
+  76% {
+    transform: rotate(0.55deg) translateY(-0.8px);
+  }
 }
 
 /* ========== 面包屑回溯小网球 ========== */
@@ -3692,7 +3835,9 @@ body {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  transition: box-shadow 0.22s ease, background 0.22s ease;
+  transition:
+    box-shadow 0.22s ease,
+    background 0.22s ease;
 }
 
 .breadcrumb-ball-wrap:hover .breadcrumb-ball-icon {
@@ -3820,13 +3965,15 @@ body {
 .objects-illus img {
   position: absolute;
   cursor: pointer;
-  transition: transform 0.2s ease, filter 0.2s ease;
-  filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.08));
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
+  filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.08));
 }
 
 .objects-illus img:hover {
   transform: scale(1.06) rotate(1.5deg);
-  filter: drop-shadow(4px 8px 12px rgba(0,0,0,0.15));
+  filter: drop-shadow(4px 8px 12px rgba(0, 0, 0, 0.15));
 }
 
 #img-shirt {
@@ -3895,7 +4042,11 @@ body {
   backdrop-filter: blur(4px);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.6s ease, background 0.2s, border-color 0.2s, transform 0.2s;
+  transition:
+    opacity 0.6s ease,
+    background 0.2s,
+    border-color 0.2s,
+    transform 0.2s;
 }
 
 .objects-ending-btn:hover {
@@ -3907,6 +4058,47 @@ body {
 .objects-ending-btn.is-ready {
   opacity: 1;
   pointer-events: auto;
+}
+
+/* 结局身份页：重玩一次按钮（沿用 objects-ending-btn 的视觉） */
+.journey-restart-once-btn {
+  position: fixed;
+  bottom: clamp(18px, 2.4vh, 30px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  padding: 11px 36px;
+  font-family: "PFanHuTu", "KaiTi", "STKaiti", serif;
+  font-size: clamp(15px, 1.15vw, 18px);
+  color: var(--ink);
+  background: rgba(255, 250, 243, 0.9);
+  border: 1.5px solid rgba(26, 26, 26, 0.22);
+  border-radius: 100px;
+  cursor: pointer;
+  letter-spacing: 0.6px;
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.5s ease,
+    background 0.2s,
+    border-color 0.2s,
+    transform 0.2s;
+}
+
+.journey-restart-once-btn:hover {
+  background: rgba(255, 250, 243, 1);
+  border-color: rgba(26, 26, 26, 0.4);
+  transform: translateX(-50%) scale(1.04);
+}
+
+.journey-restart-once-btn.is-ready {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.journey-page.is-ending-flip .page-nav {
+  display: none !important;
 }
 
 .apparel-back-btn {
@@ -3925,7 +4117,10 @@ body {
   cursor: pointer;
   letter-spacing: 0.5px;
   backdrop-filter: blur(4px);
-  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    transform 0.2s;
 }
 
 .apparel-back-btn:hover {

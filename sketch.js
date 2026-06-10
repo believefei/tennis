@@ -25,10 +25,11 @@ const SEED = 42;
 
 function mulberry32(a) {
   return function () {
-    a |= 0; a = a + 0x6d2b79f5 | 0;
-    var t = Math.imul(a ^ a >>> 15, 1 | a);
-    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    var t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
 
@@ -54,6 +55,22 @@ let _flyVel = null;
 let _racketCenter = null;
 let babyFrameTimer = null;
 let babyFrameIndex = 0;
+
+// 0 = 调试模式（显示页面编号、选材营按钮、调试下拉框）
+// 1 = 游戏模式（隐藏调试 UI，选材营自动按概率跳转）
+const APP_MODE = 1;
+const IS_DEBUG = APP_MODE === 0;
+
+if (typeof document !== "undefined") {
+  if (document.body) {
+    document.body.classList.toggle("is-game-mode", !IS_DEBUG);
+  } else {
+    document.addEventListener("DOMContentLoaded", function () {
+      document.body.classList.toggle("is-game-mode", !IS_DEBUG);
+    });
+  }
+}
+
 const PAGE_ORDER = [
   "cover",
   "gender-page",
@@ -691,8 +708,13 @@ function hydrateRatioStatic() {
   }
   const body = document.getElementById("ratio-body");
   if (body) {
-    const who = ratioState.playerGender === "boy" ? "男生" : "女生";
-    body.textContent = `每 100 个网球人口里，就有一个是${who}的你。`;
+    const common =
+      "我国网球人口总数达 25,188,388 人（2024年数据）。<br>其中 53% 是男性，47% 是女性。";
+    const extra =
+      ratioState.playerGender === "boy"
+        ? "从 2004 到 2024，中国女网的成绩比男网更耀眼，也把中国网球带到了更大的舞台。<br>你还在追赶，但每一次发球、每一次坚持，都是继续向前的机会。<br>加油，网球赛场的下一次突破也可能由你写下。"
+        : "中国女网在世界赛场上留下了许多很亮的脚印。<br>从大满贯冠军，到奥运会突破，再到越来越多年轻球员被世界看见，<br>在网球的赛场上，女孩子的你拿起球拍，也可以一路打到很远的地方。";
+    body.innerHTML = common + "<br><br>" + extra;
   }
   const btn = document.getElementById("ratio-next-btn");
   if (btn) btn.classList.add("is-ready");
@@ -779,10 +801,15 @@ function navigatePage(dir, fromPage) {
       return;
     }
     if (dir === "next") {
-      pushBreadcrumb("培训机构教练", "journey-page", () => {
-        showPageInstant("journey-page");
-        goToJourneyNode("ending-coach");
-      }, "培训机构教练");
+      pushBreadcrumb(
+        "培训机构教练",
+        "journey-page",
+        () => {
+          showPageInstant("journey-page");
+          goToJourneyNode("ending-coach");
+        },
+        "培训机构教练",
+      );
       showPageInstant("journey-page");
       goToJourneyNode("ending-coach");
       return;
@@ -790,7 +817,10 @@ function navigatePage(dir, fromPage) {
   }
   if (fromPage === "industry-page") {
     // 面包屑：离开产业页时清除产业面包屑
-    if (breadcrumbTrail.length > 0 && breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "industry-page") {
+    if (
+      breadcrumbTrail.length > 0 &&
+      breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "industry-page"
+    ) {
       popBreadcrumb();
       renderBreadcrumb();
     }
@@ -805,7 +835,10 @@ function navigatePage(dir, fromPage) {
   }
   if (fromPage === "objects-page") {
     // 面包屑：离开兴趣消费页时清除面包屑
-    if (breadcrumbTrail.length > 0 && breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "objects-page") {
+    if (
+      breadcrumbTrail.length > 0 &&
+      breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "objects-page"
+    ) {
       popBreadcrumb();
       renderBreadcrumb();
     }
@@ -823,7 +856,11 @@ function navigatePage(dir, fromPage) {
   if (fromPage === "photo-wall-woman-page") {
     if (dir === "prev") {
       // 面包屑：离开结局图鉴回到产业页
-      if (breadcrumbTrail.length > 0 && breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "photo-wall-woman-page") {
+      if (
+        breadcrumbTrail.length > 0 &&
+        breadcrumbTrail[breadcrumbTrail.length - 1].pageId ===
+          "photo-wall-woman-page"
+      ) {
         popBreadcrumb();
         renderBreadcrumb();
       }
@@ -844,14 +881,20 @@ function navigatePage(dir, fromPage) {
     return;
   // 面包屑：从性别页回到封面
   if (fromPage === "gender-page" && dir === "prev" && target === "cover") {
-    if (breadcrumbTrail.length > 0 && breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "gender-page") {
+    if (
+      breadcrumbTrail.length > 0 &&
+      breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "gender-page"
+    ) {
       popBreadcrumb();
       renderBreadcrumb();
     }
   }
   // 面包屑：从地图页回到前面
   if (fromPage === "map-page" && dir === "prev") {
-    if (breadcrumbTrail.length > 0 && breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "map-page") {
+    if (
+      breadcrumbTrail.length > 0 &&
+      breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "map-page"
+    ) {
       popBreadcrumb();
       renderBreadcrumb();
     }
@@ -1296,11 +1339,6 @@ function runRatioFillNarrative() {
     onUpdate: drawRatioScene,
   });
 
-  if (body) {
-    body.innerHTML =
-      "我国网球人口总数达 25,188,388人（2024年数据）。<br>其中 53% 是男性，47% 是女性。";
-  }
-
   ["boy", "girl"].forEach((side) => {
     const car = ratioState.cars[side];
     const g = car.geom;
@@ -1354,8 +1392,13 @@ function runRatioFillNarrative() {
 
   tl.add(() => {
     if (body) {
-      body.innerHTML =
-        "我国网球人口总数达 25,188,388人（2024年数据）。<br>其中 53% 是男性，47% 是女性。<br>也就是说，每100个网球人里，就有大约 47个是女生，你的身影就在其中。";
+      const common =
+        "我国网球人口总数达 25,188,388 人（2024年数据）。<br>其中 53% 是男性，47% 是女性。";
+      const extra =
+        ratioState.playerGender === "boy"
+          ? "从 2004 到 2024，中国女网的成绩比男网更耀眼，也把中国网球带到了更大的舞台。<br>你还在追赶，但每一次发球、每一次坚持，都是继续向前的机会。<br>加油，网球赛场的下一次突破也可能由你写下。"
+          : "中国女网在世界赛场上留下了许多很亮的脚印。<br>从大满贯冠军，到奥运会突破，再到越来越多年轻球员被世界看见，<br>在网球的赛场上，女孩子的你拿起球拍，也可以一路打到很远的地方。";
+      body.innerHTML = common + "<br><br>" + extra;
     }
   }, "<");
 
@@ -1385,6 +1428,13 @@ function openRatioPage() {
   ratioState.active = true;
   setPageNavReady("ratio-page", false);
   setCurrentPage("ratio-page");
+
+  // 页面可见前先设好初始文案，避免闪现
+  const body = document.getElementById("ratio-body");
+  if (body) {
+    body.innerHTML =
+      "我国网球人口总数达 25,188,388 人（2024年数据）。<br>其中 53% 是男性，47% 是女性。";
+  }
 
   page.setAttribute("aria-hidden", "false");
   page.classList.add("is-active");
@@ -1972,7 +2022,12 @@ function pushBreadcrumb(label, pageId, restoreFn, detail) {
   // 同一 pageId → 替换当前节点的选择（如改性别、改出生地）
   if (current && current.pageId === pageId) {
     if (current.label === label) return;
-    breadcrumbTrail[breadcrumbCurrentIndex] = { label, pageId, restore: restoreFn, detail };
+    breadcrumbTrail[breadcrumbCurrentIndex] = {
+      label,
+      pageId,
+      restore: restoreFn,
+      detail,
+    };
     breadcrumbTrail.length = breadcrumbCurrentIndex + 1;
     renderBreadcrumb();
     return;
@@ -1980,7 +2035,11 @@ function pushBreadcrumb(label, pageId, restoreFn, detail) {
 
   // 与下一个已有节点相同 → 沿原有路径前进
   const nextExisting = breadcrumbTrail[breadcrumbCurrentIndex + 1];
-  if (nextExisting && nextExisting.pageId === pageId && nextExisting.label === label) {
+  if (
+    nextExisting &&
+    nextExisting.pageId === pageId &&
+    nextExisting.label === label
+  ) {
     breadcrumbCurrentIndex++;
     renderBreadcrumb();
     return;
@@ -4098,11 +4157,16 @@ function activateJourneyEndingFlip() {
         ? "photo-wall-woman-page"
         : "photo-wall-page";
     // 面包屑：记录结局图鉴
-    pushBreadcrumb("结局", page, () => {
-      showPageInstant(page);
-      if (page === "photo-wall-page") initPhotoWall();
-      else initPhotoWallWoman();
-    }, "结局图鉴");
+    pushBreadcrumb(
+      "结局",
+      page,
+      () => {
+        showPageInstant(page);
+        if (page === "photo-wall-page") initPhotoWall();
+        else initPhotoWallWoman();
+      },
+      "结局图鉴",
+    );
     showPageInstant(page);
   });
 }
@@ -4213,8 +4277,10 @@ function journeyGraph() {
       deskGymData: {
         question: "你会怎么选择？",
         narrative: [
-          "高年级课程的难度不断加大，",
-          "可网球几乎挤占了你所有的课余时间。",
+          "你觉得网球很好玩儿",
+          "也渐渐习惯了每到周末就去球场练球。",
+          "可高年级课程的难度不断加大，",
+          "网球几乎挤占了你所有的课余时间。",
           "看着不断下滑的成绩，",
           "你心里有些着急。",
           "你不是没想过 all in 网球，",
@@ -4893,6 +4959,10 @@ function renderJourneyNode() {
       "is-family-aboard-mode",
       node.visualType === "family-aboard",
     );
+    pageEl.classList.toggle(
+      "is-ending-flip",
+      node.visualType === "ending-flip",
+    );
   }
   if (actionsEl)
     actionsEl.classList.toggle(
@@ -4900,10 +4970,22 @@ function renderJourneyNode() {
       node.visualType === "apparel-growth" || isFullWidthVisual,
     );
 
-  // 隐藏底部 page-nav（仅限 apparel 详情页，只能通过返回按钮离开）
+  // 隐藏底部 page-nav（apparel 详情页 + 结局翻页 都不允许通过翻页按钮离开）
   var pageNav = pageEl ? pageEl.querySelector(".page-nav") : null;
   if (pageNav) {
-    pageNav.classList.toggle("is-hidden", node.visualType === "apparel-growth");
+    pageNav.classList.toggle(
+      "is-hidden",
+      node.visualType === "apparel-growth" || node.visualType === "ending-flip",
+    );
+  }
+
+  // 结局翻页：底部"重玩一次"按钮
+  var restartOnceBtn = document.getElementById("journey-restart-once-btn");
+  if (restartOnceBtn) {
+    restartOnceBtn.classList.toggle(
+      "is-ready",
+      node.visualType === "ending-flip",
+    );
   }
 
   kickerEl.textContent = node.kicker || "";
@@ -4997,21 +5079,36 @@ function renderJourneyNode() {
 function goToJourneyNode(nextId) {
   const graph = journeyGraph();
   if (!graph[nextId]) return;
+  // 游戏模式：跳过选材营结果页，直接按概率分配
+  if (!IS_DEBUG && nextId === "camp-result") {
+    const target = Math.random() < 0.5 ? "injury-choice" : "camp-crossroad";
+    return goToJourneyNode(target);
+  }
   journeyState.currentNodeId = nextId;
   journeyState.history.push(nextId);
   renderJourneyNode();
 
   // 面包屑：记录旅程选择
   const node = graph[nextId];
-  const shortLabel = node && node.pageName ? node.pageName : (node ? (node.title || nextId) : nextId);
-  const journeyDetail = node ? (node.title || nextId) : nextId;
-  pushBreadcrumb(shortLabel, "journey-page", () => {
-    // 回溯：恢复到该旅程节点
-    journeyState.currentNodeId = nextId;
-    journeyState.history = ["root", nextId];
-    showPageInstant("journey-page");
-    renderJourneyNode();
-  }, journeyDetail);
+  const shortLabel =
+    node && node.pageName
+      ? node.pageName
+      : node
+        ? node.title || nextId
+        : nextId;
+  const journeyDetail = node ? node.title || nextId : nextId;
+  pushBreadcrumb(
+    shortLabel,
+    "journey-page",
+    () => {
+      // 回溯：恢复到该旅程节点
+      journeyState.currentNodeId = nextId;
+      journeyState.history = ["root", nextId];
+      showPageInstant("journey-page");
+      renderJourneyNode();
+    },
+    journeyDetail,
+  );
 
   gsap.fromTo(
     ".journey-paper",
@@ -5504,17 +5601,22 @@ function playIndustryAnimation() {
 /* ---- 页面入口 ---- */
 function openIndustryPage() {
   // 面包屑：记录产业可视化
-  pushBreadcrumb("产业", "industry-page", () => {
-    showPageInstant("industry-page");
-    requestAnimationFrame(() => {
+  pushBreadcrumb(
+    "产业",
+    "industry-page",
+    () => {
+      showPageInstant("industry-page");
       requestAnimationFrame(() => {
-        initIndustryCanvas();
-        if (industryState.canvasReady) {
-          drawIndustryChart(industryState.currentKey, 1);
-        }
+        requestAnimationFrame(() => {
+          initIndustryCanvas();
+          if (industryState.canvasReady) {
+            drawIndustryChart(industryState.currentKey, 1);
+          }
+        });
       });
-    });
-  }, "产业可视化：网球产业的增长轨迹");
+    },
+    "产业可视化：网球产业的增长轨迹",
+  );
   showPageInstant("industry-page");
   // canvas 初始化需要等元素可见且有尺寸
   requestAnimationFrame(() => {
@@ -5529,16 +5631,34 @@ function openIndustryPage() {
 
 /* ---- 兴趣消费过渡页 ---- */
 function backToObjectsPage() {
-  if (breadcrumbTrail.length > 0 && breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "journey-page") {
+  if (
+    breadcrumbTrail.length > 0 &&
+    breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "journey-page"
+  ) {
     popBreadcrumb();
     renderBreadcrumb();
   }
   // 恢复左侧叙事文案（清除 cleanup 造成的空白）
   var ids = [
-    "o-p0", "o-p1", "o-p2", "o-p3", "o-p4", "o-p5",
-    "o-p6", "o-p7", "o-p8", "o-p9", "o-p10", "o-p11", "o-p12",
+    "o-p0",
+    "o-p1",
+    "o-p2",
+    "o-p3",
+    "o-p4",
+    "o-p5",
+    "o-p6",
+    "o-p7",
+    "o-p8",
+    "o-p9",
+    "o-p10",
+    "o-p11",
+    "o-p12",
   ];
-  var paras = ids.map(function (id) { return document.getElementById(id); }).filter(Boolean);
+  var paras = ids
+    .map(function (id) {
+      return document.getElementById(id);
+    })
+    .filter(Boolean);
   paras.forEach(function (p, i) {
     p.textContent = OBJECTS_NARRATIVE[i] || "";
     p.style.visibility = "visible";
@@ -5556,9 +5676,14 @@ function backToObjectsPage() {
 }
 
 function openObjectsPage() {
-  pushBreadcrumb("兴趣消费", "objects-page", () => {
-    showPageInstant("objects-page");
-  }, "网球用品店：从赛场装备到时尚符号");
+  pushBreadcrumb(
+    "兴趣消费",
+    "objects-page",
+    () => {
+      showPageInstant("objects-page");
+    },
+    "网球用品店：从赛场装备到时尚符号",
+  );
   showPageInstant("objects-page");
 }
 
@@ -5596,10 +5721,12 @@ function cleanupObjectsPage() {
   var endBtn = document.getElementById("objects-ending-btn");
   if (endBtn) endBtn.classList.remove("is-ready");
   // Reset narrative visibility
-  document.querySelectorAll(".objects-narrative p:not(.blank)").forEach(function (p) {
-    p.textContent = "";
-    p.style.visibility = "hidden";
-  });
+  document
+    .querySelectorAll(".objects-narrative p:not(.blank)")
+    .forEach(function (p) {
+      p.textContent = "";
+      p.style.visibility = "hidden";
+    });
 }
 
 function initObjectsPage() {
@@ -5611,10 +5738,25 @@ function initObjectsPage() {
 
   /* 打字机效果 */
   var ids = [
-    "o-p0", "o-p1", "o-p2", "o-p3", "o-p4", "o-p5",
-    "o-p6", "o-p7", "o-p8", "o-p9", "o-p10", "o-p11", "o-p12",
+    "o-p0",
+    "o-p1",
+    "o-p2",
+    "o-p3",
+    "o-p4",
+    "o-p5",
+    "o-p6",
+    "o-p7",
+    "o-p8",
+    "o-p9",
+    "o-p10",
+    "o-p11",
+    "o-p12",
   ];
-  var paras = ids.map(function (id) { return document.getElementById(id); }).filter(Boolean);
+  var paras = ids
+    .map(function (id) {
+      return document.getElementById(id);
+    })
+    .filter(Boolean);
   var texts = OBJECTS_NARRATIVE;
   paras.forEach(function (p, i) {
     p.textContent = "";
@@ -5658,10 +5800,15 @@ function initObjectsPage() {
       var item = img.dataset.item;
       var pageKey = OBJECTS_ITEM_PAGE[item];
       if (!pageKey) return;
-      pushBreadcrumb("消费详情", "journey-page", function () {
-        showPageInstant("journey-page");
-        goToJourneyNode(pageKey);
-      }, "网球用品消费增长数据");
+      pushBreadcrumb(
+        "消费详情",
+        "journey-page",
+        function () {
+          showPageInstant("journey-page");
+          goToJourneyNode(pageKey);
+        },
+        "网球用品消费增长数据",
+      );
       showPageInstant("journey-page");
       goToJourneyNode(pageKey);
     });
@@ -5673,7 +5820,9 @@ function initObjectsPage() {
 
 function startObjectsImageFloat() {
   gsap.killTweensOf("#img-shirt, #img-dress, #img-shoe, #img-bag");
-  gsap.set("#img-shirt, #img-dress, #img-shoe, #img-bag", { clearProps: "rotation,scale,transformOrigin" });
+  gsap.set("#img-shirt, #img-dress, #img-shoe, #img-bag", {
+    clearProps: "rotation,scale,transformOrigin",
+  });
 
   gsap.to("#img-shirt", {
     rotation: -2.2,
@@ -5716,11 +5865,16 @@ function openCoachPage() {
   document.querySelectorAll(".coach-chart-nav-btn").forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.key === "market");
   });
-  pushBreadcrumb("转型", "coach-page", () => {
-    showPageInstant("coach-page");
-    initCoachChart();
-    startCoachIntro();
-  }, "留在国内，转型教练");
+  pushBreadcrumb(
+    "转型",
+    "coach-page",
+    () => {
+      showPageInstant("coach-page");
+      initCoachChart();
+      startCoachIntro();
+    },
+    "留在国内，转型教练",
+  );
   showPageInstant("coach-page");
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
@@ -5732,27 +5886,62 @@ function openCoachPage() {
 
 function cleanupCoachPage() {
   coachState.phase = "intro";
-  if (coachState.introTimer) { clearTimeout(coachState.introTimer); coachState.introTimer = null; }
-  if (coachState.coachFrameTimer) { clearTimeout(coachState.coachFrameTimer); coachState.coachFrameTimer = null; }
-  if (coachState.narrativeTimer) { clearTimeout(coachState.narrativeTimer); coachState.narrativeTimer = null; }
+  if (coachState.introTimer) {
+    clearTimeout(coachState.introTimer);
+    coachState.introTimer = null;
+  }
+  if (coachState.coachFrameTimer) {
+    clearTimeout(coachState.coachFrameTimer);
+    coachState.coachFrameTimer = null;
+  }
+  if (coachState.narrativeTimer) {
+    clearTimeout(coachState.narrativeTimer);
+    coachState.narrativeTimer = null;
+  }
 
   const intro = document.getElementById("coach-intro");
-  if (intro) { intro.classList.remove("fade-out"); intro.style.display = ""; }
+  if (intro) {
+    intro.classList.remove("fade-out");
+    intro.style.display = "";
+  }
   const img = document.getElementById("coach-img");
-  if (img) { img.classList.remove("hide"); img.src = COACH_FRAMES[0]; }
+  if (img) {
+    img.classList.remove("hide");
+    img.src = COACH_FRAMES[0];
+  }
   const wrap = document.getElementById("coach-narrative-wrap");
   if (wrap) wrap.classList.remove("show");
   const btn = document.getElementById("coach-continue-btn");
   if (btn) btn.classList.remove("is-ready");
 
   // 重置叙事文本
-  ["ci0","ci1","ci2","ci3","ci4","ci5","ci6","ci7","ci8"].forEach((id) => {
+  ["ci0", "ci1", "ci2", "ci3", "ci4", "ci5", "ci6", "ci7", "ci8"].forEach(
+    (id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.visibility = "hidden";
+        el.textContent = el.textContent || "";
+      }
+    },
+  );
+  [
+    "cn0",
+    "cn1",
+    "cn2",
+    "cn3",
+    "cn4",
+    "cn5",
+    "cn6",
+    "cn7",
+    "cn8",
+    "cn9",
+    "cn10",
+  ].forEach((id) => {
     const el = document.getElementById(id);
-    if (el) { el.style.visibility = "hidden"; el.textContent = el.textContent || ""; }
-  });
-  ["cn0","cn1","cn2","cn3","cn4","cn5","cn6","cn7","cn8","cn9","cn10"].forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) { el.style.visibility = "hidden"; el.textContent = el.textContent || ""; }
+    if (el) {
+      el.style.visibility = "hidden";
+      el.textContent = el.textContent || "";
+    }
   });
 }
 
@@ -5766,8 +5955,20 @@ function startCoachIntro() {
   const btn = document.getElementById("coach-continue-btn");
   if (btn) btn.classList.remove("is-ready");
 
-  const introIds = ["ci0","ci1","ci2","ci3","ci4","ci5","ci6","ci7","ci8"];
-  const paras = introIds.map((id) => document.getElementById(id)).filter(Boolean);
+  const introIds = [
+    "ci0",
+    "ci1",
+    "ci2",
+    "ci3",
+    "ci4",
+    "ci5",
+    "ci6",
+    "ci7",
+    "ci8",
+  ];
+  const paras = introIds
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
   const texts = paras.map((p) => {
     const t = p.textContent;
     p.textContent = "";
@@ -5775,7 +5976,8 @@ function startCoachIntro() {
     return t;
   });
 
-  let paraIdx = 0, charIdx = 0;
+  let paraIdx = 0,
+    charIdx = 0;
   function typeNext() {
     if (paraIdx >= paras.length) {
       // 打字完成，停留 1.8s 后淡出
@@ -5840,8 +6042,22 @@ function startCoachScene() {
 
 function typewriterCoachNarrative() {
   coachState.phase = "narrative";
-  const typedIds = ["cn0","cn1","cn2","cn3","cn4","cn5","cn6","cn7","cn8","cn9","cn10"];
-  const paras = typedIds.map((id) => document.getElementById(id)).filter(Boolean);
+  const typedIds = [
+    "cn0",
+    "cn1",
+    "cn2",
+    "cn3",
+    "cn4",
+    "cn5",
+    "cn6",
+    "cn7",
+    "cn8",
+    "cn9",
+    "cn10",
+  ];
+  const paras = typedIds
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
   const texts = paras.map((p) => {
     const t = p.textContent;
     p.textContent = "";
@@ -5849,7 +6065,8 @@ function typewriterCoachNarrative() {
     return t;
   });
 
-  let paraIdx = 0, charIdx = 0;
+  let paraIdx = 0,
+    charIdx = 0;
   function typeNext() {
     if (paraIdx >= paras.length) {
       // 叙事完成，显示继续按钮，延迟后自动播放图表动画
@@ -5878,7 +6095,8 @@ function typewriterCoachNarrative() {
 
 /* ---- 教练页右侧产业图表（复用 industry 渲染管线） ---- */
 let cCoachChart, ctxCoachChart, rCoachChart;
-let coachChartW = 0, coachChartH = 0;
+let coachChartW = 0,
+  coachChartH = 0;
 
 function initCoachChart() {
   cCoachChart = document.getElementById("coach-chart-canvas");
@@ -5907,8 +6125,11 @@ function drawCoachChart(metricKey, progress = 1) {
   if (!cCoachChart || !ctxCoachChart || !rCoachChart) return;
 
   // 临时接管 industry 渲染目标
-  const _cI = cIndustry, _ctxI = ctxIndustry, _rI = rIndustry;
-  const _w = industryW, _h = industryH;
+  const _cI = cIndustry,
+    _ctxI = ctxIndustry,
+    _rI = rIndustry;
+  const _w = industryW,
+    _h = industryH;
   const _key = industryState.currentKey;
   const _pts = industryState._points;
   const _met = industryState._metric;
@@ -5924,8 +6145,11 @@ function drawCoachChart(metricKey, progress = 1) {
   drawIndustryChart(metricKey, progress);
 
   // 恢复
-  cIndustry = _cI; ctxIndustry = _ctxI; rIndustry = _rI;
-  industryW = _w; industryH = _h;
+  cIndustry = _cI;
+  ctxIndustry = _ctxI;
+  rIndustry = _rI;
+  industryW = _w;
+  industryH = _h;
   industryState.currentKey = _key;
   industryState._points = _pts;
   industryState._metric = _met;
@@ -5992,18 +6216,31 @@ function debugOpenJourneyNode(nodeId) {
   journeyState.currentNodeId = nodeId;
   journeyState.history = ["root", nodeId];
   // 面包屑：清除之前的旅程面包屑，加入新的入口节点
-  while (breadcrumbTrail.length > 0 && breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "journey-page") {
+  while (
+    breadcrumbTrail.length > 0 &&
+    breadcrumbTrail[breadcrumbTrail.length - 1].pageId === "journey-page"
+  ) {
     popBreadcrumb();
   }
   const node = graph[nodeId];
-  const shortLabel = node && node.pageName ? node.pageName : (node ? (node.title || nodeId) : nodeId);
-  const journeyDetail = node ? (node.title || nodeId) : nodeId;
-  pushBreadcrumb(shortLabel, "journey-page", () => {
-    journeyState.currentNodeId = nodeId;
-    journeyState.history = ["root", nodeId];
-    showPageInstant("journey-page");
-    renderJourneyNode();
-  }, journeyDetail);
+  const shortLabel =
+    node && node.pageName
+      ? node.pageName
+      : node
+        ? node.title || nodeId
+        : nodeId;
+  const journeyDetail = node ? node.title || nodeId : nodeId;
+  pushBreadcrumb(
+    shortLabel,
+    "journey-page",
+    () => {
+      journeyState.currentNodeId = nodeId;
+      journeyState.history = ["root", nodeId];
+      showPageInstant("journey-page");
+      renderJourneyNode();
+    },
+    journeyDetail,
+  );
   showPageInstant("journey-page");
 }
 
@@ -6031,7 +6268,9 @@ function mapCourtCount(name) {
 }
 
 function mapPopulationCount(name) {
-  const v = window.TENNIS_POPULATION ? window.TENNIS_POPULATION[name] : undefined;
+  const v = window.TENNIS_POPULATION
+    ? window.TENNIS_POPULATION[name]
+    : undefined;
   return typeof v === "number" ? v : null;
 }
 
@@ -6121,7 +6360,8 @@ function computeMapGeom() {
     mapState.minPop = Math.min(...popCounts);
     mapState.maxPop = Math.max(...popCounts);
     mapState.popRanking = Object.keys(window.TENNIS_POPULATION || {}).sort(
-      (a, b) => (window.TENNIS_POPULATION[b] || 0) - (window.TENNIS_POPULATION[a] || 0),
+      (a, b) =>
+        (window.TENNIS_POPULATION[b] || 0) - (window.TENNIS_POPULATION[a] || 0),
     );
   }
 
@@ -6134,9 +6374,12 @@ function computeMapGeom() {
     if (pop == null) return;
     const center = f.properties.center;
     if (!center) return;
-    const popFactor = mapState.maxPop > mapState.minPop
-      ? Math.sqrt((pop - mapState.minPop) / (mapState.maxPop - mapState.minPop))
-      : 0.5;
+    const popFactor =
+      mapState.maxPop > mapState.minPop
+        ? Math.sqrt(
+            (pop - mapState.minPop) / (mapState.maxPop - mapState.minPop),
+          )
+        : 0.5;
     const clusterR = 0.25 + popFactor * 2.2; // degrees radius
     const nBlades = Math.round(15 + popFactor * 130);
     for (let i = 0; i < nBlades; i++) {
@@ -6147,7 +6390,10 @@ function computeMapGeom() {
       const h = 2 + popFactor * (1.5 + rng() * 5);
       const lean = (rng() - 0.5) * 0.25;
       mapState.grassBlades.push({
-        lng, lat, h, lean,
+        lng,
+        lat,
+        h,
+        lean,
         seed: Math.round(rng() * 10000),
       });
     }
@@ -6219,7 +6465,7 @@ function drawMap() {
       map: "china-handdrawn",
       roam: false,
       zoom: 1.06,
-      layoutCenter: ["40%", "58%"],
+      layoutCenter: ["32%", "58%"],
       layoutSize: "84%",
       label: { show: false },
       emphasis: {
@@ -6332,42 +6578,52 @@ function selectRegion(name) {
   // 面包屑：记录出生地选择
   const provinceLabel = displayRegionName(name);
   const provinceDetail = `出生地：${provinceLabel}`;
-  pushBreadcrumb(provinceLabel, "map-page", () => {
-    mapState.selected = name;
-    mapState.reveal = 1;
-    showPageInstant("map-page");
-    drawMap();
-    const titleEl2 = document.getElementById("map-title");
-    const bodyEl2 = document.getElementById("map-body");
-    const count2 = mapCourtCount(name);
-    const safeCount2 = typeof count2 === "number" ? count2 : 0;
-    const rank2 = mapState.ranking.indexOf(name) + 1;
-    const total2 = mapState.ranking.length;
-    const safeRank2 = rank2 > 0 ? rank2 : total2;
-    const pct2 = total2 > 0 ? Math.max(1, Math.round((safeRank2 / total2) * 100)) : 100;
-    const pop2 = mapPopulationCount(name);
-    const popRank2 = mapState.popRanking.indexOf(name) + 1;
-    const popTotal2 = mapState.popRanking.length;
-    const safePopRank2 = popRank2 > 0 ? popRank2 : popTotal2;
-    const popPct2 = popTotal2 > 0 ? Math.max(1, Math.round((safePopRank2 / popTotal2) * 100)) : 100;
-    if (titleEl2) titleEl2.textContent = `你出生在「${displayRegionName(name)}」。`;
-    let bodyHTML2 = `拥有 ${safeCount2.toLocaleString()} 片网球场地，<br>场地数量位于全国前 ${pct2}%。`;
-    if (pop2 != null) {
-      bodyHTML2 += `<br>网球人口约 ${pop2.toLocaleString()} 人，`;
-      bodyHTML2 += `<br>人口规模位于全国前 ${popPct2}%。`;
-    }
-    if (bodyEl2) bodyEl2.innerHTML = bodyHTML2;
-    setPageNavReady("map-page", true);
-    updatePageNav();
-    gsap.set("#map-hint", { opacity: 0, y: -10 });
-    gsap.set("#map-copy", { opacity: 1 });
-    gsap.set("#map-copy > *", { opacity: 1, y: 0 });
-    gsap.set("#map-legend", { opacity: 1 });
-    gsap.set("#map-legend-pop", { opacity: 1 });
-    // 清除旅程状态（回溯到出生地时后续旅程需要重选）
-    journeyState.currentNodeId = "";
-    journeyState.history = [];
-  }, provinceDetail);
+  pushBreadcrumb(
+    provinceLabel,
+    "map-page",
+    () => {
+      mapState.selected = name;
+      mapState.reveal = 1;
+      showPageInstant("map-page");
+      drawMap();
+      const titleEl2 = document.getElementById("map-title");
+      const bodyEl2 = document.getElementById("map-body");
+      const count2 = mapCourtCount(name);
+      const safeCount2 = typeof count2 === "number" ? count2 : 0;
+      const rank2 = mapState.ranking.indexOf(name) + 1;
+      const total2 = mapState.ranking.length;
+      const safeRank2 = rank2 > 0 ? rank2 : total2;
+      const pct2 =
+        total2 > 0 ? Math.max(1, Math.round((safeRank2 / total2) * 100)) : 100;
+      const pop2 = mapPopulationCount(name);
+      const popRank2 = mapState.popRanking.indexOf(name) + 1;
+      const popTotal2 = mapState.popRanking.length;
+      const safePopRank2 = popRank2 > 0 ? popRank2 : popTotal2;
+      const popPct2 =
+        popTotal2 > 0
+          ? Math.max(1, Math.round((safePopRank2 / popTotal2) * 100))
+          : 100;
+      if (titleEl2)
+        titleEl2.textContent = `你出生在「${displayRegionName(name)}」。`;
+      let bodyHTML2 = `拥有 ${safeCount2.toLocaleString()} 片网球场地，<br>场地数量位于全国前 ${pct2}%。`;
+      if (pop2 != null) {
+        bodyHTML2 += `<br>网球人口约 ${pop2.toLocaleString()} 人，`;
+        bodyHTML2 += `<br>人口规模位于全国前 ${popPct2}%。`;
+      }
+      if (bodyEl2) bodyEl2.innerHTML = bodyHTML2;
+      setPageNavReady("map-page", true);
+      updatePageNav();
+      gsap.set("#map-hint", { opacity: 0, y: -10 });
+      gsap.set("#map-copy", { opacity: 1 });
+      gsap.set("#map-copy > *", { opacity: 1, y: 0 });
+      gsap.set("#map-legend", { opacity: 1 });
+      gsap.set("#map-legend-pop", { opacity: 1 });
+      // 清除旅程状态（回溯到出生地时后续旅程需要重选）
+      journeyState.currentNodeId = "";
+      journeyState.history = [];
+    },
+    provinceDetail,
+  );
 
   const count = mapCourtCount(name);
   const safeCount = typeof count === "number" ? count : 0;
@@ -6382,7 +6638,9 @@ function selectRegion(name) {
   const popTotal = mapState.popRanking.length;
   const safePopRank = popRank > 0 ? popRank : popTotal;
   const popPct =
-    popTotal > 0 ? Math.max(1, Math.round((safePopRank / popTotal) * 100)) : 100;
+    popTotal > 0
+      ? Math.max(1, Math.round((safePopRank / popTotal) * 100))
+      : 100;
 
   const titleEl = document.getElementById("map-title");
   const bodyEl = document.getElementById("map-body");
@@ -6409,7 +6667,11 @@ function selectRegion(name) {
     0.25,
   );
   tl.to("#map-legend", { opacity: 1, duration: 0.5, ease: "power2.out" }, 0.35);
-  tl.to("#map-legend-pop", { opacity: 1, duration: 0.5, ease: "power2.out" }, 0.42);
+  tl.to(
+    "#map-legend-pop",
+    { opacity: 1, duration: 0.5, ease: "power2.out" },
+    0.42,
+  );
   tl.add(() => {
     setPageNavReady("map-page", true);
     updatePageNav();
@@ -6630,19 +6892,28 @@ function init() {
       // 面包屑：记录性别选择
       const genderLabel = button.dataset.gender === "girl" ? "女孩" : "男孩";
       const genderDetail = `性别选择：${genderLabel}`;
-      pushBreadcrumb(genderLabel, "gender-page", () => {
-        // 回溯：恢复性别选择并跳转到性别页，清除后续省份/旅程
-        document.querySelectorAll(".gender-option").forEach((item) => {
-          item.classList.toggle("is-selected", item.dataset.gender === button.dataset.gender);
-        });
-        ratioState.playerGender = button.dataset.gender === "girl" ? "girl" : "boy";
-        mapState.selected = null;
-        mapState.reveal = 0;
-        journeyState.currentNodeId = "";
-        journeyState.history = [];
-        showPageInstant("gender-page");
-        updatePageNav();
-      }, genderDetail);
+      pushBreadcrumb(
+        genderLabel,
+        "gender-page",
+        () => {
+          // 回溯：恢复性别选择并跳转到性别页，清除后续省份/旅程
+          document.querySelectorAll(".gender-option").forEach((item) => {
+            item.classList.toggle(
+              "is-selected",
+              item.dataset.gender === button.dataset.gender,
+            );
+          });
+          ratioState.playerGender =
+            button.dataset.gender === "girl" ? "girl" : "boy";
+          mapState.selected = null;
+          mapState.reveal = 0;
+          journeyState.currentNodeId = "";
+          journeyState.history = [];
+          showPageInstant("gender-page");
+          updatePageNav();
+        },
+        genderDetail,
+      );
       // 选完短暂停顿，自动过场到第三幕
       gsap.delayedCall(0.45, openRatioPage);
     });
@@ -6656,10 +6927,15 @@ function init() {
   const coachContinue = document.getElementById("coach-continue-btn");
   if (coachContinue) {
     coachContinue.addEventListener("click", () => {
-      pushBreadcrumb("培训机构教练", "journey-page", () => {
-        showPageInstant("journey-page");
-        goToJourneyNode("ending-coach");
-      }, "培训机构教练");
+      pushBreadcrumb(
+        "培训机构教练",
+        "journey-page",
+        () => {
+          showPageInstant("journey-page");
+          goToJourneyNode("ending-coach");
+        },
+        "培训机构教练",
+      );
       showPageInstant("journey-page");
       goToJourneyNode("ending-coach");
     });
@@ -6667,10 +6943,15 @@ function init() {
   var objectsEndBtn = document.getElementById("objects-ending-btn");
   if (objectsEndBtn) {
     objectsEndBtn.addEventListener("click", function () {
-      pushBreadcrumb("结局", "journey-page", function () {
-        showPageInstant("journey-page");
-        goToJourneyNode("ending-business");
-      }, "商业大亨");
+      pushBreadcrumb(
+        "结局",
+        "journey-page",
+        function () {
+          showPageInstant("journey-page");
+          goToJourneyNode("ending-business");
+        },
+        "商业大亨",
+      );
       showPageInstant("journey-page");
       goToJourneyNode("ending-business");
     });
@@ -6875,18 +7156,23 @@ function init() {
     });
   }
 
-  // ---- 图鉴页 "再玩一次" 按钮 ----
+  // ---- 图鉴页 "重玩一次" 按钮 ----
   document
     .getElementById("photo-wall-restart-btn")
     ?.addEventListener("click", () => {
-      resetBreadcrumb();
-      showPageInstant("cover");
+      window.location.reload();
     });
   document
     .getElementById("photo-wall-woman-restart-btn")
     ?.addEventListener("click", () => {
-      resetBreadcrumb();
-      showPageInstant("cover");
+      window.location.reload();
+    });
+
+  // ---- 结局身份页 "重玩一次" 按钮 ----
+  document
+    .getElementById("journey-restart-once-btn")
+    ?.addEventListener("click", () => {
+      window.location.reload();
     });
 
   document.addEventListener("keydown", (e) => {
