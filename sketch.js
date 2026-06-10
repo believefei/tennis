@@ -784,7 +784,11 @@ function showPageInstant(id) {
   if (id === "photo-wall-woman-page") {
     initPhotoWallWoman();
   }
-  setPageNavReady(id, true);
+  // 选择驱动页面不显示上下页翻页按钮
+  const noNavPages = ["gender-page", "coach-page", "journey-page"];
+  if (!noNavPages.includes(id)) {
+    setPageNavReady(id, true);
+  }
 }
 
 function navigatePage(dir, fromPage) {
@@ -6837,7 +6841,7 @@ function openJourneyPage() {
     },
     "-=0.06",
   );
-  tl.add(() => setPageNavReady("journey-page", true), "-=0.18");
+  // 旅程页是选择驱动，不显示上下页翻页按钮
 }
 
 function init() {
