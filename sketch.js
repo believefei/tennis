@@ -708,8 +708,7 @@ function hydrateRatioStatic() {
   }
   const body = document.getElementById("ratio-body");
   if (body) {
-    const who = ratioState.playerGender === "boy" ? "男生" : "女生";
-    body.textContent = `每 100 个网球人口里，就有一个是${who}的你。`;
+    body.textContent = "每 100 个网球人口里，就有一个是你。";
   }
   const btn = document.getElementById("ratio-next-btn");
   if (btn) btn.classList.add("is-ready");
@@ -1327,8 +1326,7 @@ function runRatioFill() {
 
   // 文案收尾
   tl.add(() => {
-    const who = ratioState.playerGender === "boy" ? "男生" : "女生";
-    body.textContent = `每 100 个网球人口里，就有一个是${who}的你。`;
+    body.textContent = "每 100 个网球人口里，就有一个是你。";
   }, "<");
 
   // 收尾后浮出「去看看你的家乡」按钮
@@ -1445,8 +1443,7 @@ function openRatioPage() {
   // 页面可见前先设好初始文案，避免闪现
   const body = document.getElementById("ratio-body");
   if (body) {
-    const who = ratioState.playerGender === "boy" ? "男生" : "女生";
-    body.textContent = `每 100 个网球人口里，就有一个是${who}的你。`;
+    body.textContent = "每 100 个网球人口里，就有一个是你。";
   }
 
   page.setAttribute("aria-hidden", "false");
