@@ -743,7 +743,7 @@ function showPageInstant(id) {
     const bodyEl = document.getElementById("achievement-body");
     if (bodyEl) {
       bodyEl.innerHTML = isGirl
-        ? "1. 中国女网在世界赛场上留下了许多很亮的脚印。<br>从大满贯冠军，到奥运会突破，再到越来越多年轻球员被世界看见，<br>在网球的赛场上，女孩子的你拿起球拍，也可以一路打到很远的地方。"
+        ? "中国女网在世界赛场上留下了许多很亮的脚印。<br>从大满贯冠军，到奥运会突破，再到越来越多年轻球员被世界看见，<br>在网球的赛场上，女孩子的你拿起球拍，也可以一路打到很远的地方。"
         : "中国女网的成绩比男网更耀眼，也把中国网球带到了更大的舞台。<br>你还在追赶，但每一次发球、每一次坚持，都是继续向前的机会。<br>加油，网球赛场的下一次突破也可能由你写下。";
     }
     gsap.set(".achievement-copy > *", { opacity: 1, y: 0 });
@@ -4207,8 +4207,8 @@ function activateJourneyVisual(node) {
   if (node.visualType !== "apparel-growth") return;
 
   gsap.to(".apparel-shirt-hero", {
-    rotation: -2.2,
-    duration: 2.1,
+    rotation: -0.8,
+    duration: 2.8,
     repeat: -1,
     yoyo: true,
     ease: "sine.inOut",
@@ -4216,9 +4216,9 @@ function activateJourneyVisual(node) {
   });
 
   gsap.to(".apparel-shirt-shadow", {
-    scaleX: 0.9,
-    opacity: 0.14,
-    duration: 2.1,
+    scaleX: 0.94,
+    opacity: 0.1,
+    duration: 2.8,
     repeat: -1,
     yoyo: true,
     ease: "sine.inOut",

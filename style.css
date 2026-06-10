@@ -2704,7 +2704,7 @@ body.is-game-mode .debug-jump {
 
 .apparel-icon-svg {
   width: 100%;
-  max-width: 22px;
+  max-width: var(--apparel-icon-size, 22px);
   height: auto;
 }
 
