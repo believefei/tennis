@@ -1252,14 +1252,6 @@ function runRatioFill() {
     onUpdate: drawRatioScene,
   });
 
-  // 计数文案
-  let shownBoy = 0,
-    shownGirl = 0;
-  function refreshCopy() {
-    body.textContent = `男生 ${shownBoy} 个，女生 ${shownGirl} 个`;
-  }
-  refreshCopy();
-
   // 两车普通球并行错峰落下
   ["boy", "girl"].forEach((side) => {
     const car = ratioState.cars[side];
@@ -1277,11 +1269,7 @@ function runRatioFill() {
           onStart: () => {
             b.y = startY;
           },
-          onComplete: () => {
-            if (side === "boy") shownBoy++;
-            else shownGirl++;
-            refreshCopy();
-          },
+          onComplete: () => {},
         },
         i * 0.03,
       ); // 错峰
@@ -1440,11 +1428,7 @@ function openRatioPage() {
   setPageNavReady("ratio-page", false);
   setCurrentPage("ratio-page");
 
-  // 页面可见前先设好初始文案，避免闪现
-  const body = document.getElementById("ratio-body");
-  if (body) {
-    body.textContent = "每 100 个网球人口里，就有一个是你。";
-  }
+  // 页面可见前先清空文案，避免闪现旧内容
 
   page.setAttribute("aria-hidden", "false");
   page.classList.add("is-active");
