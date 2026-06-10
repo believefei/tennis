@@ -174,8 +174,8 @@ const SVG_W = 918,
 // figure 在屏幕上的几何：脚贴地面、水平中心对齐地面投影
 function figGeom() {
   const groundY = H * 0.86;
-  const h = H * 0.62;
-  const w = h * (SVG_W / SVG_H);
+  const h = H * 0.5;
+  const w = 492;
   const cx = W * 0.16; // 与 drawScene 的脚下投影对齐
   const x = cx - w / 2;
   const y = groundY - h; // 脚贴地
@@ -2003,13 +2003,25 @@ function renderBreadcrumb() {
   });
 }
 
-function pushBreadcrumb(label, pageId, restoreFn, detail) {
+function pushBreadcrumb(label, pageId, restoreFn, detail, accumulate) {
   detail = detail || label;
 
   // 如果在末尾，正常追加
   if (breadcrumbCurrentIndex >= breadcrumbTrail.length - 1) {
     const last = breadcrumbTrail[breadcrumbTrail.length - 1];
     if (last && last.pageId === pageId && last.label === label) return;
+    // 同一 pageId 不同选择 → 覆盖（仅非累积型：性别、出生地等单选页）
+    if (!accumulate && last && last.pageId === pageId) {
+      breadcrumbTrail[breadcrumbCurrentIndex] = {
+        label,
+        pageId,
+        restore: restoreFn,
+        detail,
+      };
+      breadcrumbTrail.length = breadcrumbCurrentIndex + 1;
+      renderBreadcrumb();
+      return;
+    }
     breadcrumbTrail.push({ label, pageId, restore: restoreFn, detail });
     breadcrumbCurrentIndex = breadcrumbTrail.length - 1;
     renderBreadcrumb();
@@ -4277,7 +4289,7 @@ function journeyGraph() {
       deskGymData: {
         question: "你会怎么选择？",
         narrative: [
-          "你觉得网球很好玩儿",
+          "你觉得网球很好玩儿，",
           "也渐渐习惯了每到周末就去球场练球。",
           "可高年级课程的难度不断加大，",
           "网球几乎挤占了你所有的课余时间。",
@@ -5108,6 +5120,7 @@ function goToJourneyNode(nextId) {
       renderJourneyNode();
     },
     journeyDetail,
+    true, // accumulate：旅程多步不覆盖
   );
 
   gsap.fromTo(
@@ -6240,6 +6253,7 @@ function debugOpenJourneyNode(nodeId) {
       renderJourneyNode();
     },
     journeyDetail,
+    true, // accumulate：旅程多步不覆盖
   );
   showPageInstant("journey-page");
 }
@@ -7184,6 +7198,13 @@ function init() {
   });
 
   updatePageNav();
+
+  // 双击切换快进模式：所有动画瞬间完成
+  let _fastMode = false;
+  document.addEventListener("dblclick", () => {
+    _fastMode = !_fastMode;
+    gsap.globalTimeline.timeScale(_fastMode ? 999 : 1);
+  });
 }
 
 window.addEventListener("load", init);
