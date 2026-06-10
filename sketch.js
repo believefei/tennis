@@ -6811,6 +6811,21 @@ function openJourneyPage() {
   journeyState.active = true;
   resetJourney();
   renderJourneyNode();
+  // 面包屑：记录旅程入口节点（未来起点）
+  const rootNode = journeyGraph().root;
+  if (rootNode) {
+    pushBreadcrumb(
+      rootNode.pageName || "未来起点",
+      "journey-page",
+      () => {
+        resetJourney();
+        showPageInstant("journey-page");
+        renderJourneyNode();
+      },
+      rootNode.title || "未来起点",
+      true,
+    );
+  }
   setPageNavReady("journey-page", false);
   setCurrentPage("journey-page");
   page.setAttribute("aria-hidden", "false");
