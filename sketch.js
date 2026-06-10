@@ -778,6 +778,13 @@ function showPageInstant(id) {
       });
     });
   }
+  if (id === "coach-page") {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        initCoachChart();
+      });
+    });
+  }
   if (id === "photo-wall-page") {
     initPhotoWall();
   }
