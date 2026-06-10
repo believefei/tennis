@@ -6625,7 +6625,8 @@ function selectRegion(name) {
         bodyHTML2 += `<br>人口规模位于全国前 ${popPct2}%。`;
       }
       if (bodyEl2) bodyEl2.innerHTML = bodyHTML2;
-      // 出生地页是选择驱动，不显示上下页翻页按钮
+      setPageNavReady("map-page", true);
+      updatePageNav();
       gsap.set("#map-hint", { opacity: 0, y: -10 });
       gsap.set("#map-copy", { opacity: 1 });
       gsap.set("#map-copy > *", { opacity: 1, y: 0 });
@@ -6685,7 +6686,10 @@ function selectRegion(name) {
     { opacity: 1, duration: 0.5, ease: "power2.out" },
     0.42,
   );
-  // 出生地页是选择驱动，不显示上下页翻页按钮
+  tl.add(() => {
+    setPageNavReady("map-page", true);
+    updatePageNav();
+  }, 0.45);
 }
 
 function openMapPage() {
