@@ -3959,8 +3959,8 @@ function buildJourneyEndingFlipVisual(node) {
 
   if (ratioState.playerGender === "girl" && closeSrc.startsWith("ending/")) {
     const filename = closeSrc.split("/").pop();
-    closeSrc = "endingphotowallwoman/" + filename;
-    openSrc = "endingphotowallwoman/" + openSrc.split("/").pop();
+    closeSrc = "endingcardwoman/" + filename;
+    openSrc = "endingcardwoman/" + openSrc.split("/").pop();
   }
 
   const title = data.title || node.title || "结局";
